@@ -1,4 +1,4 @@
-"""Company filings of B3-listed issuers, as delivered to CVM.
+"""Company filings and financial statements of B3-listed issuers, as delivered to CVM.
 
 Yahoo tags no news with a ``.SA`` symbol, so a Brazilian company's news channel
 is empty. CVM (Comissão de Valores Mobiliários) publishes every periodic and
@@ -8,10 +8,17 @@ minutes -- as open data, each with the date it was delivered. That date is
 when the document became public, so a run dated ``D`` is served exactly what
 was on file by ``D``: re-deliveries count from their own delivery date.
 
-Open files, no key: the IPE dataset (one zip a year) for the filings and the
-FCA dataset (securities by trading code) to find the issuer of a ticker. Only
-B3 tickers (``.SA``) are served; anything else falls through to the next
-configured vendor.
+Open files, no key: the IPE dataset (one zip per delivery year) for the
+filings, DFP/ITR for statements, and the FCA dataset (securities by trading
+code) to find the issuer of a ticker. Only B3 tickers (``.SA``) are served;
+anything else falls through to the next configured vendor.
+
+Point-in-time limits. CVM's FCA and statement files keep only the latest
+version of each document. A document whose only kept version was delivered
+after ``D`` is therefore left out, and nothing tells the agents why: saying a
+period "was later restated" would itself be news from after ``D``. What
+cannot be reconstructed is the leaving-out itself, which happens only for
+documents re-delivered after ``D``.
 """
 
 from __future__ import annotations
@@ -60,19 +67,29 @@ def _ttl(year: int) -> int:
     return _CURRENT_TTL if year >= date.today().year else _PAST_TTL
 
 
-def _cached_zip(url: str, name: str, year: int) -> Path | None:
-    """The zip at ``url``, from the cache when fresh; None when CVM has no such file."""
+def _cached_zip(url: str, name: str, year: int, gaps: list[str] | None = None) -> Path | None:
+    """The zip at ``url``, from the cache when fresh; None when CVM has no such file.
+
+    ``gaps`` collects what limits coverage -- a missing year file, a stale copy
+    served because the refresh failed -- so a caller never presents an
+    incomplete register as a complete one.
+    """
     path = Path(get_config()["data_cache_dir"]) / "cvm" / name
     if path.exists() and time.time() - path.stat().st_mtime < _ttl(year):
         return path
     try:
         response = requests.get(url, timeout=REQUEST_TIMEOUT)
         if response.status_code == 404:
+            if gaps is not None:
+                gaps.append(f"CVM has no {name} file")
             return None
         response.raise_for_status()
     except requests.RequestException as exc:
         if path.exists():  # a stale copy beats no filings at all
             logger.warning("CVM refresh of %s failed (%s); using the cached copy", name, exc)
+            if gaps is not None:
+                stamp = datetime.fromtimestamp(path.stat().st_mtime).date().isoformat()
+                gaps.append(f"{name} could not be refreshed; served the copy fetched {stamp}")
             return path
         status = getattr(getattr(exc, "response", None), "status_code", None)
         raise VendorUnavailableError(f"CVM open data request failed ({status or type(exc).__name__})") from exc
@@ -101,6 +118,31 @@ def _read_rows(path: str, mtime: float, member_suffix: str) -> list[dict]:
         raise VendorUnavailableError(f"CVM file {Path(path).name} could not be read ({exc})") from exc
 
 
+def _delivered(path: Path, kind: str, year: int, cnpj: str | None = None) -> dict[str, list[tuple[int, date]]]:
+    """``{DT_REFER: [(version, delivery date), ...]}`` from a DFP/ITR/FCA index file,
+    for one issuer or (``cnpj`` None) keyed ``CNPJ|DT_REFER`` for all."""
+    out: dict[str, list[tuple[int, date]]] = {}
+    for row in _rows(path, f"{kind}_cia_aberta_{year}.csv"):
+        if cnpj is not None and row.get("CNPJ_CIA") != cnpj:
+            continue
+        try:
+            key = row["DT_REFER"] if cnpj is not None else f"{row['CNPJ_CIA']}|{row['DT_REFER']}"
+            out.setdefault(key, []).append((int(row["VERSAO"]), date.fromisoformat(row["DT_RECEB"][:10])))
+        except (KeyError, ValueError):
+            continue
+    return out
+
+
+def _kept_version_public(filed: list[tuple[int, date]], as_of: date) -> tuple[int, date] | None:
+    """The version CVM keeps (the latest), when it was public on ``as_of``; else None.
+
+    Only the latest version's figures are in the files, so an earlier version
+    delivered by ``as_of`` cannot be served: its figures are gone.
+    """
+    version, received = max(filed)
+    return (version, received) if received <= as_of else None
+
+
 def b3_code(ticker: str) -> str | None:
     """The B3 trading code of a ``.SA`` ticker (``itub4.sa`` -> ``ITUB4``), else None.
 
@@ -116,29 +158,31 @@ def b3_code(ticker: str) -> str | None:
 
 
 def issuer_for(code: str, as_of_date: str) -> tuple[str, str] | None:
-    """``(cnpj, name)`` of the company whose security trades as ``code``.
+    """``(cnpj, name)`` of the company whose security traded as ``code`` on ``as_of_date``.
 
-    Read from the FCA of the run's year, falling back to earlier years for a
-    code that has since stopped trading, then to the latest year for a listing
-    newer than the run's year file.
+    Read from FCA forms public by then: the run's year and up to four before,
+    newest first, each only when its kept version had been delivered by the run
+    date. A later year's form is never read, since it would describe tickers
+    and issuers as they became after the run date.
     """
-    year = int(as_of_date[:4])
-    latest = date.today().year
-    for y in [*range(min(year, latest), max(year - 4, 2009), -1), latest]:
+    as_of = datetime.strptime(as_of_date, "%Y-%m-%d").date()
+    for y in range(as_of.year, max(as_of.year - 5, 2009), -1):
         path = _cached_zip(_FCA_URL.format(year=y), f"fca_cia_aberta_{y}.zip", y)
         if path is None:
             continue
+        public = {key.split("|")[0] for key, filed in _delivered(path, "fca", y).items()
+                  if _kept_version_public(filed, as_of)}
         for row in _rows(path, f"valor_mobiliario_{y}.csv"):
-            if (row.get("Codigo_Negociacao") or "").strip().upper() == code:
+            if (row.get("Codigo_Negociacao") or "").strip().upper() == code and row["CNPJ_Companhia"] in public:
                 return row["CNPJ_Companhia"], row.get("Nome_Empresarial", "")
     return None
 
 
-def _filings(cnpj: str, start: date, end: date) -> list[dict]:
+def _filings(cnpj: str, start: date, end: date, gaps: list[str]) -> list[dict]:
     """The issuer's filings delivered in ``[start, end]``, latest version of each."""
     found: dict[str, dict] = {}
     for year in range(start.year, end.year + 1):
-        path = _cached_zip(_IPE_URL.format(year=year), f"ipe_cia_aberta_{year}.zip", year)
+        path = _cached_zip(_IPE_URL.format(year=year), f"ipe_cia_aberta_{year}.zip", year, gaps)
         if path is None:
             continue
         for row in _rows(path, f"ipe_cia_aberta_{year}.csv"):
@@ -201,16 +245,22 @@ def get_news(ticker: str, start_date: str, end_date: str) -> str:
     end = datetime.strptime(end_date, "%Y-%m-%d").date()
     limit = get_config().get("news_article_limit", 20)
 
+    gaps: list[str] = []
+    rows = _filings(cnpj, start, end, gaps)
     header = (f"## Filings by {name} ({code}, CNPJ {cnpj}) delivered to CVM, {start_date} to {end_date}\n"
-              "Source: CVM open data (IPE). Official company disclosures; each dated by its delivery "
-              "to CVM, when it became public. Subjects are in Portuguese.\n\n")
-    rows = _filings(cnpj, start, end)
+              "Source: CVM open data (IPE). Official company disclosures, each dated by its delivery "
+              "to CVM, when it became public. Only the type and subject of each filing are given, "
+              "not its content. Subjects are in Portuguese.\n")
+    if gaps:
+        header += f"Coverage incomplete: {'; '.join(gaps)}.\n"
+    header += "\n"
     if rows:
         return header + _listing(rows, limit)
 
-    earlier = _filings(cnpj, start - timedelta(days=_EARLIER_DAYS), start - timedelta(days=1))
-    body = ("No filing was delivered to CVM by this company in the window. CVM's register is "
-            "complete, so this is a real absence of disclosures, not missing data.\n")
+    earlier = _filings(cnpj, start - timedelta(days=_EARLIER_DAYS), start - timedelta(days=1), gaps)
+    body = ("No filing by this company in the window is in CVM's register."
+            + (" The register's coverage is incomplete (see above), so this may be missing data.\n" if gaps
+               else " CVM's register is complete for the window, so this is an absence of disclosures.\n"))
     if earlier:
         body += (f"\nMost recent earlier filings (up to {_EARLIER_DAYS} days before the window):\n"
                  + _listing(earlier, _EARLIER_MAX))
@@ -229,6 +279,13 @@ _STATEMENTS = {
     "cashflow": ("Cash Flow", ("DFC_MI", "DFC_MD")),
 }
 _PERIODS = {"quarterly": 4, "annual": 3}
+_SCALES = {"MIL": 1000.0, "UNIDADE": 1.0}
+
+# A flow statement carries several spans (the quarter, the year to date). The
+# shortest span is served when it covers nearly every account the longest does;
+# otherwise the longest, so accounts are never dropped for being reported only
+# over the longer span.
+_SPAN_COVERAGE = 0.8
 
 
 def _depth_ok(code: str) -> bool:
@@ -238,8 +295,9 @@ def _depth_ok(code: str) -> bool:
 
 @functools.lru_cache(maxsize=64)
 def _statement_rows(path: str, mtime: float, member: str, cnpj: str) -> tuple:
-    """``(dt_refer, versao, escala, dt_ini, dt_fim, cd_conta, ds_conta, vl_conta)`` rows of
-    one issuer's current-period accounts in one statement file; empty if the file lacks it."""
+    """``(dt_refer, versao, moeda, escala, dt_ini, dt_fim, cd_conta, ds_conta, vl_conta)``
+    rows of one issuer's current-period accounts in one statement file; empty if
+    the file lacks it."""
     with zipfile.ZipFile(path) as archive:
         if member not in archive.namelist():
             return ()
@@ -253,47 +311,49 @@ def _statement_rows(path: str, mtime: float, member: str, cnpj: str) -> tuple:
                 code = row[head["CD_CONTA"]]
                 if not _depth_ok(code):
                     continue
-                out.append((row[head["DT_REFER"]], row[head["VERSAO"]], row[head["ESCALA_MOEDA"]],
+                out.append((row[head["DT_REFER"]], row[head["VERSAO"]], row[head["MOEDA"]],
+                            row[head["ESCALA_MOEDA"]],
                             row[head["DT_INI_EXERC"]] if "DT_INI_EXERC" in head else "",
                             row[head["DT_FIM_EXERC"]], code, row[head["DS_CONTA"]], row[head["VL_CONTA"]]))
     return tuple(out)
 
 
-def _documents(cnpj: str, as_of: date, freq: str) -> tuple[list[dict], list[str]]:
-    """The statement documents on file at ``as_of``, newest period first, and the
-    periods withheld because their only figures CVM keeps were delivered later.
+def _documents(cnpj: str, as_of: date, freq: str) -> list[dict]:
+    """The statement documents whose figures were public on ``as_of``, newest period first.
 
-    CVM's statement files hold only the latest version of each document: when a
-    period was restated after ``as_of``, the figures investors saw on ``as_of``
-    are not available, so that period is withheld rather than served restated.
+    A period whose kept (latest) version was delivered after ``as_of`` is left
+    out silently: see the module docstring.
     """
     plan = [("dfp", y) for y in range(as_of.year - 3, as_of.year + 1)]
     if freq == "quarterly":
         plan += [("itr", y) for y in range(as_of.year - 1, as_of.year + 1)]
-    docs, withheld = [], []
+    docs = []
     for kind, year in plan:
         url = (_DFP_URL if kind == "dfp" else _ITR_URL).format(year=year)
         path = _cached_zip(url, f"{kind}_cia_aberta_{year}.zip", year)
         if path is None:
             continue
-        versions: dict[str, list[tuple[int, date]]] = {}
-        for row in _rows(path, f"{kind}_cia_aberta_{year}.csv"):
-            if row.get("CNPJ_CIA") != cnpj:
-                continue
-            try:
-                versions.setdefault(row["DT_REFER"], []).append(
-                    (int(row["VERSAO"]), date.fromisoformat(row["DT_RECEB"][:10])))
-            except (KeyError, ValueError):
-                continue
-        for refer, filed in versions.items():
-            version, received = max(filed)
-            if received <= as_of:
-                docs.append({"kind": kind, "refer": refer, "version": str(version),
-                             "received": received, "path": path, "year": year})
-            elif any(day <= as_of for _, day in filed):
-                withheld.append(refer)
+        for refer, filed in _delivered(path, kind, year, cnpj).items():
+            kept = _kept_version_public(filed, as_of)
+            if kept:
+                docs.append({"kind": kind, "refer": refer, "version": str(kept[0]),
+                             "received": kept[1], "path": path, "year": year})
     docs.sort(key=lambda d: d["refer"], reverse=True)
-    return docs[:_PERIODS[freq]], sorted(set(withheld), reverse=True)
+    return docs[:_PERIODS[freq]]
+
+
+def _span(rows: list[tuple]) -> tuple[str, str]:
+    """The ``(dt_ini, dt_fim)`` span a statement's column is served over."""
+    by_span: dict[tuple[str, str], set[str]] = {}
+    for r in rows:
+        # Earnings per share does not count towards completeness: a span holding
+        # only per-share lines would otherwise displace one holding the accounts.
+        codes = by_span.setdefault((r[4], r[5]), set())
+        if not r[6].startswith("3.99"):
+            codes.add(r[6])
+    widest = max(len(codes) for codes in by_span.values())
+    usable = [s for s, codes in by_span.items() if len(codes) >= _SPAN_COVERAGE * widest]
+    return max(usable)  # latest start: the shortest span among those that are complete
 
 
 def _values(doc: dict, cnpj: str, members: tuple[str, ...]) -> tuple[dict, str]:
@@ -307,18 +367,21 @@ def _values(doc: dict, cnpj: str, members: tuple[str, ...]) -> tuple[dict, str]:
                     if r[0] == doc["refer"] and r[1] == doc["version"]]
             if not rows:
                 continue
-            # Flows carry several spans (quarter and year to date): keep the shortest.
-            start = max(r[3] for r in rows)
-            for _refer, _, scale, ini, end, code, name, raw in rows:
-                if ini != start:
+            ini, end = _span(rows)
+            for _refer, _, currency, scale, r_ini, r_end, code, name, raw in rows:
+                if (r_ini, r_end) != (ini, end):
+                    continue
+                if currency.upper() != "REAL" or scale.upper() not in _SCALES:
+                    logger.warning("CVM %s %s %s: unexpected currency/scale %s/%s; skipped",
+                                   cnpj, doc["refer"], code, currency, scale)
                     continue
                 try:
                     amount = float(raw)
                 except ValueError:
                     continue
                 eps = code.startswith("3.99")
-                values[code] = (name, amount if eps else amount * (1000 if scale.upper() == "MIL" else 1), eps)
-                label = f"{ini}..{end}" if ini else end
+                values[code] = (name, amount if eps else amount * _SCALES[scale.upper()], eps)
+            label = f"{ini}..{end}" if ini else end
             if members[0].startswith("DFC") and values:
                 break  # one cash-flow method is the statement
         if values:
@@ -341,7 +404,7 @@ def _statement(kind: str, ticker: str, freq: str, as_of_date: str | None) -> str
     cnpj, name = issuer
     title, members = _STATEMENTS[kind]
     freq = freq if freq in _PERIODS else "quarterly"
-    docs, withheld = _documents(cnpj, datetime.strptime(as_of_date, "%Y-%m-%d").date(), freq)
+    docs = _documents(cnpj, datetime.strptime(as_of_date, "%Y-%m-%d").date(), freq)
 
     columns = []
     for doc in docs:
@@ -352,16 +415,13 @@ def _statement(kind: str, ticker: str, freq: str, as_of_date: str | None) -> str
         raise NoMarketDataError(ticker, canonical=code, detail=f"no {title.lower()} filed with CVM by {as_of_date}")
 
     header = (f"# {title} for {name} ({code}) as filed with CVM by {as_of_date}\n"
-              "Source: CVM open data (DFP annual, ITR quarterly). Each period is the version on file "
-              "on that date. Values in R$ millions, consolidated unless marked individual; earnings "
-              "per share in R$. Flows cover the period shown (ITR income: the quarter; ITR cash "
-              "flow: year to date). Account names are in Portuguese.\n")
-    filed = "; ".join(f"{d['refer']}: {d['kind'].upper()} v{d['version']} delivered {d['received']}"
-                      for d, _, _ in columns)
+              "Source: CVM open data (DFP annual, ITR quarterly), as filed: these are the statement "
+              "lines, not the issuer's adjusted or managerial figures. Values in R$ millions, "
+              "consolidated unless marked individual; earnings per share in R$. Each column covers "
+              "the span in its heading; columns of different lengths (a quarter, a year to date, a "
+              "full year) must not be compared as growth or margins. Account names are in Portuguese.\n")
+    filed = "; ".join(f"{d['refer']}: {d['kind'].upper()} delivered {d['received']}" for d, _, _ in columns)
     header += f"Filings: {filed}\n"
-    if withheld:
-        header += (f"Withheld: {', '.join(withheld)} — filed by then but later restated; CVM keeps only "
-                   "the restated figures, which were not public yet.\n")
 
     codes = sorted({c for _, _, v in columns for c in v}, key=_code_key)
     labels = {c: v[c][0] for _, _, v in reversed(columns) for c in v}

@@ -39,28 +39,41 @@ def pct(text: str | None) -> float | None:
 PROBABILITY = re.compile(r"\*\*Probability of beating the benchmark\*\*:\s*([0-9]+(?:\.[0-9]+)?)\s*%")
 
 
-def probability(decision: str) -> float | None:
-    """The Portfolio Manager's stated probability of beating the benchmark, 0-1."""
+def probability(decision: str) -> tuple[float | None, str]:
+    """The Portfolio Manager's stated probability of beating the benchmark (0-1), and
+    whether it is ``valid``, ``missing`` or ``invalid`` (outside 0-100%: a failed
+    measurement, not a forecast)."""
     match = PROBABILITY.search(decision or "")
-    return float(match.group(1)) / 100 if match else None
+    if not match:
+        return None, "missing"
+    value = float(match.group(1))
+    return (value / 100, "valid") if 0 <= value <= 100 else (None, "invalid")
 
 
-def probability_scores(probs: np.ndarray, alphas: np.ndarray) -> dict:
+def probability_scores(probs: np.ndarray, alphas: np.ndarray, dates: np.ndarray) -> dict:
     """How well a stated probability tracks the outcome, whatever the rating.
 
     Brier: mean squared gap to the outcome (1 when the stock beat the
     benchmark); always saying 50% scores 0.25. Hit: the side of 50% it leaned
     to was right (50% exactly leans nowhere). Rank IC: Spearman correlation of
-    probability with alpha across cells.
+    probability with alpha across the cells of each date, averaged over dates.
+    Outcomes use the baseline file's unrounded alpha: the memory log keeps alpha
+    to 0.1 pp, which turns a +0.04 pp win into a loss.
     """
     won = (alphas > 0).astype(float)
     lean = probs != 0.5
-    ranks = pd.Series(probs).rank().corr(pd.Series(alphas).rank())
+    # Rank IC within each date, then averaged: pooling dates would mix ranking
+    # companies with timing the market.
+    frame = pd.DataFrame({"p": probs, "a": alphas, "d": dates})
+    per_date = [g["p"].rank().corr(g["a"].rank()) for _, g in frame.groupby("d") if len(g) >= 3]
+    per_date = [r for r in per_date if not np.isnan(r)]
     return {"cells": int(len(probs)), "mean_probability": float(probs.mean()),
             "brier": float(((probs - won) ** 2).mean()), "brier_always_50": 0.25,
+            "share_beating_benchmark": float(won.mean()),
             "leaning_cells": int(lean.sum()),
             "hit_rate_of_lean": float(((probs[lean] > 0.5) == (alphas[lean] > 0)).mean()) if lean.any() else None,
-            "rank_ic": None if np.isnan(ranks) else float(ranks)}
+            "rank_ic_mean_by_date": float(np.mean(per_date)) if per_date else None,
+            "dates_ranked": len(per_date)}
 
 
 def stats(dirs: np.ndarray, alphas: np.ndarray) -> dict:
@@ -81,13 +94,21 @@ def main():
 
     entries = TradingMemoryLog({"memory_log_path": args.log}).load_entries()
     run = pd.DataFrame([{"ticker": e["ticker"], "date": e["date"], "rating": e["rating"],
-                         "native_alpha": pct(e.get("alpha")),
-                         "probability": probability(e.get("decision", ""))}
+                         "native_alpha": pct(e.get("alpha")), "holding_run": e.get("holding"),
+                         **dict(zip(("probability", "probability_status"),
+                                    probability(e.get("decision", "")), strict=True))}
                         for e in entries if not e["pending"] and e["rating"] in DIRECTION])
     cells = pd.read_csv(args.cells)
     both = run.merge(cells, on=["ticker", "date"], how="inner").dropna(subset=["native_alpha"])
     if both.empty:
         raise SystemExit("no settled cell of the run is in the baseline grid")
+    # The run and the baselines must measure the same window.
+    if "holding" in both:
+        mismatch = both[both["holding_run"] != both["holding"].astype(int).astype(str) + "d"]
+        if len(mismatch):
+            raise SystemExit(f"{len(mismatch)} cells were settled over a different holding window "
+                             f"than the baseline file ({sorted(set(mismatch['holding_run']))} vs "
+                             f"{sorted(set(both['holding']))}d); rebuild the baselines with --holding")
 
     # The log keeps alpha to 0.1 pp, so gaps up to 0.05 pp are rounding.
     gap = (both["native_alpha"] - both["alpha"]).abs()
@@ -97,17 +118,22 @@ def main():
         "ratings": both["rating"].value_counts().to_dict(),
         "alpha_check_max_gap_pp": float(gap.max() * 100),
         "alpha_check_cells_over_0.1pp": int((gap > 0.001).sum()),
-        "run": stats(dirs, both["native_alpha"].to_numpy(dtype=float)),
+        "run": stats(dirs, both["alpha"].to_numpy(dtype=float)),
         "baselines": {},
     }
     for col in [c for c in both.columns if c.startswith("sig_")]:
         sub = both.dropna(subset=[col])
         report["baselines"][col[4:]] = stats(sub[col].to_numpy(dtype=int), sub["alpha"].to_numpy(dtype=float))
 
-    probs = both.dropna(subset=["probability"])
-    report["probability"] = (probability_scores(probs["probability"].to_numpy(dtype=float),
-                                                probs["native_alpha"].to_numpy(dtype=float))
-                             if len(probs) else "no decision states a probability")
+    # A missing or invalid probability is a failed measurement, reported as such
+    # rather than dropped from the sample unnoticed.
+    report["probability_measurement"] = {"cells": int(len(both)),
+                                         **both["probability_status"].value_counts().to_dict()}
+    valid = both[both["probability_status"] == "valid"]
+    report["probability"] = (probability_scores(valid["probability"].to_numpy(dtype=float),
+                                                valid["alpha"].to_numpy(dtype=float),
+                                                valid["date"].to_numpy())
+                             if len(valid) else "no decision states a valid probability")
 
     rng = np.random.default_rng(7)
     m = dirs != 0

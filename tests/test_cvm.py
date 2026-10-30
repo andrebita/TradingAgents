@@ -34,17 +34,34 @@ def _zip(path, member, lines):
     path.write_bytes(buffer.getvalue())
 
 
+def _fca(path, year, delivered, code="ITUB4"):
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr(f"fca_cia_aberta_{year}.csv", "\n".join([
+            "CNPJ_CIA;DT_REFER;VERSAO;DENOM_CIA;CD_CVM;CATEG_DOC;ID_DOC;DT_RECEB;LINK_DOC",
+            f"{CNPJ};{year}-01-01;1;ITAU;19348;FCA;1;{delivered};x",
+        ]).encode("latin-1"))
+        archive.writestr(f"fca_cia_aberta_valor_mobiliario_{year}.csv", "\n".join([
+            "CNPJ_Companhia;Nome_Empresarial;Codigo_Negociacao",
+            f"{CNPJ};ITAU UNIBANCO HOLDING S.A.;{code}",
+            f"{CNPJ};ITAU UNIBANCO HOLDING S.A.;ITUB3",
+        ]).encode("latin-1"))
+    path.write_bytes(buffer.getvalue())
+
+
+def _cached_only(cache):
+    def cached_only(url, name, year, gaps=None):
+        return cache / "cvm" / name if (cache / "cvm" / name).exists() else None
+    return cached_only
+
+
 @pytest.fixture
 def cache(tmp_path):
     config_module._config = copy.deepcopy(default_config.DEFAULT_CONFIG)
     set_config({"data_cache_dir": str(tmp_path)})
     folder = tmp_path / "cvm"
     folder.mkdir()
-    _zip(folder / "fca_cia_aberta_2026.zip", "fca_cia_aberta_valor_mobiliario_2026.csv", [
-        "CNPJ_Companhia;Nome_Empresarial;Codigo_Negociacao",
-        f"{CNPJ};ITAU UNIBANCO HOLDING S.A.;ITUB4",
-        f"{CNPJ};ITAU UNIBANCO HOLDING S.A.;ITUB3",
-    ])
+    _fca(folder / "fca_cia_aberta_2026.zip", 2026, delivered="2026-04-09")
     _zip(folder / "ipe_cia_aberta_2026.zip", "ipe_cia_aberta_2026.csv", [
         IPE_HEADER,
         _ipe_row("2026-08-04", "Fato Relevante", "Projeções 2026", protocol="10"),
@@ -100,17 +117,40 @@ def test_a_re_delivery_counts_from_its_own_delivery_date(cache):
 @pytest.mark.unit
 def test_an_empty_window_is_a_real_absence_with_earlier_context(cache):
     out = cvm.get_news("ITUB3.SA", "2026-07-01", "2026-07-20")
-    assert "real absence of disclosures" in out
+    assert "complete for the window, so this is an absence of disclosures" in out
     assert "Pagamento de JCP" in out
 
 
 @pytest.mark.unit
 def test_an_unknown_code_is_not_served(cache):
-    def cached_only(url, name, year):
-        return cache / "cvm" / name if (cache / "cvm" / name).exists() else None
-
-    with mock.patch.object(cvm, "_cached_zip", side_effect=cached_only), pytest.raises(NoMarketDataError):
+    with mock.patch.object(cvm, "_cached_zip", side_effect=_cached_only(cache)), \
+            pytest.raises(NoMarketDataError):
         cvm.get_news("XXXX3.SA", "2026-08-01", "2026-08-10")
+
+
+@pytest.mark.unit
+def test_an_fca_form_delivered_after_the_run_date_does_not_name_the_issuer(cache):
+    # The 2026 form was delivered on 9 April; before then only earlier forms
+    # count, and here there are none.
+    with mock.patch.object(cvm, "_cached_zip", side_effect=_cached_only(cache)):
+        assert cvm.issuer_for("ITUB4", "2026-04-08") is None
+        assert cvm.issuer_for("ITUB4", "2026-04-09")[0] == CNPJ
+
+
+@pytest.mark.unit
+def test_a_later_year_form_is_never_read(cache):
+    _fca(cache / "cvm" / "fca_cia_aberta_2025.zip", 2025, delivered="2025-04-01", code="OLD3")
+    with mock.patch.object(cvm, "_cached_zip", side_effect=_cached_only(cache)):
+        assert cvm.issuer_for("ITUB4", "2025-12-31") is None   # ITUB4 appears only in the 2026 form
+
+
+@pytest.mark.unit
+def test_a_missing_year_file_makes_an_empty_window_incomplete(cache):
+    missing = mock.Mock(status_code=404)
+    with mock.patch.object(cvm.requests, "get", return_value=missing):
+        out = cvm.get_news("ITUB4.SA", "2026-12-28", "2027-01-04")
+    assert "Coverage incomplete: CVM has no ipe_cia_aberta_2027.zip file" in out
+    assert "may be missing data" in out and "absence of disclosures" not in out
 
 
 @pytest.mark.unit
@@ -169,9 +209,12 @@ def test_statements_serve_the_quarter_on_file_in_r_millions(statements):
 
 
 @pytest.mark.unit
-def test_a_period_restated_after_the_run_date_is_withheld(statements):
+def test_a_period_restated_after_the_run_date_is_left_out_without_saying_so(statements):
     before = cvm.get_income_statement("ITUB4.SA", "quarterly", "2026-08-10")
-    assert "12,324.0" not in before and "Withheld: 2026-06-30" in before
+    # Version 1 was public on 10 Aug but its figures are gone; the restated ones
+    # were not public, and telling the agents a restatement came is news from later.
+    assert "12,324.0" not in before and "2026-06-30" not in before
+    assert "restat" not in before.lower() and "withheld" not in before.lower()
     after = cvm.get_income_statement("ITUB4.SA", "quarterly", "2026-08-30")
     assert "2026-04-01..2026-06-30" in after and "12,324.0" in after and "24,199.0" not in after
 
@@ -180,3 +223,19 @@ def test_a_period_restated_after_the_run_date_is_withheld(statements):
 def test_a_period_not_yet_filed_is_not_served(statements):
     out = cvm.get_income_statement("ITUB4.SA", "quarterly", "2026-05-01")
     assert "2026-03-31" not in out and "2025-01-01..2025-12-31" in out
+
+
+@pytest.mark.unit
+def test_a_flow_column_keeps_accounts_reported_only_over_the_longer_span():
+    row = ("2026-06-30", "1", "REAL", "MIL")
+    rows = [(*row, "2026-01-01", "2026-06-30", "3.01", "Receita", "100"),
+            (*row, "2026-04-01", "2026-06-30", "3.99.01.01", "LPA ON", "1.2")]
+    assert cvm._span(rows) == ("2026-01-01", "2026-06-30")
+
+
+@pytest.mark.unit
+def test_a_flow_column_takes_the_quarter_when_it_is_complete():
+    row = ("2026-06-30", "1", "REAL", "MIL")
+    rows = [(*row, ini, "2026-06-30", code, "x", "1") for ini in ("2026-01-01", "2026-04-01")
+            for code in ("3.01", "3.11")]
+    assert cvm._span(rows) == ("2026-04-01", "2026-06-30")

@@ -11,11 +11,13 @@ SGS keeps no vintages and dates a monthly figure by the month it measures, not
 by its release, so a series is cut where it had been released by the run date:
 each monthly series carries a conservative release lag past the end of its
 reference month (IPCA comes out between the 8th and the 12th of the next month). Values are
-the current revision; only IBC-Br and unemployment are revised materially.
+the current revision, not the first release: IPCA, IGP-M and the daily series are
+not revised, but IBC-Br and unemployment are (PNAD was reweighted in 2025), and
+their reports say so to the agents.
 
-Focus statistics are computed daily but published weekly: the Monday report
-carries the survey up to the previous Friday. A run dated ``D`` reads the
-statistics of the Friday before the last Monday on or before ``D``.
+Focus statistics are computed daily but published weekly: the report released on
+the first business day of the week carries the survey up to the previous Friday.
+A run dated ``D`` reads the survey of the last report released on or before ``D``.
 
 Indicators not listed here fall through to the next configured macro vendor
 (FRED), so a US ticker's ``cpi`` keeps working.
@@ -23,7 +25,9 @@ Indicators not listed here fall through to the next configured macro vendor
 
 from __future__ import annotations
 
+import functools
 import logging
+import math
 import urllib.parse
 from datetime import date, datetime, timedelta
 
@@ -52,6 +56,9 @@ SGS_SERIES = {
     "ibc_br": (24364, "IBC-Br economic activity index (seasonally adjusted)", "index", "monthly", 50),
     "unemployment_br": (24369, "Unemployment rate (PNAD, rolling quarter)", "%", "monthly", 35),
 }
+
+# Series whose past values are revised after release: SGS serves today's revision.
+REVISED = {"ibc_br", "unemployment_br"}
 
 # alias -> Focus indicator name
 FOCUS_SERIES = {
@@ -120,15 +127,22 @@ def _sgs(alias: str, as_of_date: str, look_back_days: int) -> str:
             value = float(row["valor"])
         except (KeyError, ValueError, TypeError):
             continue
+        if not math.isfinite(value):
+            continue
         # SGS fills the Selic target forward past today; the lag cut drops
         # anything not yet public on the run date.
         if released(day, lag, as_of) and (lag is not None or day >= as_of - timedelta(days=look_back_days)):
             points.append((day, value))
+    points = sorted(dict(points).items())
 
     rule = ("known on its own date" if lag is None
             else f"each month counted as released {lag} days after it ends")
     header = (f"## Banco Central (SGS {code}): {title}\n- Units: {unit}\n- Frequency: {frequency} ({rule})\n"
               f"- As of: {as_of_date}\n")
+    if alias in REVISED:
+        header += ("- Revisions: these are today's revised values, not the figures first released; "
+                   "what was known on the run date may have differed, so do not read small moves "
+                   "as news.\n")
     if not points:
         return header + "\nNo observation of this series had been released in the window."
 
@@ -153,9 +167,44 @@ def _sgs(alias: str, as_of_date: str, look_back_days: int) -> str:
     return header + summary + note + table + "\n"
 
 
+def _easter(year: int) -> date:
+    """Easter Sunday (Gregorian), by the anonymous algorithm."""
+    a, b, c = year % 19, year // 100, year % 100
+    d, e = divmod(b, 4)
+    g = (8 * b + 13) // 25
+    h = (19 * a + b - d - g + 15) % 30
+    i, k = divmod(c, 4)
+    m = (32 + 2 * e + 2 * i - h - k) % 7
+    n = (a + 11 * h + 22 * m) // 451
+    month, day = divmod(h + m - 7 * n + 114, 31)
+    return date(year, month, day + 1)
+
+
+@functools.lru_cache(maxsize=32)
+def holidays(year: int) -> frozenset[date]:
+    """Days Banco Central does not publish: national holidays, Carnival, Good Friday, Corpus Christi."""
+    easter = _easter(year)
+    fixed = [(1, 1), (4, 21), (5, 1), (9, 7), (10, 12), (11, 2), (11, 15), (12, 25)]
+    if year >= 2024:
+        fixed.append((11, 20))   # Consciência Negra, national from 2024
+    mobile = [easter - timedelta(days=48), easter - timedelta(days=47),   # Carnival
+              easter - timedelta(days=2), easter + timedelta(days=60)]   # Good Friday, Corpus Christi
+    return frozenset([date(year, m, d) for m, d in fixed] + mobile)
+
+
+def focus_release(week_monday: date) -> date:
+    """The day the Focus report of the week starting ``week_monday`` came out."""
+    day = week_monday
+    while day.weekday() >= 5 or day in holidays(day.year):
+        day += timedelta(days=1)
+    return day
+
+
 def focus_cutoff(as_of: date) -> date:
-    """The last survey day a published Focus report covered by ``as_of``."""
+    """The last survey day covered by a Focus report released on or before ``as_of``."""
     monday = as_of - timedelta(days=as_of.weekday())
+    if focus_release(monday) > as_of:   # this week's report is not out yet (holiday Monday)
+        monday -= timedelta(days=7)
     return monday - timedelta(days=3)
 
 
@@ -173,8 +222,8 @@ def _focus(alias: str, as_of_date: str, look_back_days: int) -> str:
                             "$top": 5000})
     rows = data.get("value", []) if isinstance(data, dict) else []
     header = (f"## Banco Central Focus survey: market median forecast for {indicator}\n"
-              f"- Survey statistics as of {cutoff.isoformat()} (the Focus report published by {as_of_date} "
-              f"covers the survey up to that Friday)\n- Units: annual figure for each calendar year "
+              f"- Survey statistics as of {cutoff.isoformat()} (the latest Focus report released by "
+              f"{as_of_date} covers the survey up to that Friday)\n- Units: annual figure for each calendar year "
               f"(Selic: end of year, % p.a.; exchange rate: BRL per USD, end of year)\n")
     if not rows:
         return header + "\nNo Focus statistics were published for this indicator in the window."

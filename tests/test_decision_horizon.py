@@ -18,7 +18,10 @@ def test_the_horizon_names_the_window_and_the_regional_benchmark():
 
 
 @pytest.mark.unit
-@pytest.mark.parametrize("given, read", [("58%", 58), (0.58, 58), (58, 58), ("N/A", None), (140, None)])
+@pytest.mark.parametrize("given, read", [
+    ("58%", 58), ("0.58%", 0.58), ("0.58", 58), (0.58, 58), (58, 58), (50.4, 50.4),
+    ("N/A", None), (140, None), (float("nan"), None),
+])
 def test_the_probability_reads_as_a_percentage(given, read):
     decision = PortfolioDecision(rating=PortfolioRating.HOLD, executive_summary="s",
                                  investment_thesis="t", probability_outperform=given)
@@ -30,5 +33,8 @@ def test_the_probability_is_rendered_even_when_absent():
     base = {"rating": PortfolioRating.HOLD, "executive_summary": "s", "investment_thesis": "t"}
     assert "**Probability of beating the benchmark**: 58%" in render_pm_decision(
         PortfolioDecision(**base, probability_outperform=58))
+    # A lean of 0.4 points is kept: rounding 50.4 to 50 would erase its direction.
+    assert "**Probability of beating the benchmark**: 50.4%" in render_pm_decision(
+        PortfolioDecision(**base, probability_outperform=50.4))
     assert "**Probability of beating the benchmark**: not provided" in render_pm_decision(
         PortfolioDecision(**base))

@@ -111,8 +111,26 @@ def _pct(xs, q) -> float:
     return float(np.percentile(xs, q))
 
 
+def block_bootstrap(sums: np.ndarray, counts: np.ndarray, block: int, rng: np.random.Generator,
+                    boots: int) -> list[float] | None:
+    """95% interval of the mean per cell, resampling circular blocks of consecutive dates.
+
+    Cells on one date share that week's moves, and with a holding window longer
+    than the grid step consecutive dates share sessions too; blocks of ``block``
+    dates keep both dependencies. Too few dates for three blocks: no interval.
+    """
+    n = len(sums)
+    if n < 3 * block:
+        return None
+    starts = rng.integers(0, n, size=(boots, -(-n // block)))
+    idx = ((starts[..., None] + np.arange(block)) % n).reshape(boots, -1)[:, :n]
+    total, cells = sums[idx].sum(axis=1), counts[idx].sum(axis=1)
+    means = total[cells > 0] / cells[cells > 0]
+    return [float(np.percentile(means, 2.5)), float(np.percentile(means, 97.5))]
+
+
 def score(dirs: np.ndarray, alphas: np.ndarray, dates: np.ndarray, rng: np.random.Generator,
-          boots: int = 2000) -> dict:
+          grid_dates: list[str], block: int, boots: int = 2000) -> dict:
     mask = dirs != 0
     d, a, days = dirs[mask], alphas[mask], dates[mask]
     res = {"cells": int(len(dirs)), "directional": int(mask.sum()),
@@ -130,13 +148,13 @@ def score(dirs: np.ndarray, alphas: np.ndarray, dates: np.ndarray, rng: np.rando
     idx = rng.integers(0, len(signed), size=(boots, len(signed)))
     bm = signed[idx].mean(axis=1)
     res["ci95_signed_alpha"] = [float(np.percentile(bm, 2.5)), float(np.percentile(bm, 97.5))]
-    # Cells on one date share that week's sector moves, so they are not
-    # independent: resample whole dates for an interval that admits it.
+    # Every date of the grid stays in the sequence, abstentions included, so the
+    # blocks span real calendar time.
     by_date = pd.Series(signed).groupby(days)
-    sums, counts = by_date.sum().to_numpy(), by_date.count().to_numpy()
-    di = rng.integers(0, len(sums), size=(boots, len(sums)))
-    cm = sums[di].sum(axis=1) / counts[di].sum(axis=1)
-    res["ci95_signed_alpha_date_clustered"] = [float(np.percentile(cm, 2.5)), float(np.percentile(cm, 97.5))]
+    sums = by_date.sum().reindex(grid_dates, fill_value=0.0).to_numpy()
+    counts = by_date.count().reindex(grid_dates, fill_value=0).to_numpy()
+    res["ci95_signed_alpha_blocks"] = block_bootstrap(sums, counts, block, rng, boots)
+    res["block_dates"] = block
     return res
 
 
@@ -177,7 +195,7 @@ def main():
             hist = s[s.index <= date]
             if hist.empty:
                 continue
-            rows.append({"ticker": t, "date": date.strftime("%Y-%m-%d"),
+            rows.append({"ticker": t, "date": date.strftime("%Y-%m-%d"), "holding": args.holding,
                          "last_close_date": hist.index[-1].strftime("%Y-%m-%d"), **o,
                          **{f"sig_{k}": v for k, v in signals(hist).items()}})
     cells = pd.DataFrame(rows)
@@ -189,11 +207,15 @@ def main():
                "end": args.end, "every_days": args.every, "holding_sessions": args.holding,
                "benchmark": BENCH, "cost_round_trip": COST_ROUND_TRIP,
                "generated_at": datetime.now().isoformat(timespec="seconds"), "strategies": {}}
+    # Blocks of at least six weeks, and at least twice the holding window in weeks.
+    block = max(6, 2 * -(-args.holding // 5))
+    grid_dates = sorted(cells["date"].unique())
+    summary["block_dates"] = block
     for k in strategies:
         sub = cells.dropna(subset=[f"sig_{k}"])
         summary["strategies"][k] = score(sub[f"sig_{k}"].to_numpy(dtype=int),
                                          sub["alpha"].to_numpy(dtype=float),
-                                         sub["date"].to_numpy(), rng)
+                                         sub["date"].to_numpy(), rng, grid_dates, block)
 
     # Random-direction control on the same cells: the spread luck alone produces.
     alphas = cells["alpha"].to_numpy(dtype=float)
@@ -214,15 +236,16 @@ def main():
 
     print(f"== {label}: {len(cells)} cells, {len(tickers) - len(missing)} tickers"
           + (f" (missing: {missing})" if missing else ""))
-    print(f"{'strategy':<16}{'n_dir':>6}{'hit':>8}{'signed α':>10}{'net':>9}{'t':>7}   95% CI (cells | dates)")
+    print(f"{'strategy':<16}{'n_dir':>6}{'hit':>8}{'signed α':>10}{'net':>9}{'t':>7}"
+          f"   95% CI (cells, iid | {block}-date blocks)")
     for k, r in summary["strategies"].items():
         if "hit_rate" not in r:
             continue
-        ci, cd = r["ci95_signed_alpha"], r["ci95_signed_alpha_date_clustered"]
+        ci, cd = r["ci95_signed_alpha"], r["ci95_signed_alpha_blocks"]
         t = f"{r['t_stat']:.2f}" if r["t_stat"] is not None else "n/a"
         print(f"{k:<16}{r['directional']:>6}{r['hit_rate']:>8.1%}{r['mean_signed_alpha']:>+10.2%}"
               f"{r['mean_signed_alpha_net']:>+9.2%}{t:>7}   [{ci[0]:+.2%}, {ci[1]:+.2%}]"
-              f" | [{cd[0]:+.2%}, {cd[1]:+.2%}]")
+              + (f" | [{cd[0]:+.2%}, {cd[1]:+.2%}]" if cd else " | too few dates"))
     rc = summary["random_control"]
     print(f"{'random (p50)':<16}{rc['cells']:>6}{rc['hit_rate']['p50']:>8.1%}"
           f"{rc['mean_signed_alpha']['p50']:>+10.2%}   hit 95% band "

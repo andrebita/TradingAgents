@@ -1,7 +1,7 @@
 """Tests for Anthropic effort-parameter gating (#831).
 
-Haiku (any version) and Sonnet 4.5 reject the ``effort`` parameter with a
-400. Only Opus 4.5+ and Sonnet 4.6+ accept it. The gate uses a per-family
+Haiku before 5.5 and Sonnet 4.5 reject the ``effort`` parameter with a
+400. Opus 4.5+, Sonnet 4.6+ and Haiku 5.5+ accept it. The gate uses a per-family
 minimum version so future ``claude-{opus,sonnet}-X-Y`` releases inherit
 support automatically.
 """
@@ -42,6 +42,8 @@ class TestEffortGate:
         [
             "claude-opus-4-5", "claude-opus-4-6", "claude-opus-4-7",
             "claude-sonnet-4-6", "claude-opus-4-5-20251101",
+            # Haiku takes effort from 5.5 (default medium).
+            "claude-haiku-5-5",
         ],
     )
     def test_current_opus_and_sonnet_receive_effort(self, monkeypatch, model):

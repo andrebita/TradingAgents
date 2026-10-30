@@ -18,6 +18,7 @@ so that:
 
 from __future__ import annotations
 
+import math
 from enum import StrEnum
 from typing import Literal
 
@@ -275,13 +276,18 @@ class PortfolioDecision(BaseModel):
     @field_validator("probability_outperform", mode="before")
     @classmethod
     def _as_percent(cls, v):
-        if isinstance(v, str):
-            v = v.strip().rstrip("%")
-        value = _coerce_optional_float(v)
-        if value is None:
+        """The probability in percentage points, the field's one unit.
+
+        A string with a percent sign is read as written ("0.58%" is 0.58%). A
+        bare number below 1 is taken as a fraction (0.58 is 58%): the field asks
+        for 0-100, and a model that still answers 0.58 means 58, not 0.58%.
+        """
+        percent = isinstance(v, str) and v.strip().endswith("%")
+        value = _coerce_optional_float(v.strip().rstrip("%") if isinstance(v, str) else v)
+        if value is None or not math.isfinite(value):
             return None
-        # A fraction (0.58) and a percentage (58) both read as 58%; 1 reads as 1%.
-        value = round(value * 100, 2) if 0 < value < 1 else value
+        if not percent and 0 < value < 1:
+            value = round(value * 100, 6)   # float noise only: 0.58 * 100 is 57.99...9
         return value if 0 <= value <= 100 else None
 
 
@@ -307,7 +313,7 @@ def render_pm_decision(decision: PortfolioDecision) -> str:
     parts.extend(["", f"**Time Horizon**: {decision.time_horizon or 'not provided'}"])
     probability = decision.probability_outperform
     parts.extend(["", f"**Probability of beating the benchmark**: "
-                      f"{f'{probability:.0f}%' if probability is not None else 'not provided'}"])
+                      f"{f'{probability:.4g}%' if probability is not None else 'not provided'}"])
     return "\n".join(parts)
 
 

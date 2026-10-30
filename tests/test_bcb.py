@@ -35,6 +35,10 @@ def test_a_monthly_value_waits_for_its_release_lag():
     (date(2026, 9, 16), date(2026, 9, 11)),   # Wednesday: Monday's report, Friday's survey
     (date(2026, 9, 14), date(2026, 9, 11)),   # Monday: that morning's report
     (date(2026, 9, 13), date(2026, 9, 4)),    # Sunday: the previous Monday's report
+    (date(2026, 9, 7), date(2026, 8, 28)),    # holiday Monday: that week's report is not out yet
+    (date(2026, 9, 8), date(2026, 9, 4)),     # it comes out on Tuesday
+    (date(2026, 2, 16), date(2026, 2, 6)),    # Carnival Monday
+    (date(2026, 2, 18), date(2026, 2, 13)),   # released on Ash Wednesday
 ])
 def test_focus_reads_the_survey_of_the_last_published_report(as_of, cutoff):
     assert bcb.focus_cutoff(as_of) == cutoff
@@ -85,3 +89,20 @@ def test_the_default_macro_chain_passes_us_indicators_to_fred():
     config_module._config = copy.deepcopy(default_config.DEFAULT_CONFIG)
     with mock.patch.dict(router.VENDOR_METHODS["get_macro_indicators"], {"fred": lambda *a, **k: "FRED"}):
         assert router.route_to_vendor("get_macro_indicators", "cpi", "2026-09-14", 365) == "FRED"
+
+
+@pytest.mark.unit
+def test_easter_and_the_movable_holidays():
+    assert bcb._easter(2026) == date(2026, 4, 5) and bcb._easter(2025) == date(2025, 4, 20)
+    assert {date(2026, 2, 16), date(2026, 2, 17), date(2026, 4, 3), date(2026, 6, 4)} <= bcb.holidays(2026)
+
+
+@pytest.mark.unit
+def test_a_revised_series_says_its_values_are_todays_revision():
+    rows = [{"data": "01/06/2026", "valor": "110.4"}, {"data": "01/05/2026", "valor": "NaN"}]
+    with mock.patch.object(bcb, "_get", return_value=rows):
+        revised = bcb.get_macro_data("ibc_br", "2026-09-14", 200)
+    with mock.patch.object(bcb, "_get", return_value=[{"data": "01/07/2026", "valor": "4.44"}]):
+        final = bcb.get_macro_data("ipca_12m", "2026-09-14", 120)
+    assert "today's revised values" in revised and "NaN" not in revised.split("Revisions")[1]
+    assert "Revisions" not in final
