@@ -1,0 +1,75 @@
+{
+  "cells": 4,
+  "run_cells_not_in_grid": 0,
+  "ratings": {
+    "Hold": 3,
+    "Underweight": 1
+  },
+  "alpha_check_max_gap_pp": 0.020997839786088962,
+  "alpha_check_cells_over_0.1pp": 0,
+  "run": {
+    "directional": 1,
+    "hit_rate": 1.0,
+    "mean_signed_alpha": 0.021931032249457916
+  },
+  "baselines": {
+    "always_long": {
+      "directional": 4,
+      "hit_rate": 0.5,
+      "mean_signed_alpha": 0.001532877974093294
+    },
+    "mom_20d": {
+      "directional": 4,
+      "hit_rate": 0.5,
+      "mean_signed_alpha": 0.001532877974093294
+    },
+    "mom_60d": {
+      "directional": 4,
+      "hit_rate": 1.0,
+      "mean_signed_alpha": 0.0346033832977527
+    },
+    "mom_12_1": {
+      "directional": 4,
+      "hit_rate": 1.0,
+      "mean_signed_alpha": 0.0346033832977527
+    },
+    "reversal_5d": {
+      "directional": 4,
+      "hit_rate": 0.0,
+      "mean_signed_alpha": -0.0346033832977527
+    },
+    "px_gt_sma50": {
+      "directional": 4,
+      "hit_rate": 1.0,
+      "mean_signed_alpha": 0.0346033832977527
+    },
+    "sma20_gt_sma50": {
+      "directional": 4,
+      "hit_rate": 0.75,
+      "mean_signed_alpha": 0.01405454677491369
+    },
+    "rsi14_revert": {
+      "directional": 0
+    }
+  },
+  "probability_measurement": {
+    "cells": 4,
+    "valid": 3,
+    "missing": 1
+  },
+  "probability": {
+    "cells": 3,
+    "mean_probability": 0.49333333333333335,
+    "brier": 0.24346666666666664,
+    "brier_always_50": 0.25,
+    "share_beating_benchmark": 0.6666666666666666,
+    "leaning_cells": 1,
+    "hit_rate_of_lean": 1.0,
+    "rank_ic_mean_by_date": null,
+    "dates_ranked": 0
+  },
+  "random_band_hit_rate_95": [
+    0.0,
+    1.0
+  ]
+}

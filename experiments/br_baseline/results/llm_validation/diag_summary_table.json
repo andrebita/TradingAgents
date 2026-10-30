@@ -1,0 +1,418 @@
+{
+ "diag_A_r1": {
+  "eff": {
+   "quick": "low",
+   "deep": "low"
+  },
+  "hold": 5,
+  "an": "market,news",
+  "cost": 0.303,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    44
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Hold",
+    47
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    48
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.06,
+   0.084,
+   0.08,
+   0.079
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   4,
+   4
+  ],
+  "brier": 0.223725,
+  "b50": 0.25,
+  "meanp": 0.4725,
+  "run": {
+   "directional": 1,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.00014367590630037785
+  },
+  "ratings": {
+   "Hold": 3,
+   "Underweight": 1
+  },
+  "gap": 0
+ },
+ "diag_A_r2": {
+  "eff": {
+   "quick": "low",
+   "deep": "low"
+  },
+  "hold": 5,
+  "an": "market,news",
+  "cost": 0.2695,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    44
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Hold",
+    48
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    50
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.056,
+   0.096,
+   0.056,
+   0.062
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   4,
+   4
+  ],
+  "brier": 0.23099999999999998,
+  "b50": 0.25,
+  "meanp": 0.48,
+  "run": {
+   "directional": 1,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.00014367590630037785
+  },
+  "ratings": {
+   "Hold": 3,
+   "Underweight": 1
+  },
+  "gap": 0
+ },
+ "diag_B_r1": {
+  "eff": {
+   "quick": "low",
+   "deep": "low"
+  },
+  "hold": 20,
+  "an": "market,news",
+  "cost": 0.2989,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    42
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Hold",
+    49
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    48
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.078,
+   0.082,
+   0.059,
+   0.08
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   4,
+   4
+  ],
+  "brier": 0.234225,
+  "b50": 0.25,
+  "meanp": 0.4725,
+  "run": {
+   "directional": 1,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.021931032249457916
+  },
+  "ratings": {
+   "Hold": 3,
+   "Underweight": 1
+  },
+  "gap": 0
+ },
+ "diag_B_r2": {
+  "eff": {
+   "quick": "low",
+   "deep": "low"
+  },
+  "hold": 20,
+  "an": "market,news",
+  "cost": 0.2646,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    42
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Hold",
+    49
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    50
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.059,
+   0.082,
+   0.06,
+   0.064
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   4,
+   4
+  ],
+  "brier": 0.229125,
+  "b50": 0.25,
+  "meanp": 0.4775,
+  "run": {
+   "directional": 1,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.021931032249457916
+  },
+  "ratings": {
+   "Hold": 3,
+   "Underweight": 1
+  },
+  "gap": 0
+ },
+ "diag_C_r1": {
+  "eff": {
+   "quick": "medium",
+   "deep": "medium"
+  },
+  "hold": 20,
+  "an": "market,news",
+  "cost": 0.3168,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    43
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Hold",
+    48
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    50
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.071,
+   0.068,
+   0.085,
+   0.093
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   3,
+   4
+  ],
+  "brier": 0.24346666666666664,
+  "b50": 0.25,
+  "meanp": 0.49333333333333335,
+  "run": {
+   "directional": 1,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.021931032249457916
+  },
+  "ratings": {
+   "Hold": 3,
+   "Underweight": 1
+  },
+  "gap": 0
+ },
+ "diag_C_r2": {
+  "eff": {
+   "quick": "medium",
+   "deep": "medium"
+  },
+  "hold": 20,
+  "an": "market,news",
+  "cost": 0.2843,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    42
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Underweight",
+    42
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    50
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.07,
+   0.071,
+   0.074,
+   0.069
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   4,
+   4
+  ],
+  "brier": 0.2132,
+  "b50": 0.25,
+  "meanp": 0.45999999999999996,
+  "run": {
+   "directional": 2,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.033070505323659405
+  },
+  "ratings": {
+   "Hold": 2,
+   "Underweight": 2
+  },
+  "gap": 0
+ },
+ "diag_D_r1": {
+  "eff": {
+   "quick": "medium",
+   "deep": "medium"
+  },
+  "hold": 20,
+  "an": "fundamentals,market,news",
+  "cost": 0.3772,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    42
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Underweight",
+    42
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    50
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.079,
+   0.1,
+   0.088,
+   0.11
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   2,
+   4
+  ],
+  "brier": 0.2132,
+  "b50": 0.25,
+  "meanp": 0.45999999999999996,
+  "run": {
+   "directional": 2,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.033070505323659405
+  },
+  "ratings": {
+   "Hold": 2,
+   "Underweight": 2
+  },
+  "gap": 0
+ },
+ "diag_D_r2": {
+  "eff": {
+   "quick": "medium",
+   "deep": "medium"
+  },
+  "hold": 20,
+  "an": "fundamentals,market,news",
+  "cost": 0.3402,
+  "per": {
+   "PSSA3.SA 2026-09-21": [
+    "Underweight",
+    42
+   ],
+   "PSSA3.SA 2026-09-14": [
+    "Underweight",
+    42
+   ],
+   "ITUB4.SA 2026-09-21": [
+    "Hold",
+    50
+   ],
+   "ITUB4.SA 2026-09-14": [
+    "Hold",
+    50
+   ]
+  },
+  "costs": [
+   0.085,
+   0.083,
+   0.081,
+   0.091
+  ],
+  "fail": 0,
+  "setf": 0,
+  "pm": [
+   4,
+   4
+  ],
+  "brier": 0.2132,
+  "b50": 0.25,
+  "meanp": 0.45999999999999996,
+  "run": {
+   "directional": 2,
+   "hit_rate": 1.0,
+   "mean_signed_alpha": 0.033070505323659405
+  },
+  "ratings": {
+   "Hold": 2,
+   "Underweight": 2
+  },
+  "gap": 0
+ }
+}

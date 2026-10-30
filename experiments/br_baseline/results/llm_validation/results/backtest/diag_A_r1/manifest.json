@@ -1,0 +1,29 @@
+{
+  "provider": "anthropic",
+  "quick": "claude-haiku-5-5",
+  "deep": "claude-sonnet-5-5",
+  "effort_setting": "anthropic_effort",
+  "effort_effective": {
+    "quick": "low",
+    "deep": "low"
+  },
+  "analysts": [
+    "market",
+    "news"
+  ],
+  "holding_days": 5,
+  "benchmark": "^BVSP",
+  "data_vendors": {
+    "core_stock_apis": "yfinance",
+    "technical_indicators": "yfinance",
+    "fundamental_data": "cvm,sec_edgar,yfinance",
+    "news_data": "cvm,yfinance",
+    "macro_data": "bcb,fred",
+    "prediction_markets": "polymarket"
+  },
+  "tool_vendors": {},
+  "debate_rounds": 1,
+  "risk_rounds": 1,
+  "memory": "own log per run_id; lessons filtered by resolution date",
+  "code": "4112f8349ddb40f2a91ad876c9a140facc0b303f"
+}
