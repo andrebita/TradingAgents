@@ -1,0 +1,226 @@
+{
+ "runs": {
+  "claude_validation": {
+   "ratings": {
+    "Hold": 10,
+    "total": 10
+   },
+   "cells": {
+    "B3SA3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "B3SA3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "BBDC4.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "BBDC4.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "ITUB4.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "ITUB4.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "PSSA3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "PSSA3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "SBSP3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "SBSP3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 0,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    }
+   }
+  },
+  "claude_validation_br": {
+   "ratings": {
+    "Hold": 10,
+    "total": 10
+   },
+   "cells": {
+    "B3SA3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 3524,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "B3SA3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 3655,
+     "cvm_mentions_news_report": 2,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "BBDC4.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 3514,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "BBDC4.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 3691,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "ITUB4.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 3306,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "ITUB4.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 3294,
+     "cvm_mentions_news_report": 1,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "PSSA3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 3933,
+     "cvm_mentions_news_report": 1,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "PSSA3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 3250,
+     "cvm_mentions_news_report": 0,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "SBSP3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 3897,
+     "cvm_mentions_news_report": 2,
+     "focus_bcb_mentions_news_report": 0
+    },
+    "SBSP3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 3285,
+     "cvm_mentions_news_report": 1,
+     "focus_bcb_mentions_news_report": 1
+    }
+   }
+  },
+  "claude_validation_br2": {
+   "ratings": {
+    "Hold": 10,
+    "total": 10
+   },
+   "cells": {
+    "B3SA3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 6751,
+     "cvm_mentions_news_report": 2,
+     "focus_bcb_mentions_news_report": 8
+    },
+    "B3SA3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 7162,
+     "cvm_mentions_news_report": 3,
+     "focus_bcb_mentions_news_report": 9
+    },
+    "BBDC4.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 7482,
+     "cvm_mentions_news_report": 7,
+     "focus_bcb_mentions_news_report": 13
+    },
+    "BBDC4.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 8001,
+     "cvm_mentions_news_report": 7,
+     "focus_bcb_mentions_news_report": 9
+    },
+    "ITUB4.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 7196,
+     "cvm_mentions_news_report": 6,
+     "focus_bcb_mentions_news_report": 21
+    },
+    "ITUB4.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 6286,
+     "cvm_mentions_news_report": 1,
+     "focus_bcb_mentions_news_report": 10
+    },
+    "PSSA3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 6259,
+     "cvm_mentions_news_report": 3,
+     "focus_bcb_mentions_news_report": 14
+    },
+    "PSSA3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 6076,
+     "cvm_mentions_news_report": 1,
+     "focus_bcb_mentions_news_report": 12
+    },
+    "SBSP3.SA 2026-09-14": {
+     "rating": "Hold",
+     "news_report_chars": 6688,
+     "cvm_mentions_news_report": 2,
+     "focus_bcb_mentions_news_report": 13
+    },
+    "SBSP3.SA 2026-09-21": {
+     "rating": "Hold",
+     "news_report_chars": 6544,
+     "cvm_mentions_news_report": 4,
+     "focus_bcb_mentions_news_report": 11
+    }
+   }
+  }
+ },
+ "cost_usd_per_cell_br2": {
+  "ITUB4.SA 2026-09-14": 0.096,
+  "ITUB4.SA 2026-09-21": 0.104,
+  "PSSA3.SA 2026-09-14": 0.1,
+  "PSSA3.SA 2026-09-21": 0.089,
+  "SBSP3.SA 2026-09-14": 0.094,
+  "SBSP3.SA 2026-09-21": 0.094,
+  "BBDC4.SA 2026-09-14": 0.096,
+  "BBDC4.SA 2026-09-21": 0.093,
+  "B3SA3.SA 2026-09-14": 0.097,
+  "B3SA3.SA 2026-09-21": 0.109
+ },
+ "cost_usd_total": {
+  "claude_validation": 0.87,
+  "claude_validation_br": 0.887,
+  "claude_validation_br2": 0.9717
+ },
+ "note": "per-cell cost derived from progress-log deltas. claude_validation_br ran before the CVM/BCB vendors (bbd1856); br2 used them."
+}
