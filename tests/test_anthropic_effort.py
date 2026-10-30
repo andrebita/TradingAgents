@@ -101,3 +101,19 @@ class TestEffortGate:
         assert captured["kwargs"]["max_tokens"] == 1024
         assert captured["kwargs"]["timeout"] == 30
         assert "effort" not in captured["kwargs"]
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("model, method", [
+    ("claude-sonnet-5-5", "json_schema"), ("claude-opus-5-5", "json_schema"),
+    ("claude-haiku-5-5", "json_schema"), ("claude-fable-5-1", "json_schema"),
+    ("claude-sonnet-4-6", "function_calling"), ("claude-haiku-4-5", "function_calling"),
+])
+def test_claude_5_models_get_native_structured_output(monkeypatch, model, method):
+    """Forced tool calls are refused by Sonnet/Opus 5.5 and Fable 5.1; a miss costs a
+    second call, so Claude 5 models use the API's JSON-schema output instead."""
+    seen = {}
+    monkeypatch.setattr(mod.ChatAnthropic, "with_structured_output",
+                        lambda self, schema, *, method=None, **kw: seen.setdefault("method", method))
+    mod.NormalizedChatAnthropic(model=model, api_key="x").with_structured_output(dict)
+    assert seen["method"] == method

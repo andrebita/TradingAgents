@@ -22,6 +22,7 @@ _EFFORT_EXACT = {
     "claude-mythos-5",        # Fable 5 twin (Project Glasswing); effort-capable
 }
 _EFFORT_MODEL = re.compile(r"^claude-(opus|sonnet|fable|haiku)-(\d+)(?:-(\d{1,2}))?(?:-\d{8})?$")
+_CLAUDE_5 = re.compile(r"^claude-(opus|sonnet|fable|haiku|mythos)-([5-9]|\d{2,})(-|$)")
 _EFFORT_MIN_VERSION = {"opus": (4, 5), "sonnet": (4, 6), "fable": (5, 0), "haiku": (5, 5)}
 
 
@@ -49,6 +50,19 @@ class NormalizedChatAnthropic(ChatAnthropic):
 
     def invoke(self, input, config=None, **kwargs):
         return normalize_content(super().invoke(input, config, **kwargs))
+
+    def with_structured_output(self, schema, *, method=None, **kwargs):
+        """Native JSON-schema output on Claude 5 models, forced tool calling otherwise.
+
+        Langchain's default forces a tool call, which Claude Fable 5.1, Opus 5.5 and
+        Sonnet 5.5 refuse: the call goes out unforced, the model may answer in text,
+        and every such miss costs a second, free-text call to the same model. The
+        API's structured outputs return the schema in one call on every Claude 5
+        model.
+        """
+        if method is None:
+            method = "json_schema" if _CLAUDE_5.match(self.model.lower()) else "function_calling"
+        return super().with_structured_output(schema, method=method, **kwargs)
 
 
 class AnthropicClient(BaseLLMClient):

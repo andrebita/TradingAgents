@@ -120,6 +120,9 @@ def backtest(
     run_id: str = typer.Option(
         None, "--run-id", help="Continue an earlier sweep: its cells are skipped and its log reused"
     ),
+    workers: int = typer.Option(
+        1, "--workers", help="Tickers analyzed at once, each date in order; mind the provider's rate limits"
+    ),
 ):
     """Score past decisions over a grid of tickers and dates."""
 
@@ -144,6 +147,7 @@ def backtest(
         console.print(f"[dim][{done}/{total}] {ticker} {date}[/dim]")
 
     kwargs = {"asset_type": kind.value, "portfolio": book, "run_id": run_id, "progress": show_progress,
+              "workers": workers,
               "selected_analysts": [a.value for a in chosen]}
 
     try:

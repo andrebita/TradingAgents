@@ -364,3 +364,31 @@ def test_a_ticker_or_date_given_twice_runs_and_settles_once(tmp_path):
     graph = _FakeGraph.instances[-1]
     assert graph.calls == [("NVDA", "2026-01-05")]
     assert graph.settled == ["NVDA"]
+
+
+@pytest.mark.unit
+def test_parallel_workers_run_each_ticker_in_order_on_its_own_graph(tmp_path):
+    tickers, dates = ["NVDA", "AAPL", "MSFT"], ["2026-01-05", "2026-01-12", "2026-01-20"]
+    _FakeGraph.fail_on = {("AAPL", "2026-01-12")}
+    result = run_backtest(tickers, dates, _config(tmp_path), workers=3)
+
+    workers = [g for g in _FakeGraph.instances if g.calls]
+    assert sorted(g.calls[0][0] for g in workers) == sorted(tickers)
+    for g in workers:   # one ticker per graph, its dates in order
+        assert len({t for t, _ in g.calls}) == 1 and [d for _, d in g.calls] == dates
+    assert result.cells_run == 8 and result.failures == [("AAPL", "2026-01-12", "vendor exploded")]
+    logged = {(e["ticker"], e["date"]) for e in TradingMemoryLog({"memory_log_path": str(result.log_path)}).load_entries()}
+    assert len(logged) == 8
+
+
+@pytest.mark.unit
+def test_a_worker_stopped_by_a_base_exception_stops_the_sweep(tmp_path, monkeypatch):
+    class Stop(BaseException):
+        pass
+
+    def stop(self, ticker, trade_date, asset_type="stock", portfolio=None):
+        raise Stop
+
+    monkeypatch.setattr(_FakeGraph, "propagate", stop)
+    with pytest.raises(Stop):
+        run_backtest(["NVDA", "AAPL"], ["2026-01-05"], _config(tmp_path), workers=2)

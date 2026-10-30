@@ -34,6 +34,7 @@ import os
 import shutil
 import subprocess
 import threading
+import time
 from pathlib import Path
 
 from langchain_core.callbacks import BaseCallbackHandler
@@ -173,6 +174,8 @@ def main():
     p.add_argument("--effort", default="low", help="anthropic_effort / openai_reasoning_effort / google_thinking_level")
     p.add_argument("--budget-usd", type=float, default=3.0)
     p.add_argument("--holding", type=int, default=5, help="trading days a decision is judged over")
+    p.add_argument("--workers", type=int, default=1,
+                   help="tickers analyzed at once; mind the provider's rate limits")
     args = p.parse_args()
 
     key = {"anthropic": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY", "google": "GOOGLE_API_KEY"}.get(args.provider)
@@ -201,9 +204,12 @@ def main():
     usage = UsageByModel(fallback_model=args.quick, budget_usd=args.budget_usd,
                          spent_before=spent_so_far(history))
 
+    began = time.monotonic()
+
     def progress(done, total, ticker, date):
         spent = usage.spent_before + usage.cost()
-        print(f"[{done}/{total}] {ticker} {date} · spent so far ~US$ {spent:.3f}", flush=True)
+        print(f"[{done}/{total}] {ticker} {date} · {time.monotonic() - began:.0f}s elapsed"
+              f" · spent so far ~US$ {spent:.3f}", flush=True)
 
     tickers = [t.strip() for t in args.tickers.split(",") if t.strip()]
     dates = iter_grid(args.start, args.end, args.every)
@@ -213,7 +219,7 @@ def main():
     backtest.TradingAgentsGraph = functools.partial(TradingAgentsGraph, callbacks=[usage])
     try:
         result = run_backtest(tickers, dates, config, selected_analysts=args.analysts.split(","),
-                              run_id=args.run_id, progress=progress)
+                              run_id=args.run_id, progress=progress, workers=args.workers)
     except OverBudget as exc:
         stopped = f"{exc}; re-run with the same --run-id and a higher --budget-usd to continue"
         print(stopped)
@@ -223,6 +229,7 @@ def main():
 
     log = out / "results" / "backtest" / args.run_id / "trading_memory.md"
     report = {"run_id": args.run_id, "manifest": manifest, "tickers": tickers, "dates": dates,
+              "workers": args.workers, "wall_seconds": round(time.monotonic() - began),
               "budget_usd": args.budget_usd, "stopped": stopped, "usage": usage.usage,
               "cost_usd_this_invocation": round(usage.cost(), 4)}
     if result is not None:
