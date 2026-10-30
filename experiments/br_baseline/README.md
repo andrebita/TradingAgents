@@ -179,6 +179,30 @@ O workflow `.github/workflows/br-backtest.yml` (disparo manual) faz exatamente i
 roda `tradingagents backtest`, roda os baselines na mesma grade, compara e publica
 tudo como artefato.
 
+## Custo estimado da execução com LLM
+
+`estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
+prompt com `o200k_base`, usando respostas de tamanho controlado. Medição com
+`--analysts market` e respostas de ~1.200 tokens: 8 chamadas *quick* (30,5k tokens de
+entrada / 8,6k de saída) e 2 chamadas *deep* (9,4k / 2,4k) por célula. Some 1 chamada de
+reflexão na liquidação.
+
+No cenário realista, os números medidos foram acrescidos de 30% (rodadas extras de
+ferramenta) e de ~4k tokens de raciocínio por chamada *deep*. Preços usados:
+`gpt-6-luna` US$ 0,10 / 0,50 e `gpt-6-sol` US$ 2 / 10 por milhão de tokens. São preços
+de fontes secundárias (out/2026); confira na página da OpenAI. Câmbio PTAX de 30/10/2026: R$ 5,42.
+
+| cenário | por célula | 55 células | 800 células |
+|---|---|---|---|
+| otimista (padrão luna+sol) | US$ 0,02 | US$ 1,3 (R$ 7) | US$ 19 (R$ 100) |
+| realista (padrão luna+sol) | US$ 0,14 | US$ 7,6 (R$ 41) | US$ 110 (R$ 600) |
+| pessimista (padrão luna+sol) | US$ 0,28 | US$ 15 (R$ 82) | US$ 220 (R$ 1.200) |
+| realista, tudo em sol | US$ 0,33 | US$ 18 (R$ 97) | US$ 260 (R$ 1.410) |
+
+Com o plano ChatGPT não há cobrança extra, mas cada célula faz ~12–15 chamadas, que
+contam no limite de uso do plano: cerca de 700–800 chamadas para 55 células e
+10–12 mil para 800 células.
+
 ## Reprodução
 
 ```bash
