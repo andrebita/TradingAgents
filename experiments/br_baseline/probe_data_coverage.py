@@ -47,7 +47,7 @@ def probe(ticker: str, date: str) -> dict:
             if name == "get_indicators[rsi]":
                 text = route_to_vendor("get_indicators", ticker, "rsi", date, 30)
             elif name == "get_macro_indicators[selic]":
-                text = route_to_vendor("get_macro_indicators", "interest_rate", date, 90)
+                text = route_to_vendor("get_macro_indicators", "selic", date, 90)
             else:
                 text = route_to_vendor(name, *args)
             text = str(text)

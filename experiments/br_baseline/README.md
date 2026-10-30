@@ -42,9 +42,14 @@ credencial de API de LLM, e contratar uma não estava autorizado. O que foi feit
    recálculo independente em todas as células (diferença máxima de 0,05 p.p., que é o
    arredondamento do log).
 
-3. **Nenhuma regra simples se distingue do acaso em 2026.** Isso vale tanto para as 5
-   ações quanto para um universo de 29 ações líquidas. A referência que um LLM
-   precisa superar é, na prática, a de um sinal aleatório: taxa de acerto de 50% e alfa ~0.
+3. **Nenhuma regra simples mostrou vantagem positiva robusta em 2026,** considerando a
+   dependência entre células, a seleção dos papéis e os custos. Isso **não** é o mesmo
+   que demonstrar equivalência ao acaso: no universo de 29 ações, momentum de 20 e
+   60 dias e MM20 > MM50 tiveram intervalos inteiramente **negativos**, ou seja, o mercado
+   de 2026 puniu as tendências de curto prazo. Inverter o sinal dessas regras não é uma
+   vantagem demonstrada, porque o resultado veio de um único período escolhido depois
+   de visto. A referência prática para o LLM continua sendo o controle aleatório
+   (acerto ~50%, alfa ~0).
 
 4. **A grade sugerida no handoff não tem poder estatístico.** `--every 28` em 5 ações
    dá cerca de 50 células. Com 50 células, um sinal aleatório já fica entre ~36% e ~64%
@@ -73,33 +78,43 @@ e em geral mais.
 Métrica: para cada célula (ação, data), o alfa é o retorno da ação menos o do
 Ibovespa, da 1ª cotação de fechamento após a data até 5 pregões depois. É a mesma
 definição de `fetch_returns`, com preços ajustados por proventos. "signed α" é a
-média de `direção × alfa`. "net" desconta 0,20% de custo de ida e volta por célula.
-Os intervalos de confiança (IC) foram obtidos por bootstrap reamostrando células e,
-mais honesto, reamostrando datas (células da mesma semana são correlacionadas).
+média de `direção × alfa`. "net" desconta 0,20% de custo de ida e volta por célula, uma
+aproximação, não um retorno investível. Os intervalos de confiança (IC) usam bootstrap
+**por blocos circulares de datas consecutivas** (6 semanas; 8 para o horizonte de 20
+pregões), sobre a grade completa de datas. Isso preserva a correlação entre ações da
+mesma semana e a sobreposição de janelas entre semanas vizinhas, que existe até com 5
+pregões quando há feriado. O IC por célula (independente) aparece em
+`results/baselines_console.txt` só para comparação: ele é estreito demais.
 
 **Fora da amostra — 2026 (05/01 a 23/10, semanal), 5 ações do handoff, 210 células**
 
-| estratégia | acerto | signed α | líquido | IC 95% (por data) |
+| estratégia | acerto | signed α | líquido | IC 95% (blocos de 6 datas) |
 |---|---|---|---|---|
-| comprar sempre | 48,1% | −0,07% | −0,27% | [−0,65%, +0,62%] |
-| momentum 20d | 50,5% | +0,03% | −0,17% | [−0,57%, +0,66%] |
-| momentum 60d | 42,9% | −0,34% | −0,54% | [−0,93%, +0,17%] |
-| momentum 12-1 | 47,6% | −0,06% | −0,26% | [−0,66%, +0,60%] |
-| reversão 5d | 41,4% | −0,25% | −0,45% | [−0,82%, +0,41%] |
-| preço > MM50 | 45,7% | −0,12% | −0,32% | [−0,73%, +0,52%] |
-| MM20 > MM50 | 36,7% | −0,36% | −0,56% | [−0,91%, +0,30%] |
-| RSI14 reversão (28 células) | 53,6% | +0,34% | +0,14% | [−0,76%, +1,35%] |
-| aleatório (1.000 sementes) | 50,0% (faixa 95%: 42,9–56,7%) | ~0 | | |
+| comprar sempre | 48,1% | −0,07% | −0,27% | [−0,66%, +0,50%] |
+| momentum 20d | 50,5% | +0,03% | −0,17% | [−0,34%, +0,46%] |
+| momentum 60d | 42,9% | −0,34% | −0,54% | [−1,02%, +0,25%] |
+| momentum 12-1 | 47,6% | −0,06% | −0,26% | [−0,66%, +0,54%] |
+| reversão 5d | 41,4% | −0,25% | −0,45% | [−0,73%, +0,34%] |
+| preço > MM50 | 45,7% | −0,12% | −0,32% | [−0,59%, +0,42%] |
+| MM20 > MM50 | 36,7% | −0,36% | −0,56% | [−0,82%, +0,24%] |
+| RSI14 reversão (28 células) | 53,6% | +0,34% | +0,14% | [−0,60%, +1,28%] |
+| aleatório (1.000 sementes) | 50,0% (faixa 95%: 43,3–56,7%) | ~0 | | |
+
+**Mesmo período e ações, horizonte de 20 pregões (195 células, IC por blocos de 8 datas):**
+comprar sempre 52,3% e +0,43% [−1,30%, +2,14%]; MM20 > MM50 38,5% e −1,21%
+[−2,36%, −0,17%]; aleatório com faixa de acerto de 43,1% a 56,9%. Com janelas de
+20 pregões numa grade semanal, cada janela se sobrepõe às três seguintes. Por isso os
+intervalos ficam bem mais largos.
 
 **Fora da amostra — 2026, 29 ações líquidas do Ibovespa, 1.218 células**
 
-| estratégia | acerto | signed α | IC 95% (por data) |
+| estratégia | acerto | signed α | IC 95% (blocos de 6 datas) |
 |---|---|---|---|
-| comprar sempre | 49,2% | −0,12% | [−0,28%, +0,06%] |
-| momentum 20d | 48,6% | −0,27% | [−0,71%, +0,10%] |
-| momentum 60d | 46,1% | −0,36% | [−0,68%, −0,03%] |
-| MM20 > MM50 | 45,3% | −0,32% | [−0,64%, −0,04%] |
-| aleatório | 50,0% (faixa 95%: 47,3–52,7%) | ~0 | |
+| comprar sempre | 49,2% | −0,12% | [−0,28%, +0,05%] |
+| momentum 20d | 48,6% | −0,27% | [−0,57%, −0,01%] |
+| momentum 60d | 46,1% | −0,36% | [−0,61%, −0,05%] |
+| MM20 > MM50 | 45,3% | −0,32% | [−0,57%, −0,06%] |
+| aleatório | 50,0% (faixa 95%: 47,4–53,0%) | ~0 | |
 
 Desenvolvimento, 2021–2025: com as 5 ações, "comprar sempre" acerta 53,3% (+0,20%);
 com as 29, acerta 50,5% (+0,13%). Esses números estão **inflados por viés de
@@ -111,6 +126,31 @@ Cada célula está em `results/cells_*.csv`.
 Universo amplo, problemas encontrados: `CPLE6.SA` não retornou dados no Yahoo e foi
 excluído. `EMBR3.SA` não retornou dados, e foi usado `EMBJ3.SA`. Esses são exemplos
 de mudança de ticker que um backtest de longo prazo precisa tratar.
+
+## Revisão independente (GPT-6 Astra, commit `12b5e52`) e correções
+
+Uma revisão externa encontrou problemas reais de vazamento e de medição. As correções
+estão no commit `5196112` e nos seguintes. Situação de cada achado:
+
+| # | Achado | Situação |
+|---|---|---|
+| F1 | CVM revelava o futuro: avisava ao agente que um balanço "foi reapresentado depois" e procurava o emissor no FCA do ano atual | **Corrigido.** O FCA só é lido até o ano de D e só quando entregue até D. O período cuja única versão guardada é posterior a D é omitido **sem aviso**. Resta o limite da fonte: a omissão em si depende de uma reentrega futura, porque a CVM não guarda versões antigas. |
+| F2 | Focus ignorava feriados; o SGS não guarda versões originais | **Corrigido** o calendário: o corte segue o 1º dia útil da semana (feriados nacionais, Carnaval, Sexta-feira Santa e Corpus Christi). As séries revisadas (IBC-Br, desemprego) avisam ao agente que os valores são os revisados de hoje. Continua sem as versões originais. |
+| F3 | Probabilidade e alfa distorcidos (0,58% lido como 58%, 50,4% arredondado para 50%, alfa arredondado no Brier) | **Corrigido.** Uma unidade só, sem arredondar a inclinação; o Brier e o acerto usam o alfa sem arredondamento; probabilidade ausente ou inválida conta como falha de medição. |
+| F4 | O esforço não era enviado ao Haiku 5.5 | **Corrigido.** O manifesto registra o esforço efetivo de cada modelo. |
+| F5 | Reaproveitar um `run_id` misturava configurações | **Corrigido.** Manifesto por `run_id`; uma retomada com qualquer diferença é recusada. A comparação recusa baselines de outro horizonte. |
+| F6 | Inferência ignorava a dependência entre semanas; a conclusão do README era forte demais | **Corrigido.** Bootstrap por blocos de datas e texto revisto (conclusão 3). |
+| F7 | A sonda de cobertura consultava indicadores errados | **Corrigido.** A sonda usa `selic`; o modelo roteirizado passa um indicador macro à ferramenta macro. |
+| F8 | Preços ajustados por proventos posteriores a D | **Em aberto.** Os retornos não mudam, mas os níveis de preço citados pelos agentes (suportes, stops) podem não ser os negociados em D. Exige uma série de preços reconstruída para a decisão. |
+| F9 | "Nenhum documento" podia ser falta de cobertura | **Corrigido.** Arquivo ausente ou cópia antiga aparecem como cobertura incompleta. O texto avisa que só vão tipo e assunto, não o conteúdo. |
+| F10 | Seleção de período nos fluxos podia descartar contas | **Corrigido.** O período é escolhido por cobertura de contas; moeda e escala desconhecidas são rejeitadas; os agentes são avisados para não comparar colunas de durações diferentes. |
+| F11 | O teto de gasto só era checado entre células; o workflow o ignorava | **Corrigido.** Checagem antes de cada chamada, acumulada entre retomadas; para se o uso de tokens não vier. O workflow usa o executor com teto e não esconde falhas. |
+| F12 | A reflexão afirmava fatos sobre a trajetória de preços que não recebeu | **Corrigido** no prompt: a reflexão sabe que só tem os dois retornos. |
+
+Ressalvas que permanecem:
+- Um teste em datas passadas com um modelo atual é uma avaliação retrospectiva, não uma estratégia que poderia ter sido executada naquela época.
+- O contexto do instrumento traz o nome atual da empresa.
+- As datas 14/09 e 21/09 já foram usadas para decidir mudanças, então agora são desenvolvimento, não teste intocado.
 
 ## Auditoria de `tradingagents/backtest.py` e da liquidação
 
@@ -160,24 +200,38 @@ de normalização de ticker. Não há motivo para incorporá-lo.
   demonstrativos ponto-no-tempo, incluindo reapresentações.
 - **BCB SGS:** a API responde (por exemplo, série 433, IPCA mensal).
 
-## Desenho para a execução com LLM (próximo passo — exige decisão do usuário)
+## Execuções com LLM até agora e próximos experimentos
 
-O usuário precisa definir: provedor e modelo (com o corte de treino conhecido),
-orçamento e, então, cadastrar a chave como *secret* do repositório.
+Validações já feitas, todas com Claude Haiku 5.5 no nível rápido e Sonnet 5.5 no forte, 5
+ações × 14 e 21/09/2026, horizonte de 5 pregões. Os resultados estão em
+`results/llm_validation/`.
 
-Recomendação:
-- **Etapa 1 (infraestrutura com LLM, barata):** `--analysts market`, 5 ações,
-  `--every 28`. Cerca de 50 células. Serve **só** para validar a execução e medir
-  custo por célula, não para medir qualidade.
-- **Etapa 2 (medição):** ≥ 800 células fora do corte de treino. Por exemplo, as 29
-  ações de `broad29` × 28 datas semanais. Pode ser em 2026 se o modelo tiver corte
-  anterior a 2026. Comparar com `compare_run.py`, que põe o LLM ao lado de todos os
-  baselines **nas mesmas células** e da faixa do aleatório.
-- Repetir pelo menos uma vez com outra semente/temperatura para medir a variabilidade.
+| run | analistas | dados | notas | US$/célula |
+|---|---|---|---|---|
+| `claude_validation` | market | só preços | 10 Hold | 0,087 |
+| `claude_validation_br` | market, news | código antigo (sem CVM/BCB) | 10 Hold | 0,089 |
+| `claude_validation_br2` | market, news | CVM IPE + BCB | 10 Hold | 0,097 |
 
-O workflow `.github/workflows/br-backtest.yml` (disparo manual) faz exatamente isto:
-roda `tradingagents backtest`, roda os baselines na mesma grade, compara e publica
-tudo como artefato.
+Essas execuções provam que o pipeline funciona e que os dados chegam aos agentes. Elas
+**não** medem qualidade, por três motivos: o esforço do Haiku não era aplicado (F4), as
+decisões ainda não traziam probabilidade, e o horizonte não era informado aos agentes.
+
+Próximos passos, seguindo a revisão:
+
+1. **Diagnóstico controlado** (4 células: 2 ações × 2 datas de desenvolvimento, duas
+   repetições, 32 execuções, ~US$ 3–8). Cada configuração muda uma variável por vez:
+   (A) market+news, h5, low; (B) h20; (C) h20 com esforço medium; (D) C com fundamentos.
+   Critérios: probabilidade válida em todas as decisões, esforço e horizonte efetivos no
+   manifesto, fallbacks identificados, custo por chamada medido. Hold continua permitido.
+2. **Valor incremental da arquitetura** (15 ações × 4 janelas de 20 pregões sem
+   sobreposição, depois do corte de treino, datas escolhidas sem olhar os retornos). Compara
+   o sistema completo, um decisor único com o mesmo pacote de dados e os baselines.
+   Métrica principal: diferença pareada de Brier. Teto de ~US$ 35. Isso não certifica
+   uma vantagem de 3 a 5 p.p.; serve para descartar configurações ruins ou corrigir a medição.
+
+Use sempre um `--run-id` novo por configuração (o manifesto recusa misturas) e baselines
+gerados com o mesmo `--holding`. O workflow `.github/workflows/br-backtest.yml` (disparo
+manual) roda o executor com teto, os baselines na mesma grade e a comparação.
 
 ## Custo estimado da execução com LLM
 

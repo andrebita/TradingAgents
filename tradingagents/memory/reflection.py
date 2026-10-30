@@ -29,6 +29,8 @@ class Reflector:
             "and say so plainly if the window is too short to judge the thesis.\n"
             "2. Which part of the investment thesis this window supports or undercuts.\n"
             "3. One concrete lesson to apply to the next similar analysis.\n\n"
+            "You are given only the two returns, not the path prices took within the window: do not "
+            "say whether a level, target or stop was reached.\n"
             "Be specific and terse. Your output will be stored verbatim in a memory log "
             "and re-read by future analysts, so every word must earn its place."
         )

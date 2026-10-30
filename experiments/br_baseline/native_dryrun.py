@@ -79,8 +79,10 @@ class ScriptedModel(BaseChatModel):
             calls = []
             for i, t in enumerate(self.tools):
                 props = t.tool_call_schema.model_json_schema().get("properties", {})
-                calls.append({"name": t.name, "id": f"call_{i}",
-                              "args": {k: v for k, v in FUTURE_ARGS.items() if k in props}})
+                args = {k: v for k, v in FUTURE_ARGS.items() if k in props}
+                if t.name == "get_macro_indicators":
+                    args["indicator"] = "selic"   # "rsi" is a technical indicator, not a macro one
+                calls.append({"name": t.name, "id": f"call_{i}", "args": args})
             return ChatResult(generations=[ChatGeneration(message=AIMessage(content="", tool_calls=calls))])
         if tool_results and self.tool_log:
             with _lock, open(self.tool_log, "a", encoding="utf-8") as fh:

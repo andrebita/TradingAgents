@@ -1,9 +1,10 @@
 name: B3 backtest (LLM)
 
-# Runs `tradingagents backtest` on B3 tickers and places the result against the
-# rule baselines on the same cells. Manual only: every cell calls a paid LLM API.
-# Needs the provider's key as a repository secret (e.g. OPENAI_API_KEY or
-# ANTHROPIC_API_KEY); nothing runs on push or pull request.
+# Runs a budget-capped backtest on B3 tickers (experiments/br_baseline/llm_validation.py)
+# and places it against the rule baselines on the same cells and holding window.
+# Manual only: every cell calls a paid LLM API. Needs the provider's key as a
+# repository secret (e.g. ANTHROPIC_API_KEY or OPENAI_API_KEY); nothing runs on
+# push or pull request.
 
 on:
   workflow_dispatch:
@@ -13,28 +14,37 @@ on:
         default: "ITUB4.SA,PSSA3.SA,SBSP3.SA,BBDC4.SA,B3SA3.SA"
       start:
         description: "First analysis date (YYYY-MM-DD)"
-        default: "2026-01-05"
+        default: "2026-09-14"
       end:
         description: "Last analysis date (YYYY-MM-DD)"
-        default: "2026-10-23"
+        default: "2026-09-21"
       every:
         description: "Days between analysis dates"
-        default: "28"
+        default: "7"
+      holding:
+        description: "Trading days each decision is judged over"
+        default: "20"
       analysts:
         description: "Analysts to run"
-        default: "market"
+        default: "market,news,fundamentals"
       provider:
-        description: "LLM provider (openai, anthropic, google, ...)"
-        default: "openai"
-      deep_model:
-        description: "Deep-thinking model id"
-        required: true
+        description: "LLM provider (anthropic, openai, google)"
+        default: "anthropic"
       quick_model:
         description: "Quick-thinking model id"
-        required: true
+        default: "claude-haiku-5-5"
+      deep_model:
+        description: "Deep-thinking model id"
+        default: "claude-sonnet-5-5"
+      effort:
+        description: "Reasoning effort"
+        default: "medium"
+      budget_usd:
+        description: "Spend cap in US$ for this run_id, across re-runs"
+        default: "4"
       run_id:
-        description: "Run id (reuse to resume a sweep)"
-        default: "b3-llm"
+        description: "Run id (a new one for any change of configuration)"
+        required: true
 
 permissions:
   contents: read
@@ -44,12 +54,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 350
     env:
-      TRADINGAGENTS_LLM_PROVIDER: ${{ inputs.provider }}
-      TRADINGAGENTS_DEEP_THINK_LLM: ${{ inputs.deep_model }}
-      TRADINGAGENTS_QUICK_THINK_LLM: ${{ inputs.quick_model }}
-      TRADINGAGENTS_RESULTS_DIR: ${{ github.workspace }}/out/results
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
       FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
     steps:
@@ -59,22 +65,28 @@ jobs:
           python-version: "3.13"
       - run: pip install -e .
       - name: Backtest
+        shell: bash   # explicit, so pipefail makes a failed run fail the step despite tee
         run: |
           mkdir -p out
-          tradingagents backtest "${{ inputs.tickers }}" --start "${{ inputs.start }}" \
-            --end "${{ inputs.end }}" --every "${{ inputs.every }}" \
-            --analysts "${{ inputs.analysts }}" --run-id "${{ inputs.run_id }}" 2>&1 | tee out/backtest.log
-      - name: Baselines on the same grid
+          python experiments/br_baseline/llm_validation.py --out out --run-id "${{ inputs.run_id }}" \
+            --tickers "${{ inputs.tickers }}" --start "${{ inputs.start }}" --end "${{ inputs.end }}" \
+            --every "${{ inputs.every }}" --holding "${{ inputs.holding }}" --analysts "${{ inputs.analysts }}" \
+            --provider "${{ inputs.provider }}" --quick "${{ inputs.quick_model }}" \
+            --deep "${{ inputs.deep_model }}" --effort "${{ inputs.effort }}" \
+            --budget-usd "${{ inputs.budget_usd }}" 2>&1 | tee out/backtest.log
+      - name: Baselines on the same grid and window
         if: always()
+        shell: bash
         run: |
           python experiments/br_baseline/baselines.py --out out/baselines \
             --tickers "${{ inputs.tickers }}" --start "${{ inputs.start }}" --end "${{ inputs.end }}" \
-            --every "${{ inputs.every }}" --label grid 2>&1 | tee out/baselines.log
-          python experiments/br_baseline/compare_run.py \
-            "out/results/backtest/${{ inputs.run_id }}/trading_memory.md" out/baselines/cells_grid.csv \
-            --out out/comparison.json || true
+            --every "${{ inputs.every }}" --holding "${{ inputs.holding }}" --label grid 2>&1 | tee out/baselines.log
+          python experiments/br_baseline/compare_run.py "out/${{ inputs.run_id }}_trading_memory.md" \
+            out/baselines/cells_grid.csv --out out/comparison.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: b3-backtest-${{ inputs.run_id }}
-          path: out/
+          path: |
+            out/
+            !out/cache/
