@@ -36,7 +36,9 @@ def pct(text: str | None) -> float | None:
         return None
 
 
-PROBABILITY = re.compile(r"\*\*Probability of beating the benchmark\*\*:\s*([0-9]+(?:\.[0-9]+)?)\s*%")
+# Free-text decisions write the line in several shapes: "**...**: 42%", "**...:** 42%",
+# or the label alone with the figure on the next line.
+PROBABILITY = re.compile(r"\*\*Probability of beating the benchmark:?\*\*:?\s*([0-9]+(?:\.[0-9]+)?)\s*%")
 
 
 def probability(decision: str) -> tuple[float | None, str]:

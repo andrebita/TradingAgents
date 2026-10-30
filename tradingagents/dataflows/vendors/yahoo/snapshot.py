@@ -15,6 +15,7 @@ from collections.abc import Iterable
 import pandas as pd
 from stockstats import wrap
 
+from tradingagents.dataflows.config import get_config
 from tradingagents.dataflows.errors import NoMarketDataError
 from tradingagents.dataflows.symbols import normalize_symbol
 from tradingagents.dataflows.vendors.yahoo.common import price_text
@@ -48,6 +49,48 @@ def _verified_rows(symbol: str, as_of_date: str) -> pd.DataFrame:
     if df.empty:
         raise NoMarketDataError(symbol, normalize_symbol(symbol), f"no price rows on or before {as_of_date}")
     return df
+
+
+# Windows, in trading sessions, over which the instrument is set against its benchmark.
+RELATIVE_WINDOWS: tuple[int, ...] = (5, 20, 60, 120)
+BETA_SESSIONS = 120
+
+
+def _relative_lines(symbol: str, as_of_date: str, df: pd.DataFrame) -> list[str]:
+    """The instrument's returns against its regional benchmark, from closes up to the run date.
+
+    A call is judged on the instrument's return relative to this benchmark, so
+    the agents need the benchmark's own path: without it, relative strength and
+    beta can only be guessed. Each window ends at the instrument's latest row and
+    reads the benchmark at its last close on or before each end.
+    """
+    from tradingagents.memory.settlement import resolve_benchmark  # memory imports dataflows
+
+    benchmark = resolve_benchmark(symbol, get_config())
+    if normalize_symbol(benchmark) == normalize_symbol(symbol):
+        return []
+    head = ["", f"### Relative to the benchmark ({benchmark})", ""]
+    try:
+        bench = _verified_rows(benchmark, as_of_date)
+    except Exception as exc:  # noqa: BLE001 — the snapshot stands without the comparison
+        return head + [f"Benchmark prices unavailable ({type(exc).__name__}); relative strength cannot be computed."]
+
+    own = df.set_index("Date")["Close"].astype(float)
+    ref = bench.set_index("Date")["Close"].astype(float).reindex(own.index, method="ffill")
+    lines = head + ["| Window (sessions) | Instrument | Benchmark | Difference |", "|---|---:|---:|---:|"]
+    for n in RELATIVE_WINDOWS:
+        if len(own) <= n or pd.isna(ref.iloc[-n - 1]):
+            continue
+        mine = own.iloc[-1] / own.iloc[-n - 1] - 1
+        theirs = ref.iloc[-1] / ref.iloc[-n - 1] - 1
+        lines.append(f"| {n} | {mine:+.2%} | {theirs:+.2%} | {mine - theirs:+.2%} |")
+    daily = pd.DataFrame({"own": own.pct_change(), "ref": ref.pct_change()}).dropna().tail(BETA_SESSIONS)
+    if len(daily) >= 30 and daily["ref"].var() > 0:
+        beta = daily["own"].cov(daily["ref"]) / daily["ref"].var()
+        corr = daily["own"].corr(daily["ref"])
+        lines += ["", f"- Beta to {benchmark} over the last {len(daily)} sessions: {beta:.2f} "
+                      f"(correlation {corr:.2f})"]
+    return lines
 
 
 def _fmt(value) -> str:
@@ -105,6 +148,8 @@ def build_verified_market_snapshot(
     ]
     for field in ("Open", "High", "Low", "Close", "Volume"):
         lines.append(f"| {field} | {_fmt(latest.get(field))} |")
+    if "Volume" in df and len(df) >= 20:
+        lines.append(f"| Average volume, last 20 sessions | {_fmt(int(round(df['Volume'].tail(20).mean())))} |")
 
     lines += ["", "### Verified technical indicators (latest row)", "",
               "| Indicator | Value |", "|---|---:|"]
@@ -115,6 +160,8 @@ def build_verified_market_snapshot(
               "| Date | Close |", "|---|---:|"]
     for _, row in recent.iterrows():
         lines.append(f"| {_fmt(row['Date'])} | {_fmt(row.get('Close'))} |")
+
+    lines += _relative_lines(symbol, as_of_date, df)
 
     lines += [
         "",

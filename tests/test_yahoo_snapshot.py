@@ -117,3 +117,33 @@ class TestPricesKeepTheirDigits:
         monkeypatch.setattr(market.yf, "Ticker", _Ticker)
         text = market.get_YFin_data_online("SHIB-USD", "2026-05-11", "2026-05-15")
         assert "0.00000503" in text and ",0.0," not in text
+
+
+@pytest.mark.unit
+class TestRelativeToBenchmark:
+    """A call is judged against the regional benchmark, so the snapshot shows it."""
+
+    def test_returns_against_the_benchmark_use_rows_up_to_the_run_date(self, monkeypatch):
+        own = _sample_ohlcv()
+        bench = own.assign(Close=200.0)                   # a flat benchmark...
+        bench.loc[bench["Date"] > "2026-05-13", "Close"] = 400.0   # ...that jumps after the run date
+        monkeypatch.setattr(validator, "load_ohlcv",
+                            lambda s, d, fill_gaps=True: bench.copy() if s == "^BVSP" else own.copy())
+
+        snap = validator.build_verified_market_snapshot("ITUB4.SA", "2026-05-13")
+        assert "### Relative to the benchmark (^BVSP)" in snap
+        # Over 5 sessions the instrument rose from 125 to 130; the benchmark, read only
+        # up to the run date, did not move.
+        assert "| 5 | +4.00% | +0.00% | +4.00% |" in snap
+        assert "Average volume, last 20 sessions" in snap
+
+    def test_the_benchmark_itself_gets_no_comparison(self, monkeypatch):
+        monkeypatch.setattr(validator, "load_ohlcv", lambda s, d, fill_gaps=True: _sample_ohlcv())
+        assert "Relative to the benchmark" not in validator.build_verified_market_snapshot("SPY", "2026-05-13")
+
+    def test_missing_benchmark_prices_leave_the_snapshot_standing(self, monkeypatch):
+        def load(symbol, d, fill_gaps=True):
+            return pd.DataFrame() if symbol == "^BVSP" else _sample_ohlcv()
+        monkeypatch.setattr(validator, "load_ohlcv", load)
+        snap = validator.build_verified_market_snapshot("ITUB4.SA", "2026-05-13")
+        assert "Benchmark prices unavailable" in snap and "| Close |" in snap
