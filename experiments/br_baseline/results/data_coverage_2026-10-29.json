@@ -1,0 +1,265 @@
+{
+  "date": "2026-10-29",
+  "results": {
+    "ITUB4.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1298,
+        "head": "# Stock data for ITUB4.SA from 2026-09-29 to 2026-10-29\n# Total records: 22\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-09-29,41.6929,42.3426,41.493,42.2826,17690800,0.0,0.0\n2026-09-30,43.1523,44.6517,42.6925,44.2618,73883700,0.0,0.0\n2026-10-01,44.35,44.63,43.41,44.14,58873000,0.018182,0.0\n2026-10-02,45.25,45.27,43.10,44.83,44876100,0.0,0.0\n2026-10-05,48.80,50.68,48.08,49.48,10538"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1440,
+        "head": "## rsi values from 2026-09-29 to 2026-10-29:\n\n2026-10-29: 29.845606426485443\n2026-10-28: 30.349633704457812\n2026-10-27: 33.429489513471445\n2026-10-26: 34.609091164130476\n2026-10-25: N/A: Not a trading day (weekend or holiday)\n2026-10-24: N/A: Not a trading day (weekend or holiday)\n2026-10-23: 60.08797020678831\n2026-10-22: 58.80801590266641\n2026-10-21: 64.57711065289315\n2026-10-20: 64.2149049106544"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for ITUB4.SA\n# Point-in-time as of: 2026-10-29\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-10-29 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for ITUB4.SA\n# Point-in-time as of: 2026-10-29\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for ITUB4.SA\n# Point-in-time as of: 2026-10-29\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for ITUB4.SA\n# Point-in-time as of: 2026-10-29\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged ITUB4.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 826,
+        "head": "## Global Market News, from 2026-10-22 to 2026-10-29:\n\n### IBM (IBM) Debuts AI Agent Security Controls For Hybrid Cloud (source: Simply Wall St.)\nLink: https://finance.yahoo.com/technology/ai/articles/ibm-ibm-debuts-ai-agent-221557150.html\n\n### What Needs To Be True To Buy Accenture Stock Now? (source: Trefis)\nLink: https://finance.yahoo.com/markets/stocks/articles/needs-true-buy-accenture-stock-2"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for ITUB4.SA\n# Point-in-time as of: 2026-10-29\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-10-29."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "PSSA3.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1253,
+        "head": "# Stock data for PSSA3.SA from 2026-09-29 to 2026-10-29\n# Total records: 22\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-09-29,47.00,47.08,46.58,46.98,1312100,0.0,0.0\n2026-09-30,47.78,47.83,46.84,47.29,3652200,0.0,0.0\n2026-10-01,47.78,47.87,46.90,47.66,1749700,0.0,0.0\n2026-10-02,48.39,49.50,48.21,49.47,1798300,0.0,0.0\n2026-10-05,50.91,52.44,49.12,51.54,5344100,0.0,0.0\n2026-10-06,51"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1442,
+        "head": "## rsi values from 2026-09-29 to 2026-10-29:\n\n2026-10-29: 30.092416615277536\n2026-10-28: 32.52735975034002\n2026-10-27: 37.18373590657996\n2026-10-26: 37.46834691523191\n2026-10-25: N/A: Not a trading day (weekend or holiday)\n2026-10-24: N/A: Not a trading day (weekend or holiday)\n2026-10-23: 53.68419244111011\n2026-10-22: 54.45658675502598\n2026-10-21: 54.639076098930474\n2026-10-20: 60.196306179504276"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for PSSA3.SA\n# Point-in-time as of: 2026-10-29\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-10-29 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for PSSA3.SA\n# Point-in-time as of: 2026-10-29\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for PSSA3.SA\n# Point-in-time as of: 2026-10-29\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for PSSA3.SA\n# Point-in-time as of: 2026-10-29\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged PSSA3.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 826,
+        "head": "## Global Market News, from 2026-10-22 to 2026-10-29:\n\n### IBM (IBM) Debuts AI Agent Security Controls For Hybrid Cloud (source: Simply Wall St.)\nLink: https://finance.yahoo.com/technology/ai/articles/ibm-ibm-debuts-ai-agent-221557150.html\n\n### What Needs To Be True To Buy Accenture Stock Now? (source: Trefis)\nLink: https://finance.yahoo.com/markets/stocks/articles/needs-true-buy-accenture-stock-2"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for PSSA3.SA\n# Point-in-time as of: 2026-10-29\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-10-29."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "SBSP3.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1276,
+        "head": "# Stock data for SBSP3.SA from 2026-09-29 to 2026-10-29\n# Total records: 22\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-09-29,26.75,27.14,26.44,27.06,16274700,0.0,0.0\n2026-09-30,27.80,27.80,27.21,27.43,17769400,0.0,0.0\n2026-10-01,27.80,27.80,27.02,27.58,21233100,0.0,0.0\n2026-10-02,28.28,28.28,27.35,28.23,20331000,0.0,0.0\n2026-10-05,30.93,32.00,30.50,31.50,64928000,0.0,0.0\n2026-10-"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1439,
+        "head": "## rsi values from 2026-09-29 to 2026-10-29:\n\n2026-10-29: 30.209327482974103\n2026-10-28: 30.01189098771414\n2026-10-27: 31.15782137531051\n2026-10-26: 29.612931847473806\n2026-10-25: N/A: Not a trading day (weekend or holiday)\n2026-10-24: N/A: Not a trading day (weekend or holiday)\n2026-10-23: 64.06712880584918\n2026-10-22: 62.99464333754064\n2026-10-21: 65.30740549883164\n2026-10-20: 70.64797285713612\n"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for SBSP3.SA\n# Point-in-time as of: 2026-10-29\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-10-29 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for SBSP3.SA\n# Point-in-time as of: 2026-10-29\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for SBSP3.SA\n# Point-in-time as of: 2026-10-29\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for SBSP3.SA\n# Point-in-time as of: 2026-10-29\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged SBSP3.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 826,
+        "head": "## Global Market News, from 2026-10-22 to 2026-10-29:\n\n### IBM (IBM) Debuts AI Agent Security Controls For Hybrid Cloud (source: Simply Wall St.)\nLink: https://finance.yahoo.com/technology/ai/articles/ibm-ibm-debuts-ai-agent-221557150.html\n\n### What Needs To Be True To Buy Accenture Stock Now? (source: Trefis)\nLink: https://finance.yahoo.com/markets/stocks/articles/needs-true-buy-accenture-stock-2"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for SBSP3.SA\n# Point-in-time as of: 2026-10-29\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-10-29."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "BBDC4.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1374,
+        "head": "# Stock data for BBDC4.SA from 2026-09-29 to 2026-10-29\n# Total records: 22\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-09-29,17.3188,17.4661,17.1812,17.4661,41812200,0.0,0.0\n2026-09-30,17.8296,18.2127,17.6528,18.1832,60176500,0.0,0.0\n2026-10-01,17.8296,18.3895,17.6528,18.2029,96438800,0.0,0.0\n2026-10-02,18.6247,18.9394,17.8872,18.9099,109085500,0.018975,0.0\n2026-10-05,20.4144,21."
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1445,
+        "head": "## rsi values from 2026-09-29 to 2026-10-29:\n\n2026-10-29: 24.044526674397964\n2026-10-28: 25.519503313253782\n2026-10-27: 28.83621515262774\n2026-10-26: 29.584292055301916\n2026-10-25: N/A: Not a trading day (weekend or holiday)\n2026-10-24: N/A: Not a trading day (weekend or holiday)\n2026-10-23: 57.331064628328136\n2026-10-22: 56.03155030966905\n2026-10-21: 60.974744290556885\n2026-10-20: 61.325247559036"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for BBDC4.SA\n# Point-in-time as of: 2026-10-29\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-10-29 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for BBDC4.SA\n# Point-in-time as of: 2026-10-29\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for BBDC4.SA\n# Point-in-time as of: 2026-10-29\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for BBDC4.SA\n# Point-in-time as of: 2026-10-29\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged BBDC4.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 826,
+        "head": "## Global Market News, from 2026-10-22 to 2026-10-29:\n\n### IBM (IBM) Debuts AI Agent Security Controls For Hybrid Cloud (source: Simply Wall St.)\nLink: https://finance.yahoo.com/technology/ai/articles/ibm-ibm-debuts-ai-agent-221557150.html\n\n### What Needs To Be True To Buy Accenture Stock Now? (source: Trefis)\nLink: https://finance.yahoo.com/markets/stocks/articles/needs-true-buy-accenture-stock-2"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for BBDC4.SA\n# Point-in-time as of: 2026-10-29\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-10-29."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "B3SA3.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1280,
+        "head": "# Stock data for B3SA3.SA from 2026-09-29 to 2026-10-29\n# Total records: 22\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-09-29,17.69,18.05,17.53,17.90,56307100,0.0,0.0\n2026-09-30,18.42,18.60,18.09,18.34,39435800,0.0,0.0\n2026-10-01,18.32,18.58,18.11,18.43,36039100,0.0,0.0\n2026-10-02,18.95,19.04,18.32,19.00,40016700,0.0,0.0\n2026-10-05,22.10,24.28,22.03,23.30,200158200,0.0,0.0\n2026-10"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1439,
+        "head": "## rsi values from 2026-09-29 to 2026-10-29:\n\n2026-10-29: 28.897385857570086\n2026-10-28: 30.008492325970572\n2026-10-27: 31.64564380937319\n2026-10-26: 29.99736816318581\n2026-10-25: N/A: Not a trading day (weekend or holiday)\n2026-10-24: N/A: Not a trading day (weekend or holiday)\n2026-10-23: 71.79383203057955\n2026-10-22: 69.98329676486523\n2026-10-21: 72.8039338848101\n2026-10-20: 74.96199148609509\n2"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for B3SA3.SA\n# Point-in-time as of: 2026-10-29\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-10-29 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for B3SA3.SA\n# Point-in-time as of: 2026-10-29\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for B3SA3.SA\n# Point-in-time as of: 2026-10-29\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for B3SA3.SA\n# Point-in-time as of: 2026-10-29\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-10-29. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged B3SA3.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 826,
+        "head": "## Global Market News, from 2026-10-22 to 2026-10-29:\n\n### IBM (IBM) Debuts AI Agent Security Controls For Hybrid Cloud (source: Simply Wall St.)\nLink: https://finance.yahoo.com/technology/ai/articles/ibm-ibm-debuts-ai-agent-221557150.html\n\n### What Needs To Be True To Buy Accenture Stock Now? (source: Trefis)\nLink: https://finance.yahoo.com/markets/stocks/articles/needs-true-buy-accenture-stock-2"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for B3SA3.SA\n# Point-in-time as of: 2026-10-29\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-10-29."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    }
+  }
+}

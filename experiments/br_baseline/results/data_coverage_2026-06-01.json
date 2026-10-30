@@ -1,0 +1,265 @@
+{
+  "date": "2026-06-01",
+  "results": {
+    "ITUB4.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1399,
+        "head": "# Stock data for ITUB4.SA from 2026-05-02 to 2026-06-01\n# Total records: 21\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-05-04,42.6317,42.7701,41.7812,41.9295,25336300,0.018182,0.0\n2026-05-05,42.0284,42.2262,41.6526,41.9889,29386700,0.0,0.0\n2026-05-06,42.7602,42.8097,41.0791,41.3164,38718400,0.0,0.0\n2026-05-07,41.3263,41.4054,40.0704,40.3374,36335300,0.0,0.0\n2026-05-08,40.7033,41.0"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1473,
+        "head": "## rsi values from 2026-05-02 to 2026-06-01:\n\n2026-06-01: 38.183171073249305\n2026-05-31: N/A: Not a trading day (weekend or holiday)\n2026-05-30: N/A: Not a trading day (weekend or holiday)\n2026-05-29: 41.983455924945524\n2026-05-28: 41.657703193903544\n2026-05-27: 43.470742244815405\n2026-05-26: 41.55156008477315\n2026-05-25: 42.904122307975435\n2026-05-24: N/A: Not a trading day (weekend or holiday)\n2"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for ITUB4.SA\n# Point-in-time as of: 2026-06-01\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-06-01 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for ITUB4.SA\n# Point-in-time as of: 2026-06-01\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for ITUB4.SA\n# Point-in-time as of: 2026-06-01\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for ITUB4.SA\n# Point-in-time as of: 2026-06-01\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged ITUB4.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 137,
+        "head": "<Yahoo Finance global news unavailable for 2026-05-25..2026-06-01: it only serves recent items, so this is not an absence of market news>"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for ITUB4.SA\n# Point-in-time as of: 2026-06-01\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-06-01."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "PSSA3.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1361,
+        "head": "# Stock data for PSSA3.SA from 2026-05-02 to 2026-06-01\n# Total records: 21\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-05-04,49.051,49.1881,48.1007,48.3946,1011600,0.0,0.0\n2026-05-05,48.3946,48.8452,48.1007,48.1791,1174300,0.0,0.0\n2026-05-06,48.3554,49.0118,48.1497,48.6003,802000,0.0,0.0\n2026-05-07,48.8844,50.3735,48.3652,49.2763,3299500,0.0,0.0\n2026-05-08,49.5702,51.167,49.5702,"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1468,
+        "head": "## rsi values from 2026-05-02 to 2026-06-01:\n\n2026-06-01: 41.12542120279545\n2026-05-31: N/A: Not a trading day (weekend or holiday)\n2026-05-30: N/A: Not a trading day (weekend or holiday)\n2026-05-29: 42.74510589602121\n2026-05-28: 42.541735608402256\n2026-05-27: 43.79347775760063\n2026-05-26: 45.46567822882363\n2026-05-25: 47.13698440501295\n2026-05-24: N/A: Not a trading day (weekend or holiday)\n2026-"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for PSSA3.SA\n# Point-in-time as of: 2026-06-01\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-06-01 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for PSSA3.SA\n# Point-in-time as of: 2026-06-01\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for PSSA3.SA\n# Point-in-time as of: 2026-06-01\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for PSSA3.SA\n# Point-in-time as of: 2026-06-01\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged PSSA3.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 137,
+        "head": "<Yahoo Finance global news unavailable for 2026-05-25..2026-06-01: it only serves recent items, so this is not an absence of market news>"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for PSSA3.SA\n# Point-in-time as of: 2026-06-01\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-06-01."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "SBSP3.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1222,
+        "head": "# Stock data for SBSP3.SA from 2026-05-02 to 2026-06-01\n# Total records: 21\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-05-04,33.18,33.64,32.67,32.84,14908400,0.0,0.0\n2026-05-05,32.53,33.37,32.35,33.29,12156900,0.0,0.0\n2026-05-06,33.54,33.70,32.32,32.87,16700300,0.0,0.0\n2026-05-07,32.36,32.83,31.56,31.66,14443800,0.0,0.0\n2026-05-08,32.04,32.15,30.97,31.13,13556100,0.0,0.0\n2026-05-"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1472,
+        "head": "## rsi values from 2026-05-02 to 2026-06-01:\n\n2026-06-01: 28.68032613353229\n2026-05-31: N/A: Not a trading day (weekend or holiday)\n2026-05-30: N/A: Not a trading day (weekend or holiday)\n2026-05-29: 31.995750732010027\n2026-05-28: 33.109707349502216\n2026-05-27: 35.28236422608192\n2026-05-26: 36.448343090721295\n2026-05-25: 38.29498511431398\n2026-05-24: N/A: Not a trading day (weekend or holiday)\n202"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for SBSP3.SA\n# Point-in-time as of: 2026-06-01\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-06-01 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for SBSP3.SA\n# Point-in-time as of: 2026-06-01\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for SBSP3.SA\n# Point-in-time as of: 2026-06-01\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for SBSP3.SA\n# Point-in-time as of: 2026-06-01\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged SBSP3.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 137,
+        "head": "<Yahoo Finance global news unavailable for 2026-05-25..2026-06-01: it only serves recent items, so this is not an absence of market news>"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for SBSP3.SA\n# Point-in-time as of: 2026-06-01\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-06-01."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "BBDC4.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1388,
+        "head": "# Stock data for BBDC4.SA from 2026-05-02 to 2026-06-01\n# Total records: 21\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-05-04,18.512,18.5791,18.0231,18.1285,27527900,0.0,0.0\n2026-05-05,18.2139,18.4346,18.1275,18.4154,23567700,0.018942,0.0\n2026-05-06,18.6841,18.8472,18.3578,18.4922,31056000,0.0,0.0\n2026-05-07,18.1371,18.1371,17.6765,17.7724,53319900,0.0,0.0\n2026-05-08,17.8684,18.06"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1470,
+        "head": "## rsi values from 2026-05-02 to 2026-06-01:\n\n2026-06-01: 37.23660395368496\n2026-05-31: N/A: Not a trading day (weekend or holiday)\n2026-05-30: N/A: Not a trading day (weekend or holiday)\n2026-05-29: 39.5599801588283\n2026-05-28: 41.992899451354496\n2026-05-27: 43.227268323583566\n2026-05-26: 40.634758235683925\n2026-05-25: 43.272364746732656\n2026-05-24: N/A: Not a trading day (weekend or holiday)\n202"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for BBDC4.SA\n# Point-in-time as of: 2026-06-01\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-06-01 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for BBDC4.SA\n# Point-in-time as of: 2026-06-01\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for BBDC4.SA\n# Point-in-time as of: 2026-06-01\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for BBDC4.SA\n# Point-in-time as of: 2026-06-01\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged BBDC4.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 137,
+        "head": "<Yahoo Finance global news unavailable for 2026-05-25..2026-06-01: it only serves recent items, so this is not an absence of market news>"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for BBDC4.SA\n# Point-in-time as of: 2026-06-01\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-06-01."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    },
+    "B3SA3.SA": {
+      "get_stock_data": {
+        "status": "OK",
+        "chars": 1383,
+        "head": "# Stock data for B3SA3.SA from 2026-05-02 to 2026-06-01\n# Total records: 21\n\nDate,Open,High,Low,Close,Volume,Dividends,Stock Splits\n2026-05-04,17.5073,17.7311,17.2543,17.3905,29385800,0.0,0.0\n2026-05-05,17.4392,17.5754,17.2543,17.5268,20019200,0.0,0.0\n2026-05-06,17.8771,18.0912,17.6435,17.8674,34599300,0.0,0.0\n2026-05-07,17.8187,17.9939,17.2348,17.3029,26262200,0.0,0.0\n2026-05-08,17.7214,17.8674,1"
+      },
+      "get_indicators[rsi]": {
+        "status": "OK",
+        "chars": 1468,
+        "head": "## rsi values from 2026-05-02 to 2026-06-01:\n\n2026-06-01: 38.75895953786952\n2026-05-31: N/A: Not a trading day (weekend or holiday)\n2026-05-30: N/A: Not a trading day (weekend or holiday)\n2026-05-29: 41.01391449808628\n2026-05-28: 41.01391449808627\n2026-05-27: 40.77622515818008\n2026-05-26: 44.615652714024634\n2026-05-25: 47.50504686028004\n2026-05-24: N/A: Not a trading day (weekend or holiday)\n2026-"
+      },
+      "get_fundamentals": {
+        "status": "WITHHELD",
+        "chars": 585,
+        "head": "# Company Fundamentals for B3SA3.SA\n# Point-in-time as of: 2026-06-01\n\nProfile fundamentals are withheld for this date. This vendor serves only present-day values with no historical vintage: market cap, valuation multiples, the 52-week range and TTM income move with today's quote, and even the name, sector and industry reflect today rather than 2026-06-01 (companies rename and get reclassified). S"
+      },
+      "get_balance_sheet": {
+        "status": "WITHHELD",
+        "chars": 287,
+        "head": "# Balance Sheet for B3SA3.SA\n# Point-in-time as of: 2026-06-01\n\nBalance Sheet data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_income_statement": {
+        "status": "WITHHELD",
+        "chars": 293,
+        "head": "# Income Statement for B3SA3.SA\n# Point-in-time as of: 2026-06-01\n\nIncome Statement data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_cashflow": {
+        "status": "WITHHELD",
+        "chars": 279,
+        "head": "# Cash Flow for B3SA3.SA\n# Point-in-time as of: 2026-06-01\n\nCash Flow data is withheld for this date. This vendor dates a statement by the period it covers and reports no filing date, so it cannot show which figures were public on 2026-06-01. SEC EDGAR serves US filers as filed."
+      },
+      "get_news": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 235,
+        "head": "DATA_UNAVAILABLE: no configured vendor could serve get_news right now (Yahoo Finance has no news articles tagged B3SA3.SA). This says nothing about the instrument; report the data as unavailable and do not estimate or fabricate values."
+      },
+      "get_global_news": {
+        "status": "OK",
+        "chars": 137,
+        "head": "<Yahoo Finance global news unavailable for 2026-05-25..2026-06-01: it only serves recent items, so this is not an absence of market news>"
+      },
+      "get_insider_transactions": {
+        "status": "WITHHELD",
+        "chars": 251,
+        "head": "# Insider Transactions for B3SA3.SA\n# Point-in-time as of: 2026-06-01\n\nInsider transactions are withheld for this date. This vendor dates a trade by when it happened and reports no filing date, so it cannot show which trades were public on 2026-06-01."
+      },
+      "get_macro_indicators[selic]": {
+        "status": "DATA_UNAVAILABLE",
+        "chars": 223,
+        "head": "DATA_UNAVAILABLE: optional macro_data could not be retrieved (FRED_API_KEY environment variable is not set. Get a free key at https://fred.stlouisfed.org/docs/api/api_key.html.). Proceed without it; do not fabricate values."
+      }
+    }
+  }
+}

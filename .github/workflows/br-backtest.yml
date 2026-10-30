@@ -1,0 +1,80 @@
+name: B3 backtest (LLM)
+
+# Runs `tradingagents backtest` on B3 tickers and places the result against the
+# rule baselines on the same cells. Manual only: every cell calls a paid LLM API.
+# Needs the provider's key as a repository secret (e.g. OPENAI_API_KEY or
+# ANTHROPIC_API_KEY); nothing runs on push or pull request.
+
+on:
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: "Comma-separated tickers"
+        default: "ITUB4.SA,PSSA3.SA,SBSP3.SA,BBDC4.SA,B3SA3.SA"
+      start:
+        description: "First analysis date (YYYY-MM-DD)"
+        default: "2026-01-05"
+      end:
+        description: "Last analysis date (YYYY-MM-DD)"
+        default: "2026-10-23"
+      every:
+        description: "Days between analysis dates"
+        default: "28"
+      analysts:
+        description: "Analysts to run"
+        default: "market"
+      provider:
+        description: "LLM provider (openai, anthropic, google, ...)"
+        default: "openai"
+      deep_model:
+        description: "Deep-thinking model id"
+        required: true
+      quick_model:
+        description: "Quick-thinking model id"
+        required: true
+      run_id:
+        description: "Run id (reuse to resume a sweep)"
+        default: "b3-llm"
+
+permissions:
+  contents: read
+
+jobs:
+  backtest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    env:
+      TRADINGAGENTS_LLM_PROVIDER: ${{ inputs.provider }}
+      TRADINGAGENTS_DEEP_THINK_LLM: ${{ inputs.deep_model }}
+      TRADINGAGENTS_QUICK_THINK_LLM: ${{ inputs.quick_model }}
+      TRADINGAGENTS_RESULTS_DIR: ${{ github.workspace }}/out/results
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+      FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+      - run: pip install -e .
+      - name: Backtest
+        run: |
+          mkdir -p out
+          tradingagents backtest "${{ inputs.tickers }}" --start "${{ inputs.start }}" \
+            --end "${{ inputs.end }}" --every "${{ inputs.every }}" \
+            --analysts "${{ inputs.analysts }}" --run-id "${{ inputs.run_id }}" 2>&1 | tee out/backtest.log
+      - name: Baselines on the same grid
+        if: always()
+        run: |
+          python experiments/br_baseline/baselines.py --out out/baselines \
+            --tickers "${{ inputs.tickers }}" --start "${{ inputs.start }}" --end "${{ inputs.end }}" \
+            --every "${{ inputs.every }}" --label grid 2>&1 | tee out/baselines.log
+          python experiments/br_baseline/compare_run.py \
+            "out/results/backtest/${{ inputs.run_id }}/trading_memory.md" out/baselines/cells_grid.csv \
+            --out out/comparison.json || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: b3-backtest-${{ inputs.run_id }}
+          path: out/

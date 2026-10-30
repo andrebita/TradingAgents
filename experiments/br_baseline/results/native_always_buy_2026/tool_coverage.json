@@ -1,0 +1,14 @@
+{
+  "get_balance_sheet | withheld": 210,
+  "get_cashflow | withheld": 210,
+  "get_fundamentals | withheld": 210,
+  "get_global_news | unavailable": 210,
+  "get_income_statement | withheld": 210,
+  "get_indicators | ok": 210,
+  "get_insider_transactions | withheld": 210,
+  "get_macro_indicators | DATA_UNAVAILABLE": 210,
+  "get_news | DATA_UNAVAILABLE": 210,
+  "get_prediction_markets | withheld": 210,
+  "get_stock_data | ok": 210,
+  "get_verified_market_snapshot | ok": 210
+}

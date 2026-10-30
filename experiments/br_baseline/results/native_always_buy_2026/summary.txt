@@ -1,0 +1,4 @@
+Resolved cells: 210 · pending: 0
+- Buy: n=210, called the direction 47%, mean alpha -0.07% vs the benchmark
+
+Alpha is measured over 5 trading days from the first close after each analysis date. One model sampling per cell, and text feeds are not archived, so these figures are indicative rather than repeatable.
