@@ -125,7 +125,21 @@ class TradingAgentsGraph:
         graph regardless of entry point.
         """
         identity = resolve_instrument_identity(ticker)
-        return build_instrument_context(ticker, asset_type, identity, trade_date)
+        context = build_instrument_context(ticker, asset_type, identity, trade_date)
+        return f"{context}\n\n{self.decision_horizon(ticker)}"
+
+    def decision_horizon(self, ticker: str) -> str:
+        """The horizon a decision is judged on, so every agent frames its call for it.
+
+        Settlement scores a decision on its return against the regional benchmark
+        over ``holding_period_days`` sessions; without saying so, each agent picks
+        its own horizon and a short-dated call reads like a long-term thesis.
+        """
+        days = self.config.get("holding_period_days", 5)
+        benchmark = settlement.resolve_benchmark(ticker, self.config)
+        return (f"Decision horizon: the call is judged on `{ticker}`'s return relative to {benchmark} "
+                f"over the {days} trading days after the first close following the analysis date "
+                f"(about {max(1, round(days / 5))} week(s)). Frame the analysis and the call for that horizon.")
 
     def _memory_as_of(self, trade_date) -> str | None:
         """Point-in-time cutoff for past-context lessons (#1251).

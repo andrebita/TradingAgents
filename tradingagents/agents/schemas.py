@@ -258,11 +258,31 @@ class PortfolioDecision(BaseModel):
         default=None,
         description="Optional recommended holding period, e.g. '3-6 months'.",
     )
+    probability_outperform: float | None = Field(
+        default=None,
+        description=(
+            "Your probability, from 0 to 100, that the instrument's return beats its "
+            "benchmark over the decision horizon stated in the context. Give it for "
+            "every rating, Hold included: 50 means no edge either way."
+        ),
+    )
 
     @field_validator("price_target", mode="before")
     @classmethod
     def _nullish_float_to_none(cls, v):
         return _coerce_optional_float(v)
+
+    @field_validator("probability_outperform", mode="before")
+    @classmethod
+    def _as_percent(cls, v):
+        if isinstance(v, str):
+            v = v.strip().rstrip("%")
+        value = _coerce_optional_float(v)
+        if value is None:
+            return None
+        # A fraction (0.58) and a percentage (58) both read as 58%; 1 reads as 1%.
+        value = round(value * 100, 2) if 0 < value < 1 else value
+        return value if 0 <= value <= 100 else None
 
 
 def render_pm_decision(decision: PortfolioDecision) -> str:
@@ -285,6 +305,9 @@ def render_pm_decision(decision: PortfolioDecision) -> str:
     target = decision.price_target if decision.price_target is not None else "not provided"
     parts.extend(["", f"**Price Target**: {target}"])
     parts.extend(["", f"**Time Horizon**: {decision.time_horizon or 'not provided'}"])
+    probability = decision.probability_outperform
+    parts.extend(["", f"**Probability of beating the benchmark**: "
+                      f"{f'{probability:.0f}%' if probability is not None else 'not provided'}"])
     return "\n".join(parts)
 
 

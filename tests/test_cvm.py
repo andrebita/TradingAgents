@@ -118,3 +118,65 @@ def test_the_default_news_chain_passes_other_tickers_to_yahoo():
     config_module._config = copy.deepcopy(default_config.DEFAULT_CONFIG)
     with mock.patch.dict(router.VENDOR_METHODS["get_news"], {"yfinance": lambda *a, **k: "YAHOO"}):
         assert router.route_to_vendor("get_news", "AAPL", "2026-08-01", "2026-08-10") == "YAHOO"
+
+
+STMT_HEADER = ("CNPJ_CIA;DT_REFER;VERSAO;DENOM_CIA;CD_CVM;GRUPO_DFP;MOEDA;ESCALA_MOEDA;ORDEM_EXERC;"
+               "DT_INI_EXERC;DT_FIM_EXERC;CD_CONTA;DS_CONTA;VL_CONTA;ST_CONTA_FIXA")
+
+
+def _dre(refer, version, ini, value, code="3.11", name="Lucro do Período"):
+    return f"{CNPJ};{refer};{version};ITAU;19348;G;REAL;MIL;ÚLTIMO;{ini};{refer};{code};{name};{value};S"
+
+
+def _statements_zip(path, kind, year, index_rows, dre_rows):
+    buffer = io.BytesIO()
+    with zipfile.ZipFile(buffer, "w") as archive:
+        archive.writestr(f"{kind}_cia_aberta_{year}.csv", "\n".join(
+            ["CNPJ_CIA;DT_REFER;VERSAO;DENOM_CIA;CD_CVM;CATEG_DOC;ID_DOC;DT_RECEB;LINK_DOC", *index_rows]
+        ).encode("latin-1"))
+        archive.writestr(f"{kind}_cia_aberta_DRE_con_{year}.csv",
+                         "\n".join([STMT_HEADER, *dre_rows]).encode("latin-1"))
+    path.write_bytes(buffer.getvalue())
+
+
+@pytest.fixture
+def statements(cache):
+    folder = cache / "cvm"
+    _statements_zip(folder / "itr_cia_aberta_2026.zip", "itr", 2026, [
+        f"{CNPJ};2026-03-31;1;ITAU;19348;ITR;1;2026-05-05;x",
+        # Q2 first delivered 4 Aug, restated 20 Aug: CVM keeps only version 2.
+        f"{CNPJ};2026-06-30;1;ITAU;19348;ITR;2;2026-08-04;x",
+        f"{CNPJ};2026-06-30;2;ITAU;19348;ITR;3;2026-08-20;x",
+    ], [
+        _dre("2026-03-31", "1", "2026-01-01", "11875000"),
+        _dre("2026-06-30", "2", "2026-04-01", "12324000"),
+        _dre("2026-06-30", "2", "2026-01-01", "24199000"),   # year to date: not the quarter
+    ])
+    for year in (2023, 2024, 2025):
+        _statements_zip(folder / f"dfp_cia_aberta_{year}.zip", "dfp", year, [
+            f"{CNPJ};{year}-12-31;1;ITAU;19348;DFP;9;{year + 1}-02-10;x",
+        ], [_dre(f"{year}-12-31", "1", f"{year}-01-01", "45849000")])
+    for name in ("itr_cia_aberta_2025.zip", "dfp_cia_aberta_2026.zip"):
+        _statements_zip(folder / name, name[:3], int(name[-8:-4]), [], [])
+    return cache
+
+
+@pytest.mark.unit
+def test_statements_serve_the_quarter_on_file_in_r_millions(statements):
+    out = cvm.get_income_statement("ITUB4.SA", "quarterly", "2026-08-30")
+    assert "2026-01-01..2026-03-31" in out and "11,875.0" in out
+    assert "2025-01-01..2025-12-31" in out and "45,849.0" in out
+
+
+@pytest.mark.unit
+def test_a_period_restated_after_the_run_date_is_withheld(statements):
+    before = cvm.get_income_statement("ITUB4.SA", "quarterly", "2026-08-10")
+    assert "12,324.0" not in before and "Withheld: 2026-06-30" in before
+    after = cvm.get_income_statement("ITUB4.SA", "quarterly", "2026-08-30")
+    assert "2026-04-01..2026-06-30" in after and "12,324.0" in after and "24,199.0" not in after
+
+
+@pytest.mark.unit
+def test_a_period_not_yet_filed_is_not_served(statements):
+    out = cvm.get_income_statement("ITUB4.SA", "quarterly", "2026-05-01")
+    assert "2026-03-31" not in out and "2025-01-01..2025-12-31" in out

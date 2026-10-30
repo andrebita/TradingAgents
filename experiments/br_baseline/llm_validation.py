@@ -16,6 +16,8 @@ Usage (Anthropic; needs ANTHROPIC_API_KEY, or TRADINGAGENTS_CLAUDE_KEY in cloud 
     python experiments/br_baseline/llm_validation.py --out experiments/br_baseline/results/llm_validation \
         --run-id claude_validation --tickers ITUB4.SA,PSSA3.SA,SBSP3.SA,BBDC4.SA,B3SA3.SA \
         --start 2026-09-14 --end 2026-09-21 --every 7
+    # Longer horizon: --holding 20 judges each call over 20 trading days (~1 month);
+    # the agents are told the horizon, and baselines.py takes the same --holding.
 """
 
 from __future__ import annotations
@@ -98,6 +100,7 @@ def main():
     p.add_argument("--deep", default="claude-sonnet-5-5")
     p.add_argument("--effort", default="low", help="anthropic_effort / openai_reasoning_effort / google_thinking_level")
     p.add_argument("--budget-usd", type=float, default=3.0)
+    p.add_argument("--holding", type=int, default=5, help="trading days a decision is judged over")
     args = p.parse_args()
 
     key = {"anthropic": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY", "google": "GOOGLE_API_KEY"}.get(args.provider)
@@ -115,7 +118,7 @@ def main():
     config = copy.deepcopy(DEFAULT_CONFIG)
     config.update(results_dir=str(out / "results"), data_cache_dir=str(out / "cache"),
                   llm_provider=args.provider, quick_think_llm=args.quick, deep_think_llm=args.deep,
-                  checkpoint_enabled=False)
+                  checkpoint_enabled=False, holding_period_days=args.holding)
     effort_key = {"anthropic": "anthropic_effort", "openai": "openai_reasoning_effort",
                   "chatgpt": "openai_reasoning_effort", "google": "google_thinking_level"}[args.provider]
     config[effort_key] = args.effort
@@ -144,7 +147,7 @@ def main():
 
     log = out / "results" / "backtest" / args.run_id / "trading_memory.md"
     report = {"run_id": args.run_id, "provider": args.provider, "quick": args.quick, "deep": args.deep,
-              "effort": args.effort, "analysts": args.analysts, "tickers": tickers, "dates": dates,
+              "effort": args.effort, "analysts": args.analysts, "holding": args.holding, "tickers": tickers, "dates": dates,
               "budget_usd": args.budget_usd, "stopped": stopped, "usage": usage.usage,
               "cost_usd_this_invocation": round(usage.cost(), 4)}
     if result is not None:

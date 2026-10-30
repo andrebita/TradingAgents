@@ -158,9 +158,9 @@ def build_default_config() -> dict:
         "data_vendors": {
             "core_stock_apis": "yfinance",       # Options: alpha_vantage, yfinance
             "technical_indicators": "yfinance",  # Options: alpha_vantage, yfinance
-            # Statements come from SEC EDGAR as filed (US filers), then Yahoo; the
-        # overview and insider tools, which SEC EDGAR does not serve, from Yahoo.
-        "fundamental_data": "sec_edgar,yfinance",  # Options: sec_edgar, alpha_vantage, yfinance
+            # Statements come as filed from CVM (B3 issuers) or SEC EDGAR (US filers),
+        # then Yahoo; the overview and insider tools, which neither serves, from Yahoo.
+        "fundamental_data": "cvm,sec_edgar,yfinance",  # Options: cvm, sec_edgar, alpha_vantage, yfinance
             # CVM serves B3 (.SA) companies' filings and passes other tickers on to Yahoo.
             "news_data": "cvm,yfinance",         # Options: cvm, alpha_vantage, yfinance
             # Banco Central serves Brazilian aliases (selic, ipca, focus_ipca, ...)

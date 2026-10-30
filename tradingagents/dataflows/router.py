@@ -18,7 +18,12 @@ from tradingagents.dataflows.vendors.alpha_vantage import (
     get_stock as get_alpha_vantage_stock,
 )
 from tradingagents.dataflows.vendors.bcb import get_macro_data as get_bcb_macro_data
-from tradingagents.dataflows.vendors.cvm import get_news as get_cvm_news
+from tradingagents.dataflows.vendors.cvm import (
+    get_balance_sheet as get_cvm_balance_sheet,
+    get_cashflow as get_cvm_cashflow,
+    get_income_statement as get_cvm_income_statement,
+    get_news as get_cvm_news,
+)
 from tradingagents.dataflows.vendors.fred import get_macro_data as get_fred_macro_data
 from tradingagents.dataflows.vendors.polymarket import (
     get_prediction_markets as get_polymarket_prediction_markets,
@@ -113,16 +118,19 @@ VENDOR_METHODS = {
         "yfinance": get_yfinance_fundamentals,
     },
     "get_balance_sheet": {
+        "cvm": get_cvm_balance_sheet,
         "alpha_vantage": get_alpha_vantage_balance_sheet,
         "sec_edgar": get_sec_edgar_balance_sheet,
         "yfinance": get_yfinance_balance_sheet,
     },
     "get_cashflow": {
+        "cvm": get_cvm_cashflow,
         "alpha_vantage": get_alpha_vantage_cashflow,
         "sec_edgar": get_sec_edgar_cashflow,
         "yfinance": get_yfinance_cashflow,
     },
     "get_income_statement": {
+        "cvm": get_cvm_income_statement,
         "alpha_vantage": get_alpha_vantage_income_statement,
         "sec_edgar": get_sec_edgar_income_statement,
         "yfinance": get_yfinance_income_statement,

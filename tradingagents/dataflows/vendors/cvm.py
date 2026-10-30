@@ -215,3 +215,177 @@ def get_news(ticker: str, start_date: str, end_date: str) -> str:
         body += (f"\nMost recent earlier filings (up to {_EARLIER_DAYS} days before the window):\n"
                  + _listing(earlier, _EARLIER_MAX))
     return header + body
+
+
+# --- Financial statements (DFP annual, ITR quarterly) ---------------------------------
+
+_ITR_URL = _BASE + "/ITR/DADOS/itr_cia_aberta_{year}.zip"
+_DFP_URL = _BASE + "/DFP/DADOS/dfp_cia_aberta_{year}.zip"
+
+# Statement files per kind; cash flow comes by the indirect method when filed so.
+_STATEMENTS = {
+    "balance_sheet": ("Balance Sheet", ("BPA", "BPP")),
+    "income_statement": ("Income Statement", ("DRE",)),
+    "cashflow": ("Cash Flow", ("DFC_MI", "DFC_MD")),
+}
+_PERIODS = {"quarterly": 4, "annual": 3}
+
+
+def _depth_ok(code: str) -> bool:
+    """Top two levels of the chart of accounts, plus basic earnings per share by class."""
+    return (code.count(".") <= 1 and not code.startswith("3.99")) or code.startswith("3.99.01.")
+
+
+@functools.lru_cache(maxsize=64)
+def _statement_rows(path: str, mtime: float, member: str, cnpj: str) -> tuple:
+    """``(dt_refer, versao, escala, dt_ini, dt_fim, cd_conta, ds_conta, vl_conta)`` rows of
+    one issuer's current-period accounts in one statement file; empty if the file lacks it."""
+    with zipfile.ZipFile(path) as archive:
+        if member not in archive.namelist():
+            return ()
+        with archive.open(member) as raw:
+            reader = csv.reader(io.TextIOWrapper(raw, encoding="latin-1"), delimiter=";")
+            head = {name: i for i, name in enumerate(next(reader))}
+            out = []
+            for row in reader:
+                if row[head["CNPJ_CIA"]] != cnpj or not row[head["ORDEM_EXERC"]].startswith("Ú"):
+                    continue
+                code = row[head["CD_CONTA"]]
+                if not _depth_ok(code):
+                    continue
+                out.append((row[head["DT_REFER"]], row[head["VERSAO"]], row[head["ESCALA_MOEDA"]],
+                            row[head["DT_INI_EXERC"]] if "DT_INI_EXERC" in head else "",
+                            row[head["DT_FIM_EXERC"]], code, row[head["DS_CONTA"]], row[head["VL_CONTA"]]))
+    return tuple(out)
+
+
+def _documents(cnpj: str, as_of: date, freq: str) -> tuple[list[dict], list[str]]:
+    """The statement documents on file at ``as_of``, newest period first, and the
+    periods withheld because their only figures CVM keeps were delivered later.
+
+    CVM's statement files hold only the latest version of each document: when a
+    period was restated after ``as_of``, the figures investors saw on ``as_of``
+    are not available, so that period is withheld rather than served restated.
+    """
+    plan = [("dfp", y) for y in range(as_of.year - 3, as_of.year + 1)]
+    if freq == "quarterly":
+        plan += [("itr", y) for y in range(as_of.year - 1, as_of.year + 1)]
+    docs, withheld = [], []
+    for kind, year in plan:
+        url = (_DFP_URL if kind == "dfp" else _ITR_URL).format(year=year)
+        path = _cached_zip(url, f"{kind}_cia_aberta_{year}.zip", year)
+        if path is None:
+            continue
+        versions: dict[str, list[tuple[int, date]]] = {}
+        for row in _rows(path, f"{kind}_cia_aberta_{year}.csv"):
+            if row.get("CNPJ_CIA") != cnpj:
+                continue
+            try:
+                versions.setdefault(row["DT_REFER"], []).append(
+                    (int(row["VERSAO"]), date.fromisoformat(row["DT_RECEB"][:10])))
+            except (KeyError, ValueError):
+                continue
+        for refer, filed in versions.items():
+            version, received = max(filed)
+            if received <= as_of:
+                docs.append({"kind": kind, "refer": refer, "version": str(version),
+                             "received": received, "path": path, "year": year})
+            elif any(day <= as_of for _, day in filed):
+                withheld.append(refer)
+    docs.sort(key=lambda d: d["refer"], reverse=True)
+    return docs[:_PERIODS[freq]], sorted(set(withheld), reverse=True)
+
+
+def _values(doc: dict, cnpj: str, members: tuple[str, ...]) -> tuple[dict, str]:
+    """``{code: (label, value in R$, is_eps)}`` for one document, and its period label."""
+    kind, year, path = doc["kind"], doc["year"], doc["path"]
+    for basis in ("con", "ind"):
+        values, label = {}, ""
+        for member in members:
+            rows = [r for r in _statement_rows(str(path), path.stat().st_mtime,
+                                               f"{kind}_cia_aberta_{member}_{basis}_{year}.csv", cnpj)
+                    if r[0] == doc["refer"] and r[1] == doc["version"]]
+            if not rows:
+                continue
+            # Flows carry several spans (quarter and year to date): keep the shortest.
+            start = max(r[3] for r in rows)
+            for _refer, _, scale, ini, end, code, name, raw in rows:
+                if ini != start:
+                    continue
+                try:
+                    amount = float(raw)
+                except ValueError:
+                    continue
+                eps = code.startswith("3.99")
+                values[code] = (name, amount if eps else amount * (1000 if scale.upper() == "MIL" else 1), eps)
+                label = f"{ini}..{end}" if ini else end
+            if members[0].startswith("DFC") and values:
+                break  # one cash-flow method is the statement
+        if values:
+            return values, label + ("" if basis == "con" else " (individual)")
+    return {}, ""
+
+
+def _code_key(code: str) -> tuple:
+    return tuple(int(p) if p.isdigit() else 0 for p in code.split("."))
+
+
+def _statement(kind: str, ticker: str, freq: str, as_of_date: str | None) -> str:
+    code = b3_code(ticker)
+    if code is None:
+        raise NoMarketDataError(ticker, detail="CVM covers only B3-listed companies (.SA tickers)")
+    as_of_date = as_of_date or date.today().isoformat()
+    issuer = issuer_for(code, as_of_date)
+    if issuer is None:
+        raise NoMarketDataError(ticker, canonical=code, detail="no CVM-registered issuer trades under this code")
+    cnpj, name = issuer
+    title, members = _STATEMENTS[kind]
+    freq = freq if freq in _PERIODS else "quarterly"
+    docs, withheld = _documents(cnpj, datetime.strptime(as_of_date, "%Y-%m-%d").date(), freq)
+
+    columns = []
+    for doc in docs:
+        values, label = _values(doc, cnpj, members)
+        if values:
+            columns.append((doc, label, values))
+    if not columns:
+        raise NoMarketDataError(ticker, canonical=code, detail=f"no {title.lower()} filed with CVM by {as_of_date}")
+
+    header = (f"# {title} for {name} ({code}) as filed with CVM by {as_of_date}\n"
+              "Source: CVM open data (DFP annual, ITR quarterly). Each period is the version on file "
+              "on that date. Values in R$ millions, consolidated unless marked individual; earnings "
+              "per share in R$. Flows cover the period shown (ITR income: the quarter; ITR cash "
+              "flow: year to date). Account names are in Portuguese.\n")
+    filed = "; ".join(f"{d['refer']}: {d['kind'].upper()} v{d['version']} delivered {d['received']}"
+                      for d, _, _ in columns)
+    header += f"Filings: {filed}\n"
+    if withheld:
+        header += (f"Withheld: {', '.join(withheld)} — filed by then but later restated; CVM keeps only "
+                   "the restated figures, which were not public yet.\n")
+
+    codes = sorted({c for _, _, v in columns for c in v}, key=_code_key)
+    labels = {c: v[c][0] for _, _, v in reversed(columns) for c in v}
+    lines = ["| Account | " + " | ".join(label for _, label, _ in columns) + " |",
+             "| --- |" + " --- |" * len(columns)]
+    for c in codes:
+        cells = []
+        for _, _, v in columns:
+            if c not in v:
+                cells.append("")
+            else:
+                _, amount, eps = v[c]
+                cells.append(f"{amount:.4g}" if eps else f"{amount / 1e6:,.1f}")
+        lines.append(f"| {c} {labels[c]} | " + " | ".join(cells) + " |")
+    return header + "\n" + "\n".join(lines) + "\n"
+
+
+def get_balance_sheet(ticker: str, freq: str = "quarterly", as_of_date: str | None = None) -> str:
+    return _statement("balance_sheet", ticker, freq, as_of_date)
+
+
+def get_income_statement(ticker: str, freq: str = "quarterly", as_of_date: str | None = None) -> str:
+    return _statement("income_statement", ticker, freq, as_of_date)
+
+
+def get_cashflow(ticker: str, freq: str = "quarterly", as_of_date: str | None = None) -> str:
+    return _statement("cashflow", ticker, freq, as_of_date)

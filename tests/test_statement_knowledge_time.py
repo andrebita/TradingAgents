@@ -55,6 +55,8 @@ def test_statements_come_from_sec_edgar_first_by_default():
     served = []
     chain = {name: (lambda *a, _n=name, **k: served.append(_n) or f"{_n} statements")
              for name in router.VENDOR_METHODS["get_balance_sheet"]}
+    # CVM, first in the chain, serves B3 issuers only and passes a US ticker on.
+    chain["cvm"] = router.VENDOR_METHODS["get_balance_sheet"]["cvm"]
     with mock.patch.dict(router.VENDOR_METHODS, {"get_balance_sheet": chain}):
         router.route_to_vendor("get_balance_sheet", "AAPL", "quarterly", PAST)
     assert served == ["sec_edgar"]

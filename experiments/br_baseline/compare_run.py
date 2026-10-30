@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 
 import numpy as np
 import pandas as pd
@@ -33,6 +34,33 @@ def pct(text: str | None) -> float | None:
         return float((text or "").strip().rstrip("%")) / 100
     except ValueError:
         return None
+
+
+PROBABILITY = re.compile(r"\*\*Probability of beating the benchmark\*\*:\s*([0-9]+(?:\.[0-9]+)?)\s*%")
+
+
+def probability(decision: str) -> float | None:
+    """The Portfolio Manager's stated probability of beating the benchmark, 0-1."""
+    match = PROBABILITY.search(decision or "")
+    return float(match.group(1)) / 100 if match else None
+
+
+def probability_scores(probs: np.ndarray, alphas: np.ndarray) -> dict:
+    """How well a stated probability tracks the outcome, whatever the rating.
+
+    Brier: mean squared gap to the outcome (1 when the stock beat the
+    benchmark); always saying 50% scores 0.25. Hit: the side of 50% it leaned
+    to was right (50% exactly leans nowhere). Rank IC: Spearman correlation of
+    probability with alpha across cells.
+    """
+    won = (alphas > 0).astype(float)
+    lean = probs != 0.5
+    ranks = pd.Series(probs).rank().corr(pd.Series(alphas).rank())
+    return {"cells": int(len(probs)), "mean_probability": float(probs.mean()),
+            "brier": float(((probs - won) ** 2).mean()), "brier_always_50": 0.25,
+            "leaning_cells": int(lean.sum()),
+            "hit_rate_of_lean": float(((probs[lean] > 0.5) == (alphas[lean] > 0)).mean()) if lean.any() else None,
+            "rank_ic": None if np.isnan(ranks) else float(ranks)}
 
 
 def stats(dirs: np.ndarray, alphas: np.ndarray) -> dict:
@@ -53,7 +81,8 @@ def main():
 
     entries = TradingMemoryLog({"memory_log_path": args.log}).load_entries()
     run = pd.DataFrame([{"ticker": e["ticker"], "date": e["date"], "rating": e["rating"],
-                         "native_alpha": pct(e.get("alpha"))}
+                         "native_alpha": pct(e.get("alpha")),
+                         "probability": probability(e.get("decision", ""))}
                         for e in entries if not e["pending"] and e["rating"] in DIRECTION])
     cells = pd.read_csv(args.cells)
     both = run.merge(cells, on=["ticker", "date"], how="inner").dropna(subset=["native_alpha"])
@@ -75,11 +104,19 @@ def main():
         sub = both.dropna(subset=[col])
         report["baselines"][col[4:]] = stats(sub[col].to_numpy(dtype=int), sub["alpha"].to_numpy(dtype=float))
 
+    probs = both.dropna(subset=["probability"])
+    report["probability"] = (probability_scores(probs["probability"].to_numpy(dtype=float),
+                                                probs["native_alpha"].to_numpy(dtype=float))
+                             if len(probs) else "no decision states a probability")
+
     rng = np.random.default_rng(7)
     m = dirs != 0
     a = both["alpha"].to_numpy(dtype=float)[m]
-    hits = [float(((rng.choice([-1, 1], size=len(a)) * a) > 0).mean()) for _ in range(1000)]
-    report["random_band_hit_rate_95"] = [float(np.percentile(hits, 2.5)), float(np.percentile(hits, 97.5))]
+    if len(a):
+        hits = [float(((rng.choice([-1, 1], size=len(a)) * a) > 0).mean()) for _ in range(1000)]
+        report["random_band_hit_rate_95"] = [float(np.percentile(hits, 2.5)), float(np.percentile(hits, 97.5))]
+    else:
+        report["random_band_hit_rate_95"] = None  # every call was Hold: no direction to score
 
     print(json.dumps(report, indent=2))
     if args.out:
