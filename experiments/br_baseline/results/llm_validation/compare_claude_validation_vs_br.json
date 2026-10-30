@@ -1,0 +1,149 @@
+{
+ "claude_validation": {
+  "cells": {
+   "B3SA3.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "B3SA3.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "BBDC4.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "BBDC4.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "ITUB4.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "ITUB4.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "PSSA3.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "PSSA3.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "SBSP3.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "SBSP3.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 0,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   }
+  },
+  "ratings": {
+   "Hold": 10
+  }
+ },
+ "claude_validation_br": {
+  "cells": {
+   "B3SA3.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 3524,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "B3SA3.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 3655,
+    "cvm_mentions_news_report": 2,
+    "bcb_mentions_news_report": 0
+   },
+   "BBDC4.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 3514,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "BBDC4.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 3691,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "ITUB4.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 3306,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "ITUB4.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 3294,
+    "cvm_mentions_news_report": 1,
+    "bcb_mentions_news_report": 0
+   },
+   "PSSA3.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 3933,
+    "cvm_mentions_news_report": 1,
+    "bcb_mentions_news_report": 0
+   },
+   "PSSA3.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 3250,
+    "cvm_mentions_news_report": 0,
+    "bcb_mentions_news_report": 0
+   },
+   "SBSP3.SA 2026-09-14": {
+    "rating": "Hold",
+    "news_report_chars": 3897,
+    "cvm_mentions_news_report": 2,
+    "bcb_mentions_news_report": 0
+   },
+   "SBSP3.SA 2026-09-21": {
+    "rating": "Hold",
+    "news_report_chars": 3285,
+    "cvm_mentions_news_report": 1,
+    "bcb_mentions_news_report": 1
+   }
+  },
+  "ratings": {
+   "Hold": 10
+  }
+ },
+ "cost_usd_per_cell_br": {
+  "ITUB4.SA 2026-09-14": 0.087,
+  "ITUB4.SA 2026-09-21": 0.085,
+  "PSSA3.SA 2026-09-14": 0.089,
+  "PSSA3.SA 2026-09-21": 0.085,
+  "SBSP3.SA 2026-09-14": 0.096,
+  "SBSP3.SA 2026-09-21": 0.087,
+  "BBDC4.SA 2026-09-14": 0.089,
+  "BBDC4.SA 2026-09-21": 0.088,
+  "B3SA3.SA 2026-09-14": 0.092,
+  "B3SA3.SA 2026-09-21": 0.089
+ },
+ "note": "cost per cell derived from the progress log (spent-so-far deltas); first invocation of claude_validation_br died mid-cell (PSSA3 14/09) before writing its record, so claude_validation_br_invocations.jsonl holds only the resumed invocation (8 cells, US$ 0.7148); the first invocation's 2 cells cost ~US$ 0.172. CVM/BCB mentions in news reports are suggestions/unavailability notices: no CVM or BCB data vendor is configured in this branch."
+}
