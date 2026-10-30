@@ -203,6 +203,43 @@ Com o plano ChatGPT não há cobrança extra, mas cada célula faz ~12–15 cham
 contam no limite de uso do plano: cerca de 700–800 chamadas para 55 células e
 10–12 mil para 800 células.
 
+## Escolha de modelo (pesquisa de 30/10/2026)
+
+O critério principal é diferente para cada uso:
+
+- **Backtest histórico:** o que importa é a data de corte do treino. Um período antes
+  do corte não é teste limpo, porque o modelo pode lembrar os preços e as notícias
+  (Look-Ahead-Bench, arXiv 2601.13770; FinCAD, arXiv 2605.24564). Os dois níveis
+  (quick e deep) precisam ter corte anterior ao período testado. Deixe ~1 mês de folga.
+- **Uso diário e teste prospectivo:** o corte não importa. O que importa é a
+  qualidade da análise por real gasto.
+
+| modelo | Finance Agent v2.1 (Vals, 29/10/2026) | corte (fontes secundárias) | US$/M entrada/saída |
+|---|---|---|---|
+| Claude Opus 5.5 | 67,85% (1º) | jun/2026 | 4 / 20 |
+| Gemini 4 Argon | 67,66% | ? | 2/10 até 30/11, depois 4/20 |
+| Claude Sonnet 5.5 | 67,28% | jun/2026 | 2 / 10 |
+| Gemini 3.8 Flash | 65,76% | mar/2026 | 0,75 / 3,75 até 31/12 |
+| Claude Haiku 5.5 | 65,37% | jun/2026 | 0,10 / 0,50 |
+| GPT-6.1 Sol | 61,82% | ~abr/2026 (6 Sol) | 2 / 10 (6 Sol) |
+| GPT-6 Luna | 56,84% | mai/2026 | 0,10 / 0,50 |
+| Gemini 3.1 Pro / 3.1 Flash Lite | — | jan/2025 | 2 / 12 e 0,25 / 1,50 |
+
+O Finance Agent mede pesquisa em documentos financeiros, não previsão de retorno.
+Nenhum benchmark mostra que um LLM gera alfa.
+
+Recomendação:
+
+1. **Validação da infraestrutura (~50 células):** plano ChatGPT (`chatgpt`), sem custo extra.
+2. **Backtest retroativo com amostra suficiente:** `gemini-3.1-pro-preview` (deep) +
+   `gemini-3.1-flash-lite` (quick), `google_thinking_level=medium`. É a única combinação
+   com corte (jan/2025) que deixa ~20 meses limpos (mar/2025 a out/2026). São ~2.500
+   células possíveis em 29 ações, ~US$ 0,18 por célula.
+3. **Uso diário + teste prospectivo semanal:** `claude-haiku-5-5` (quick) +
+   `claude-sonnet-5-5` (deep), `anthropic_effort=high`. O repositório não envia
+   `effort` para Haiku, que fica no padrão `medium`. Custa ~US$ 0,14 por célula, o mesmo
+   que o padrão OpenAI, com nota de finanças bem maior. São ~R$ 95/mês para 29 ações por semana.
+
 ## Reprodução
 
 ```bash
