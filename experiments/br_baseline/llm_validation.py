@@ -8,7 +8,7 @@ Same ``run_backtest`` as the CLI, plus what a controlled first run needs:
   skips finished cells, settles them and goes on);
 * a ``summary.json`` with the cells, failures, score and cost per cell.
 
-Usage (Anthropic; needs ANTHROPIC_API_KEY in the environment):
+Usage (Anthropic; needs ANTHROPIC_API_KEY, or TRADINGAGENTS_CLAUDE_KEY in cloud sessions):
     # Phase A: one cell
     python experiments/br_baseline/llm_validation.py --out experiments/br_baseline/results/llm_validation \
         --run-id claude_validation --tickers ITUB4.SA --start 2026-09-14 --end 2026-09-14
@@ -101,8 +101,14 @@ def main():
     args = p.parse_args()
 
     key = {"anthropic": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY", "google": "GOOGLE_API_KEY"}.get(args.provider)
+    # Cloud sessions drop user-set ANTHROPIC_* variables (the host owns that
+    # provider), so the project's key can also come from TRADINGAGENTS_CLAUDE_KEY.
+    # It is set for this process only.
+    if args.provider == "anthropic" and not os.environ.get(key) and os.environ.get("TRADINGAGENTS_CLAUDE_KEY"):
+        os.environ[key] = os.environ["TRADINGAGENTS_CLAUDE_KEY"]
     if key and not os.environ.get(key):
-        raise SystemExit(f"{key} is not set: add the project's own key to the environment first")
+        raise SystemExit(f"{key} is not set: add the project's own key to the environment first"
+                         + (" (or TRADINGAGENTS_CLAUDE_KEY)" if args.provider == "anthropic" else ""))
 
     out = Path(args.out).resolve()
     out.mkdir(parents=True, exist_ok=True)
