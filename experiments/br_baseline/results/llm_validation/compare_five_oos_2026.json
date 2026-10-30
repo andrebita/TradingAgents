@@ -1,0 +1,58 @@
+{
+  "cells": 10,
+  "run_cells_not_in_grid": 0,
+  "ratings": {
+    "Hold": 10
+  },
+  "alpha_check_max_gap_pp": 0.04841534849124836,
+  "alpha_check_cells_over_0.1pp": 0,
+  "run": {
+    "directional": 0
+  },
+  "baselines": {
+    "always_long": {
+      "directional": 10,
+      "hit_rate": 0.6,
+      "mean_signed_alpha": 0.002738386877935539
+    },
+    "mom_20d": {
+      "directional": 10,
+      "hit_rate": 0.6,
+      "mean_signed_alpha": 0.002738386877935539
+    },
+    "mom_60d": {
+      "directional": 10,
+      "hit_rate": 0.6,
+      "mean_signed_alpha": 0.007861623529642203
+    },
+    "mom_12_1": {
+      "directional": 10,
+      "hit_rate": 0.7,
+      "mean_signed_alpha": 0.011553834820366437
+    },
+    "reversal_5d": {
+      "directional": 10,
+      "hit_rate": 0.2,
+      "mean_signed_alpha": -0.004369799533817031
+    },
+    "px_gt_sma50": {
+      "directional": 10,
+      "hit_rate": 0.7,
+      "mean_signed_alpha": 0.008069418518072313
+    },
+    "sma20_gt_sma50": {
+      "directional": 10,
+      "hit_rate": 0.5,
+      "mean_signed_alpha": 0.008134369370839301
+    },
+    "rsi14_revert": {
+      "directional": 1,
+      "hit_rate": 0.0,
+      "mean_signed_alpha": -0.0025158465150875164
+    }
+  },
+  "random_band_hit_rate_95": [
+    NaN,
+    NaN
+  ]
+}
