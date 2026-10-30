@@ -237,7 +237,10 @@ def get_macro_indicators(
         "'unemployment', 'fed_funds_rate', '10y_treasury', 'yield_curve', "
         "'real_gdp', 'vix', euro-area aliases such as 'ecb_deposit_rate', "
         "'euro_hicp', 'euro_core_hicp', 'euro_real_gdp', 'germany_10y', "
-        "'france_10y', 'eur_usd', or a raw FRED series ID such as 'CPIAUCSL'.",
+        "'france_10y', 'eur_usd', or a raw FRED series ID such as 'CPIAUCSL'. "
+        "For Brazil (Banco Central): 'selic', 'cdi', 'usd_brl', 'ipca', 'ipca_12m', "
+        "'igpm', 'ibc_br', 'unemployment_br', and Focus survey forecasts "
+        "'focus_ipca', 'focus_selic', 'focus_gdp', 'focus_usd_brl', 'focus_igpm'.",
     ],
     curr_date: Annotated[str, "Current date in yyyy-mm-dd format; the end of the window"],
     look_back_days: Annotated[
@@ -248,7 +251,8 @@ def get_macro_indicators(
     """
     Retrieve a macroeconomic indicator time series from FRED (Federal Reserve
     Economic Data): policy rates, Treasury yields, inflation, labor, and growth,
-    for the US and, through FRED's mirrored series, the euro area.
+    for the US and, through FRED's mirrored series, the euro area; or, for
+    Brazil, from Banco Central do Brasil (SGS series and Focus market forecasts).
     Returns the series title, units, frequency, the latest value, the change
     over the window, and a recent observation table. Uses the configured
     macro_data vendor.

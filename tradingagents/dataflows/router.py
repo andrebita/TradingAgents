@@ -17,6 +17,8 @@ from tradingagents.dataflows.vendors.alpha_vantage import (
     get_news as get_alpha_vantage_news,
     get_stock as get_alpha_vantage_stock,
 )
+from tradingagents.dataflows.vendors.bcb import get_macro_data as get_bcb_macro_data
+from tradingagents.dataflows.vendors.cvm import get_news as get_cvm_news
 from tradingagents.dataflows.vendors.fred import get_macro_data as get_fred_macro_data
 from tradingagents.dataflows.vendors.polymarket import (
     get_prediction_markets as get_polymarket_prediction_markets,
@@ -127,6 +129,7 @@ VENDOR_METHODS = {
     },
     # news_data
     "get_news": {
+        "cvm": get_cvm_news,
         "alpha_vantage": get_alpha_vantage_news,
         "yfinance": get_news_yfinance,
     },
@@ -140,6 +143,7 @@ VENDOR_METHODS = {
     },
     # macro_data
     "get_macro_indicators": {
+        "bcb": get_bcb_macro_data,
         "fred": get_fred_macro_data,
     },
     # prediction_markets
