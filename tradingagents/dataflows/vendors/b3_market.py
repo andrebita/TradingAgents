@@ -21,8 +21,9 @@ from tradingagents.dataflows.vendors import cvm
 
 logger = logging.getLogger(__name__)
 
-# A share or unit code: four letters and the class (PETR4, TAEE11).
-CODE = re.compile(r"^[A-Z]{4}(3|4|5|6|11)$")
+# A share or unit code: a letter, three letters or digits (B3SA3 has a digit in its root) and the class
+# (PETR4, TAEE11).
+CODE = re.compile(r"^[A-Z][A-Z0-9]{3}(3|4|5|6|11)$")
 # A one-day rise above 100% or fall beyond 90% in a large B3 stock is either a misadjusted
 # corporate action or a real event. When the price undoes it within ``REVERSAL_SESSIONS``
 # (back within 25% of where it was), it was a data error: both days' returns are set to

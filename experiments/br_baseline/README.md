@@ -1062,6 +1062,41 @@ Selic):
 não rende, e os três cenários saíram iguais. Os choques foram movidos para o mês 1. As probabilidades e as
 janelas não mudaram.
 
+## Achado com os arquivos COTAHIST da B3 (31/10/2026): o universo dos backtests estava incompleto
+
+O investidor baixou as séries históricas da B3 (COTAHIST, 2013 a 2026; hashes em `results/cotahist/`). Antes da
+disputa de seleção, conferi quantas das 50 empresas mais negociadas em cada data de decisão tinham dados no cache
+do Yahoo usado nos backtests (`cotahist/coverage.py`; resultado em `results/cotahist/coverage.txt`).
+
+| Data de decisão | Das 50 maiores, sem dados no Yahoo | Fatia do volume dessas 50 |
+|---|---|---|
+| jun/2014 | 24 | 38% |
+| jun/2016 | 21 | 36% |
+| jun/2018 | 19 | 22% |
+| jun/2020 | 19 | 32% |
+| jun/2022 | 16 | 20% |
+| jun/2024 | 14 | 20% |
+| dez/2025 | 4 | 9% |
+| jun/2026 | 4 | 9% |
+
+**Causas:**
+- **Empresas que saíram da bolsa:** Cielo, Fibria, BR Malls, Smiles, Cetip, Estácio, Sul América, Via Varejo e
+  outras.
+- **Tickers trocados**, com o Yahoo guardando a história só no código novo: Eletrobras (ELET3 → AXIA), Embraer
+  (EMBR3 → EMBJ3), CCR (CCRO3 → MOTV3), BRF e Marfrig (→ MBRF3), Natura.
+- **Classes extintas:** VALE5, SUZB5, CPLE6.
+- **Falhas de cadastro:**
+  - o padrão de ticker exigia quatro letras e deixava de fora o B3SA3;
+  - o FCA da CVM traz códigos inválidos para o BTG Pactual ("000000") e a CSN ("4030").
+
+**Consequência:** a seção "Dividendos entre as grandes" e o replay da rotina usaram um universo sem 20% a 40% do
+volume das 50 maiores na maior parte do período. O viés não tem sinal conhecido: ficaram de fora tanto empresas
+compradas com prêmio quanto quedas fortes. **Os números dessas seções passam a ser exploratórios**, não só pelo
+viés de sobrevivência já declarado.
+
+**Correção em produção:** o padrão de ticker aceita dígito na raiz (B3SA3). Os códigos inválidos do FCA ainda
+deixam BTG e CSN fora do universo da rotina ao vivo.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada

@@ -368,3 +368,11 @@ def test_the_routine_freezes_its_target_retries_pending_sales_and_leaves_funds_a
         [("OLDD3", 1000, "venda pendente")]
     assert {o.code for o in august.plan.orders if o.side == "compra"} <= {"AAAA3", "BBBB3"}
     assert "FUND11" not in {o.code for o in august.plan.orders}
+
+
+@pytest.mark.unit
+def test_a_ticker_with_a_digit_in_its_root_is_a_listed_share():
+    # B3 S.A. trades as B3SA3: the old four-letter pattern left it out of the universe.
+    from tradingagents.dataflows.vendors.b3_market import CODE
+    assert all(CODE.match(c) for c in ("B3SA3", "PETR4", "TAEE11", "BPAC11"))
+    assert not any(CODE.match(c) for c in ("000000", "4030", "ABCD12", "PETR"))
