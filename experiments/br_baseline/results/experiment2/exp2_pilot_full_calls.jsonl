@@ -1,0 +1,1087 @@
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2077, "output": 391, "cost_usd": 0.000403, "seconds": 2.13, "at": 1793409927.864218}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3098, "output": 348, "cost_usd": 0.000484, "seconds": 2.13, "at": 1793409927.8963342}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2080, "output": 406, "cost_usd": 0.000411, "seconds": 2.15, "at": 1793409927.9063869}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2077, "output": 445, "cost_usd": 0.00043, "seconds": 2.14, "at": 1793409927.9204824}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3095, "output": 340, "cost_usd": 0.00048, "seconds": 2.32, "at": 1793409928.0540938}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3095, "output": 419, "cost_usd": 0.000519, "seconds": 2.47, "at": 1793409928.2485108}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2922, "output": 731, "cost_usd": 0.000658, "seconds": 3.14, "at": 1793409928.9106128}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2919, "output": 917, "cost_usd": 0.00075, "seconds": 3.47, "at": 1793409929.2265062}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2919, "output": 909, "cost_usd": 0.000746, "seconds": 3.57, "at": 1793409929.3610861}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14509, "output": 1085, "cost_usd": 0.001993, "seconds": 3.76, "at": 1793409932.3684947}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9529, "output": 1073, "cost_usd": 0.001489, "seconds": 3.83, "at": 1793409932.7171385}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15241, "output": 1177, "cost_usd": 0.002113, "seconds": 4.24, "at": 1793409933.1752198}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6321, "output": 447, "cost_usd": 0.000856, "seconds": 2.27, "at": 1793409940.5307806}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6211, "output": 307, "cost_usd": 0.000775, "seconds": 2.05, "at": 1793409940.7796013}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5972, "output": 600, "cost_usd": 0.000897, "seconds": 2.68, "at": 1793409941.034139}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8929, "output": 2948, "cost_usd": 0.002367, "seconds": 14.98, "at": 1793409957.1561453}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8255, "output": 3342, "cost_usd": 0.002497, "seconds": 17.22, "at": 1793409958.028639}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9217, "output": 3421, "cost_usd": 0.002632, "seconds": 17.37, "at": 1793409958.7795212}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 20984, "output": 6146, "cost_usd": 0.005171, "seconds": 29.42, "at": 1793409964.9424748}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21340, "output": 7202, "cost_usd": 0.005735, "seconds": 33.56, "at": 1793409968.3729963}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 26774, "output": 7323, "cost_usd": 0.006339, "seconds": 33.98, "at": 1793409969.5922468}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5744, "output": 5119, "cost_usd": 0.003134, "seconds": 22.48, "at": 1793409976.9907274}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5197, "output": 5816, "cost_usd": 0.003428, "seconds": 24.96, "at": 1793409979.5073955}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5324, "output": 6709, "cost_usd": 0.003887, "seconds": 28.46, "at": 1793409982.973305}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11676, "output": 3108, "cost_usd": 0.002722, "seconds": 16.18, "at": 1793409993.1730983}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12166, "output": 3012, "cost_usd": 0.002723, "seconds": 16.82, "at": 1793409996.3257508}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12923, "output": 3388, "cost_usd": 0.002986, "seconds": 17.19, "at": 1793410000.1664095}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16733, "output": 7494, "cost_usd": 0.00542, "seconds": 38.16, "at": 1793410034.4823806}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17716, "output": 7287, "cost_usd": 0.005415, "seconds": 38.42, "at": 1793410038.5944998}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7007, "output": 991, "cost_usd": 0.023924, "seconds": 8.69, "at": 1793410043.1758533}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7455, "output": 789, "cost_usd": 0.0228, "seconds": 6.82, "at": 1793410045.419211}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16477, "output": 10814, "cost_usd": 0.007055, "seconds": 53.12, "at": 1793410046.2911525}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7324, "output": 403, "cost_usd": 0.000934, "seconds": 2.15, "at": 1793410047.575968}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6791, "output": 801, "cost_usd": 0.00108, "seconds": 4.43, "at": 1793410047.6074986}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7578, "output": 908, "cost_usd": 0.024236, "seconds": 7.88, "at": 1793410054.1733434}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6976, "output": 507, "cost_usd": 0.000951, "seconds": 3.0, "at": 1793410057.1787305}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12789, "output": 2208, "cost_usd": 0.002383, "seconds": 13.54, "at": 1793410061.1452942}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13572, "output": 4142, "cost_usd": 0.003428, "seconds": 22.42, "at": 1793410070.0019774}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12429, "output": 3013, "cost_usd": 0.002749, "seconds": 16.69, "at": 1793410073.8747642}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15151, "output": 4076, "cost_usd": 0.003553, "seconds": 22.63, "at": 1793410083.7718508}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 16950, "output": 4104, "cost_usd": 0.003747, "seconds": 21.23, "at": 1793410091.2289524}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15139, "output": 3682, "cost_usd": 0.003355, "seconds": 18.73, "at": 1793410092.6019788}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18453, "output": 3128, "cost_usd": 0.003409, "seconds": 16.99, "at": 1793410100.7642488}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7789, "output": 854, "cost_usd": 0.024118, "seconds": 6.13, "at": 1793410106.8952858}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3174, "output": 240, "cost_usd": 0.000437, "seconds": 1.21, "at": 1793410109.100171}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2156, "output": 329, "cost_usd": 0.00038, "seconds": 1.33, "at": 1793410109.214312}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2998, "output": 711, "cost_usd": 0.000655, "seconds": 2.74, "at": 1793410110.632876}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18705, "output": 3429, "cost_usd": 0.003585, "seconds": 19.01, "at": 1793410111.61181}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14420, "output": 1078, "cost_usd": 0.001981, "seconds": 3.64, "at": 1793410112.9423568}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 20578, "output": 4200, "cost_usd": 0.004158, "seconds": 21.84, "at": 1793410113.0661535}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7218, "output": 350, "cost_usd": 0.000897, "seconds": 1.96, "at": 1793410117.1483874}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8210, "output": 863, "cost_usd": 0.02505, "seconds": 6.91, "at": 1793410118.527034}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8650, "output": 988, "cost_usd": 0.02718, "seconds": 7.55, "at": 1793410120.7192473}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2164, "output": 400, "cost_usd": 0.000416, "seconds": 1.61, "at": 1793410120.9183779}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3182, "output": 313, "cost_usd": 0.000475, "seconds": 1.74, "at": 1793410121.0533192}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3006, "output": 838, "cost_usd": 0.00072, "seconds": 2.9, "at": 1793410122.220147}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2170, "output": 383, "cost_usd": 0.000409, "seconds": 1.66, "at": 1793410122.8319144}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3188, "output": 399, "cost_usd": 0.000518, "seconds": 1.98, "at": 1793410123.1620638}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3012, "output": 946, "cost_usd": 0.000774, "seconds": 3.22, "at": 1793410124.408152}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14739, "output": 928, "cost_usd": 0.001938, "seconds": 2.98, "at": 1793410124.4945142}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16108, "output": 1071, "cost_usd": 0.002146, "seconds": 3.53, "at": 1793410127.091118}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6120, "output": 327, "cost_usd": 0.000776, "seconds": 1.74, "at": 1793410127.941869}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9932, "output": 2976, "cost_usd": 0.002481, "seconds": 15.23, "at": 1793410133.671697}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5279, "output": 6554, "cost_usd": 0.003805, "seconds": 26.59, "at": 1793410135.82173}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 22406, "output": 5123, "cost_usd": 0.004802, "seconds": 23.28, "at": 1793410136.9360442}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7730, "output": 3075, "cost_usd": 0.002311, "seconds": 16.04, "at": 1793410139.7142968}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8348, "output": 2861, "cost_usd": 0.002265, "seconds": 14.0, "at": 1793410143.0151439}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5828, "output": 5679, "cost_usd": 0.003422, "seconds": 24.52, "at": 1793410145.459841}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5441, "output": 6094, "cost_usd": 0.003591, "seconds": 25.03, "at": 1793410147.8875537}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 22942, "output": 5216, "cost_usd": 0.004902, "seconds": 23.78, "at": 1793410151.5510762}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 27506, "output": 5652, "cost_usd": 0.005577, "seconds": 26.87, "at": 1793410152.191974}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12317, "output": 3614, "cost_usd": 0.003039, "seconds": 22.32, "at": 1793410159.2624009}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11866, "output": 3374, "cost_usd": 0.002874, "seconds": 16.87, "at": 1793410168.4183116}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11928, "output": 4727, "cost_usd": 0.003556, "seconds": 23.95, "at": 1793410176.1447165}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17220, "output": 5907, "cost_usd": 0.004675, "seconds": 32.04, "at": 1793410191.299634}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6986, "output": 900, "cost_usd": 0.022972, "seconds": 7.65, "at": 1793410198.9517558}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7043, "output": 734, "cost_usd": 0.001071, "seconds": 3.88, "at": 1793410202.8345342}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16903, "output": 7043, "cost_usd": 0.005212, "seconds": 35.3, "at": 1793410203.714825}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7384, "output": 774, "cost_usd": 0.022508, "seconds": 7.01, "at": 1793410210.724295}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6424, "output": 524, "cost_usd": 0.000904, "seconds": 2.77, "at": 1793410213.5011}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12973, "output": 2666, "cost_usd": 0.00263, "seconds": 14.92, "at": 1793410217.7555637}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12635, "output": 2385, "cost_usd": 0.002456, "seconds": 14.05, "at": 1793410227.5488296}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16489, "output": 10720, "cost_usd": 0.007009, "seconds": 53.13, "at": 1793410229.2781298}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7087, "output": 928, "cost_usd": 0.023454, "seconds": 7.44, "at": 1793410236.7179668}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15753, "output": 3938, "cost_usd": 0.003544, "seconds": 21.17, "at": 1793410238.928898}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7089, "output": 501, "cost_usd": 0.000959, "seconds": 2.48, "at": 1793410239.2017636}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15485, "output": 2721, "cost_usd": 0.002909, "seconds": 15.29, "at": 1793410242.836707}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12672, "output": 2624, "cost_usd": 0.002579, "seconds": 13.96, "at": 1793410253.1588824}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18899, "output": 3592, "cost_usd": 0.003686, "seconds": 19.01, "at": 1793410257.9429889}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18655, "output": 2982, "cost_usd": 0.003357, "seconds": 16.14, "at": 1793410258.9753494}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7869, "output": 871, "cost_usd": 0.024448, "seconds": 6.41, "at": 1793410264.3501081}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7778, "output": 881, "cost_usd": 0.024366, "seconds": 6.13, "at": 1793410265.1051142}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2156, "output": 389, "cost_usd": 0.00041, "seconds": 1.61, "at": 1793410265.9654841}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3174, "output": 346, "cost_usd": 0.00049, "seconds": 1.62, "at": 1793410265.9800239}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3188, "output": 208, "cost_usd": 0.000423, "seconds": 1.41, "at": 1793410266.5281942}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2170, "output": 400, "cost_usd": 0.000417, "seconds": 1.64, "at": 1793410266.7543192}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2998, "output": 819, "cost_usd": 0.000709, "seconds": 2.85, "at": 1793410267.2215445}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3012, "output": 835, "cost_usd": 0.000719, "seconds": 3.82, "at": 1793410268.9438405}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15446, "output": 928, "cost_usd": 0.002009, "seconds": 2.85, "at": 1793410269.584445}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9590, "output": 1065, "cost_usd": 0.001491, "seconds": 4.2, "at": 1793410270.630652}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14784, "output": 3811, "cost_usd": 0.003384, "seconds": 19.43, "at": 1793410272.5910308}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6141, "output": 429, "cost_usd": 0.000829, "seconds": 1.89, "at": 1793410276.1319063}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17930, "output": 3090, "cost_usd": 0.003338, "seconds": 16.54, "at": 1793410289.1363034}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6414, "output": 3469, "cost_usd": 0.002376, "seconds": 18.52, "at": 1793410289.9889214}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5279, "output": 6013, "cost_usd": 0.003534, "seconds": 24.37, "at": 1793410290.3732877}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5387, "output": 5579, "cost_usd": 0.003328, "seconds": 23.61, "at": 1793410290.3849618}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9302, "output": 2902, "cost_usd": 0.002381, "seconds": 14.42, "at": 1793410294.6722567}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7700, "output": 952, "cost_usd": 0.02492, "seconds": 7.39, "at": 1793410296.5252597}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2164, "output": 388, "cost_usd": 0.00041, "seconds": 1.48, "at": 1793410298.013819}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3182, "output": 274, "cost_usd": 0.000455, "seconds": 1.53, "at": 1793410298.0657296}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3006, "output": 789, "cost_usd": 0.000695, "seconds": 2.65, "at": 1793410299.194863}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16385, "output": 6061, "cost_usd": 0.004669, "seconds": 28.32, "at": 1793410299.6925578}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 28105, "output": 6159, "cost_usd": 0.00589, "seconds": 29.76, "at": 1793410300.1676846}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15510, "output": 1154, "cost_usd": 0.002128, "seconds": 3.81, "at": 1793410302.2683365}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6306, "output": 400, "cost_usd": 0.000831, "seconds": 2.18, "at": 1793410304.2981834}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11520, "output": 3118, "cost_usd": 0.002711, "seconds": 16.22, "at": 1793410315.9152946}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12276, "output": 3434, "cost_usd": 0.002945, "seconds": 17.68, "at": 1793410317.8547819}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9309, "output": 3112, "cost_usd": 0.002487, "seconds": 15.45, "at": 1793410320.9484034}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5828, "output": 6139, "cost_usd": 0.003652, "seconds": 26.52, "at": 1793410324.564165}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 28268, "output": 7665, "cost_usd": 0.006659, "seconds": 34.46, "at": 1793410337.6858993}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15991, "output": 6029, "cost_usd": 0.004614, "seconds": 29.96, "at": 1793410345.8753722}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6787, "output": 808, "cost_usd": 0.021654, "seconds": 6.91, "at": 1793410352.790196}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6654, "output": 384, "cost_usd": 0.000857, "seconds": 2.53, "at": 1793410355.3205886}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17179, "output": 7608, "cost_usd": 0.005522, "seconds": 39.98, "at": 1793410357.8392205}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12345, "output": 4244, "cost_usd": 0.003357, "seconds": 21.72, "at": 1793410359.4072115}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7740, "output": 886, "cost_usd": 0.02434, "seconds": 7.75, "at": 1793410365.5872731}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7212, "output": 335, "cost_usd": 0.000889, "seconds": 2.07, "at": 1793410367.655576}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12151, "output": 2995, "cost_usd": 0.002713, "seconds": 16.85, "at": 1793410372.172862}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12856, "output": 2854, "cost_usd": 0.002713, "seconds": 16.07, "at": 1793410383.7317672}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15015, "output": 3718, "cost_usd": 0.003361, "seconds": 19.51, "at": 1793410391.683755}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17086, "output": 8724, "cost_usd": 0.006071, "seconds": 44.59, "at": 1793410404.0016985}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15398, "output": 3997, "cost_usd": 0.003538, "seconds": 21.6, "at": 1793410405.3314273}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18669, "output": 3508, "cost_usd": 0.003621, "seconds": 19.08, "at": 1793410410.763544}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7141, "output": 988, "cost_usd": 0.024162, "seconds": 7.85, "at": 1793410411.852684}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7895, "output": 514, "cost_usd": 0.001046, "seconds": 3.39, "at": 1793410415.2433586}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8173, "output": 881, "cost_usd": 0.025156, "seconds": 6.71, "at": 1793410417.4752176}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3174, "output": 253, "cost_usd": 0.000444, "seconds": 1.21, "at": 1793410418.7031033}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2156, "output": 402, "cost_usd": 0.000417, "seconds": 1.61, "at": 1793410419.1002235}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2998, "output": 913, "cost_usd": 0.000756, "seconds": 3.03, "at": 1793410420.52571}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 11719, "output": 789, "cost_usd": 0.001566, "seconds": 2.99, "at": 1793410422.155244}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6266, "output": 429, "cost_usd": 0.000841, "seconds": 2.47, "at": 1793410424.4165685}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13103, "output": 2192, "cost_usd": 0.002406, "seconds": 12.04, "at": 1793410427.2859938}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 19768, "output": 4237, "cost_usd": 0.004095, "seconds": 22.6, "at": 1793410427.9372637}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8360, "output": 814, "cost_usd": 0.02486, "seconds": 6.37, "at": 1793410434.3130028}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2170, "output": 401, "cost_usd": 0.000418, "seconds": 1.67, "at": 1793410435.9950845}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3188, "output": 394, "cost_usd": 0.000516, "seconds": 1.86, "at": 1793410436.1843069}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3012, "output": 924, "cost_usd": 0.000763, "seconds": 3.35, "at": 1793410437.6865914}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 17535, "output": 1060, "cost_usd": 0.002283, "seconds": 3.48, "at": 1793410439.888647}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8148, "output": 2898, "cost_usd": 0.002264, "seconds": 14.04, "at": 1793410441.0839624}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6020, "output": 482, "cost_usd": 0.000843, "seconds": 2.41, "at": 1793410441.1513305}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5279, "output": 6376, "cost_usd": 0.003716, "seconds": 26.49, "at": 1793410445.6181102}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15989, "output": 5065, "cost_usd": 0.004131, "seconds": 24.09, "at": 1793410446.7063148}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15731, "output": 3515, "cost_usd": 0.003331, "seconds": 19.5, "at": 1793410446.7839184}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6734, "output": 3187, "cost_usd": 0.002267, "seconds": 15.09, "at": 1793410456.2470813}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5387, "output": 5604, "cost_usd": 0.003341, "seconds": 23.73, "at": 1793410459.7507749}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11398, "output": 3081, "cost_usd": 0.00268, "seconds": 15.96, "at": 1793410462.6639483}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18679, "output": 3208, "cost_usd": 0.003472, "seconds": 17.05, "at": 1793410463.8356485}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7807, "output": 865, "cost_usd": 0.024264, "seconds": 6.49, "at": 1793410470.3223586}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3182, "output": 257, "cost_usd": 0.000447, "seconds": 1.35, "at": 1793410471.6839159}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2164, "output": 409, "cost_usd": 0.000421, "seconds": 1.63, "at": 1793410471.9630473}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3006, "output": 934, "cost_usd": 0.000768, "seconds": 3.22, "at": 1793410473.56501}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 11918, "output": 1044, "cost_usd": 0.001714, "seconds": 3.48, "at": 1793410475.613028}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 25511, "output": 7628, "cost_usd": 0.006365, "seconds": 35.2, "at": 1793410475.9161398}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6010, "output": 372, "cost_usd": 0.000787, "seconds": 1.96, "at": 1793410477.456631}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15733, "output": 4164, "cost_usd": 0.003655, "seconds": 21.84, "at": 1793410484.502179}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6128, "output": 867, "cost_usd": 0.020926, "seconds": 7.28, "at": 1793410491.787912}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8617, "output": 3068, "cost_usd": 0.002396, "seconds": 15.24, "at": 1793410493.5093951}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21063, "output": 4241, "cost_usd": 0.004227, "seconds": 19.41, "at": 1793410495.7686148}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 13127, "output": 3948, "cost_usd": 0.003287, "seconds": 19.86, "at": 1793410495.8766434}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6621, "output": 1027, "cost_usd": 0.001176, "seconds": 5.16, "at": 1793410496.9566538}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5828, "output": 5870, "cost_usd": 0.003518, "seconds": 25.39, "at": 1793410497.371547}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12101, "output": 2640, "cost_usd": 0.00253, "seconds": 14.81, "at": 1793410511.769802}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11012, "output": 4882, "cost_usd": 0.003542, "seconds": 25.9, "at": 1793410523.2747579}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15351, "output": 4278, "cost_usd": 0.003674, "seconds": 22.5, "at": 1793410534.2697194}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 19738, "output": 9069, "cost_usd": 0.006508, "seconds": 47.83, "at": 1793410543.7071233}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18757, "output": 2822, "cost_usd": 0.003287, "seconds": 15.41, "at": 1793410549.685055}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 8080, "output": 988, "cost_usd": 0.02604, "seconds": 7.92, "at": 1793410551.6289985}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 8457, "output": 701, "cost_usd": 0.001196, "seconds": 4.02, "at": 1793410555.6463175}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8441, "output": 836, "cost_usd": 0.025242, "seconds": 6.54, "at": 1793410556.2265925}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3182, "output": 328, "cost_usd": 0.000482, "seconds": 1.79, "at": 1793410558.7360518}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2164, "output": 510, "cost_usd": 0.000471, "seconds": 2.01, "at": 1793410558.9513261}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3006, "output": 845, "cost_usd": 0.000723, "seconds": 2.98, "at": 1793410559.9357834}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16127, "output": 7193, "cost_usd": 0.005209, "seconds": 36.76, "at": 1793410560.0356724}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 13968, "output": 1299, "cost_usd": 0.002046, "seconds": 4.33, "at": 1793410563.2673864}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5734, "output": 562, "cost_usd": 0.000854, "seconds": 2.36, "at": 1793410563.4806705}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7857, "output": 1052, "cost_usd": 0.026234, "seconds": 9.46, "at": 1793410569.499754}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13734, "output": 2893, "cost_usd": 0.00282, "seconds": 15.66, "at": 1793410571.312435}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6466, "output": 698, "cost_usd": 0.000996, "seconds": 3.66, "at": 1793410573.162279}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9709, "output": 4001, "cost_usd": 0.002971, "seconds": 19.08, "at": 1793410583.8389552}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11638, "output": 2937, "cost_usd": 0.002632, "seconds": 16.19, "at": 1793410589.3572643}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15546, "output": 3329, "cost_usd": 0.003219, "seconds": 18.32, "at": 1793410589.6334424}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 23337, "output": 5707, "cost_usd": 0.005187, "seconds": 26.82, "at": 1793410591.0049598}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6800, "output": 6672, "cost_usd": 0.004016, "seconds": 28.94, "at": 1793410594.686332}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14084, "output": 3926, "cost_usd": 0.003371, "seconds": 20.59, "at": 1793410609.9447188}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18124, "output": 3802, "cost_usd": 0.003713, "seconds": 20.99, "at": 1793410610.6201775}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11542, "output": 4134, "cost_usd": 0.003221, "seconds": 22.32, "at": 1793410617.0122395}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7262, "output": 989, "cost_usd": 0.024414, "seconds": 7.72, "at": 1793410618.3450546}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3193, "output": 230, "cost_usd": 0.000434, "seconds": 1.46, "at": 1793410620.5830762}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2175, "output": 417, "cost_usd": 0.000426, "seconds": 1.83, "at": 1793410620.9429405}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3017, "output": 916, "cost_usd": 0.00076, "seconds": 3.1, "at": 1793410622.2242227}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8253, "output": 1263, "cost_usd": 0.001457, "seconds": 4.18, "at": 1793410624.980992}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16916, "output": 3790, "cost_usd": 0.003587, "seconds": 20.03, "at": 1793410629.9745932}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7975, "output": 950, "cost_usd": 0.02545, "seconds": 8.17, "at": 1793410638.1422775}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6579, "output": 3347, "cost_usd": 0.002331, "seconds": 16.77, "at": 1793410640.4114645}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 380, "cost_usd": 0.000406, "seconds": 1.68, "at": 1793410640.5396667}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 393, "cost_usd": 0.000514, "seconds": 1.83, "at": 1793410640.6939795}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 845, "cost_usd": 0.000723, "seconds": 3.12, "at": 1793410641.9913821}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9622, "output": 1182, "cost_usd": 0.001553, "seconds": 4.07, "at": 1793410645.088806}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7849, "output": 456, "cost_usd": 0.001013, "seconds": 2.06, "at": 1793410645.8449428}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16482, "output": 5108, "cost_usd": 0.004202, "seconds": 24.3, "at": 1793410650.1401098}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5287, "output": 6918, "cost_usd": 0.003988, "seconds": 28.04, "at": 1793410655.1844935}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17031, "output": 7978, "cost_usd": 0.005692, "seconds": 40.83, "at": 1793410657.8456926}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 8128, "output": 961, "cost_usd": 0.025866, "seconds": 8.2, "at": 1793410666.047015}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 10352, "output": 3673, "cost_usd": 0.002872, "seconds": 19.26, "at": 1793410666.0716264}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6227, "output": 553, "cost_usd": 0.000899, "seconds": 3.02, "at": 1793410669.0742345}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16465, "output": 5641, "cost_usd": 0.004467, "seconds": 26.18, "at": 1793410672.0743625}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5317, "output": 6268, "cost_usd": 0.003666, "seconds": 25.58, "at": 1793410672.7227914}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12339, "output": 2528, "cost_usd": 0.002498, "seconds": 13.65, "at": 1793410682.7305608}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11013, "output": 5407, "cost_usd": 0.003805, "seconds": 28.51, "at": 1793410683.6998134}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11662, "output": 3770, "cost_usd": 0.003051, "seconds": 19.0, "at": 1793410691.724072}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14785, "output": 2875, "cost_usd": 0.002916, "seconds": 15.31, "at": 1793410698.046849}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16873, "output": 4547, "cost_usd": 0.003961, "seconds": 23.27, "at": 1793410714.9957147}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18003, "output": 3225, "cost_usd": 0.003413, "seconds": 16.98, "at": 1793410715.0320807}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7845, "output": 915, "cost_usd": 0.02484, "seconds": 6.9, "at": 1793410721.9318476}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6643, "output": 864, "cost_usd": 0.021926, "seconds": 7.67, "at": 1793410722.6697059}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3182, "output": 247, "cost_usd": 0.000442, "seconds": 1.23, "at": 1793410723.17249}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2164, "output": 430, "cost_usd": 0.000431, "seconds": 2.28, "at": 1793410724.2188854}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3006, "output": 761, "cost_usd": 0.000681, "seconds": 2.66, "at": 1793410724.6129522}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9011, "output": 928, "cost_usd": 0.001365, "seconds": 2.8, "at": 1793410726.41059}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6418, "output": 989, "cost_usd": 0.001136, "seconds": 5.23, "at": 1793410727.8978412}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6450, "output": 534, "cost_usd": 0.000912, "seconds": 2.31, "at": 1793410728.4408712}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16720, "output": 9552, "cost_usd": 0.006448, "seconds": 48.69, "at": 1793410732.3897853}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 8605, "output": 729, "cost_usd": 0.0245, "seconds": 6.96, "at": 1793410739.3563814}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 5937, "output": 669, "cost_usd": 0.000928, "seconds": 3.65, "at": 1793410743.0097296}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12375, "output": 2945, "cost_usd": 0.00271, "seconds": 16.29, "at": 1793410744.1908507}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5787, "output": 6186, "cost_usd": 0.003672, "seconds": 26.69, "at": 1793410750.938421}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21775, "output": 5239, "cost_usd": 0.004797, "seconds": 24.94, "at": 1793410752.1703687}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 11773, "output": 4507, "cost_usd": 0.003431, "seconds": 22.82, "at": 1793410752.742585}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11685, "output": 2327, "cost_usd": 0.002332, "seconds": 13.64, "at": 1793410756.6551626}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15365, "output": 3388, "cost_usd": 0.00323, "seconds": 18.63, "at": 1793410762.8223543}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12153, "output": 3954, "cost_usd": 0.003192, "seconds": 20.76, "at": 1793410773.5085077}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13861, "output": 3703, "cost_usd": 0.003238, "seconds": 20.04, "at": 1793410776.7005558}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18967, "output": 3048, "cost_usd": 0.003421, "seconds": 16.79, "at": 1793410779.619368}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8294, "output": 948, "cost_usd": 0.026068, "seconds": 6.39, "at": 1793410786.0079925}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 399, "cost_usd": 0.000416, "seconds": 1.55, "at": 1793410787.5764754}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 327, "cost_usd": 0.000481, "seconds": 1.95, "at": 1793410787.978875}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 778, "cost_usd": 0.000689, "seconds": 2.73, "at": 1793410788.7668207}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6465, "output": 353, "cost_usd": 0.000823, "seconds": 2.01, "at": 1793410792.0244718}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14722, "output": 1186, "cost_usd": 0.002065, "seconds": 3.89, "at": 1793410792.2811968}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17265, "output": 3518, "cost_usd": 0.003485, "seconds": 19.51, "at": 1793410796.2137861}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17894, "output": 5468, "cost_usd": 0.004523, "seconds": 27.88, "at": 1793410801.3882577}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7623, "output": 858, "cost_usd": 0.023826, "seconds": 6.65, "at": 1793410802.867519}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8286, "output": 2041, "cost_usd": 0.001849, "seconds": 10.68, "at": 1793410803.9937055}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2175, "output": 407, "cost_usd": 0.000421, "seconds": 1.6, "at": 1793410804.4750252}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3193, "output": 400, "cost_usd": 0.000519, "seconds": 2.34, "at": 1793410805.2222233}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3017, "output": 788, "cost_usd": 0.000696, "seconds": 2.94, "at": 1793410805.8292646}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7527, "output": 786, "cost_usd": 0.022914, "seconds": 6.14, "at": 1793410807.532532}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16146, "output": 1073, "cost_usd": 0.002151, "seconds": 3.98, "at": 1793410809.6219888}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6180, "output": 845, "cost_usd": 0.00104, "seconds": 4.01, "at": 1793410811.547128}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5263, "output": 7043, "cost_usd": 0.004048, "seconds": 28.2, "at": 1793410815.8062816}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 22899, "output": 6288, "cost_usd": 0.005434, "seconds": 29.62, "at": 1793410822.749174}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7017, "output": 3329, "cost_usd": 0.002366, "seconds": 17.1, "at": 1793410824.2158515}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12922, "output": 2601, "cost_usd": 0.002593, "seconds": 15.54, "at": 1793410827.085924}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5287, "output": 5864, "cost_usd": 0.003461, "seconds": 23.83, "at": 1793410828.334977}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 22987, "output": 4925, "cost_usd": 0.004761, "seconds": 22.33, "at": 1793410832.703033}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 16066, "output": 2769, "cost_usd": 0.002991, "seconds": 14.81, "at": 1793410841.893583}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11151, "output": 3789, "cost_usd": 0.00301, "seconds": 19.99, "at": 1793410842.7436337}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 19514, "output": 2733, "cost_usd": 0.003318, "seconds": 15.17, "at": 1793410857.0684247}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11058, "output": 4777, "cost_usd": 0.003494, "seconds": 24.86, "at": 1793410857.5625226}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8163, "output": 891, "cost_usd": 0.025236, "seconds": 6.46, "at": 1793410863.5348587}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2164, "output": 398, "cost_usd": 0.000415, "seconds": 1.54, "at": 1793410865.0854986}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3182, "output": 359, "cost_usd": 0.000498, "seconds": 1.89, "at": 1793410865.4423914}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3006, "output": 934, "cost_usd": 0.000768, "seconds": 3.21, "at": 1793410866.7623894}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 13852, "output": 1210, "cost_usd": 0.00199, "seconds": 3.96, "at": 1793410869.8424625}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5873, "output": 420, "cost_usd": 0.000797, "seconds": 2.12, "at": 1793410870.3843296}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15256, "output": 6484, "cost_usd": 0.004768, "seconds": 33.97, "at": 1793410876.7170365}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6183, "output": 905, "cost_usd": 0.021416, "seconds": 7.39, "at": 1793410884.1131861}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5787, "output": 4469, "cost_usd": 0.002813, "seconds": 19.72, "at": 1793410884.8281367}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6259, "output": 365, "cost_usd": 0.000808, "seconds": 2.75, "at": 1793410886.8665502}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8890, "output": 3415, "cost_usd": 0.002596, "seconds": 17.2, "at": 1793410889.0555334}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 22046, "output": 5037, "cost_usd": 0.004723, "seconds": 23.13, "at": 1793410894.0394142}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11759, "output": 3898, "cost_usd": 0.003125, "seconds": 21.64, "at": 1793410908.5086029}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16897, "output": 10438, "cost_usd": 0.006909, "seconds": 52.66, "at": 1793410910.2279496}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10522, "output": 4205, "cost_usd": 0.003155, "seconds": 21.23, "at": 1793410915.2760174}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7946, "output": 894, "cost_usd": 0.024832, "seconds": 7.28, "at": 1793410917.5135822}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6406, "output": 484, "cost_usd": 0.000883, "seconds": 2.32, "at": 1793410919.839317}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15237, "output": 4167, "cost_usd": 0.003607, "seconds": 22.46, "at": 1793410930.9698596}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11787, "output": 2478, "cost_usd": 0.002418, "seconds": 14.14, "at": 1793410933.9850788}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14701, "output": 3154, "cost_usd": 0.003047, "seconds": 17.68, "at": 1793410951.6695435}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18651, "output": 4051, "cost_usd": 0.003891, "seconds": 21.99, "at": 1793410952.9573274}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15577, "output": 7955, "cost_usd": 0.005535, "seconds": 40.34, "at": 1793410955.6234653}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8614, "output": 854, "cost_usd": 0.025768, "seconds": 6.43, "at": 1793410959.3915932}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 305, "cost_usd": 0.00047, "seconds": 1.58, "at": 1793410960.999941}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 446, "cost_usd": 0.000439, "seconds": 1.71, "at": 1793410961.1227257}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 832, "cost_usd": 0.000716, "seconds": 2.8, "at": 1793410962.2306936}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7571, "output": 928, "cost_usd": 0.024422, "seconds": 7.86, "at": 1793410963.4868872}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 13019, "output": 703, "cost_usd": 0.001653, "seconds": 2.27, "at": 1793410963.76528}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6302, "output": 762, "cost_usd": 0.001011, "seconds": 4.11, "at": 1793410967.60425}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17153, "output": 3885, "cost_usd": 0.003658, "seconds": 20.45, "at": 1793410972.1209524}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7793, "output": 1006, "cost_usd": 0.025646, "seconds": 7.62, "at": 1793410979.7410233}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7826, "output": 3060, "cost_usd": 0.002313, "seconds": 15.69, "at": 1793410979.7964752}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11137, "output": 2236, "cost_usd": 0.002232, "seconds": 12.39, "at": 1793410980.0001018}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3193, "output": 251, "cost_usd": 0.000445, "seconds": 1.28, "at": 1793410981.0352612}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2175, "output": 453, "cost_usd": 0.000444, "seconds": 1.72, "at": 1793410981.4697213}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3017, "output": 827, "cost_usd": 0.000715, "seconds": 2.94, "at": 1793410982.6941512}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9794, "output": 928, "cost_usd": 0.001443, "seconds": 2.82, "at": 1793410984.2891364}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6226, "output": 453, "cost_usd": 0.000849, "seconds": 2.34, "at": 1793410986.2011251}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5294, "output": 6060, "cost_usd": 0.003559, "seconds": 25.21, "at": 1793410986.3667276}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 20887, "output": 5554, "cost_usd": 0.004866, "seconds": 27.16, "at": 1793410991.9394093}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13409, "output": 3508, "cost_usd": 0.003095, "seconds": 19.26, "at": 1793410999.2603524}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8797, "output": 2869, "cost_usd": 0.002314, "seconds": 14.46, "at": 1793411001.775733}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5291, "output": 6198, "cost_usd": 0.003628, "seconds": 25.71, "at": 1793411007.2073655}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11381, "output": 3008, "cost_usd": 0.002642, "seconds": 16.05, "at": 1793411007.9893594}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16543, "output": 2939, "cost_usd": 0.003124, "seconds": 16.56, "at": 1793411015.8201075}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 22479, "output": 7823, "cost_usd": 0.006159, "seconds": 35.8, "at": 1793411020.9543583}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7341, "output": 911, "cost_usd": 0.023792, "seconds": 7.0, "at": 1793411022.817068}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3182, "output": 303, "cost_usd": 0.00047, "seconds": 1.68, "at": 1793411024.5106316}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2164, "output": 434, "cost_usd": 0.000433, "seconds": 2.25, "at": 1793411025.0733132}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3006, "output": 868, "cost_usd": 0.000735, "seconds": 3.19, "at": 1793411026.0226135}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 12963, "output": 1360, "cost_usd": 0.001976, "seconds": 4.96, "at": 1793411029.8873847}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5730, "output": 524, "cost_usd": 0.000835, "seconds": 2.41, "at": 1793411029.8946486}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12091, "output": 4467, "cost_usd": 0.003443, "seconds": 23.13, "at": 1793411044.0835567}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9156, "output": 3181, "cost_usd": 0.002506, "seconds": 15.74, "at": 1793411047.128509}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5817, "output": 5560, "cost_usd": 0.003362, "seconds": 22.98, "at": 1793411048.0841753}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16016, "output": 7922, "cost_usd": 0.005563, "seconds": 41.25, "at": 1793411049.2410827}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21187, "output": 4993, "cost_usd": 0.004615, "seconds": 24.36, "at": 1793411055.1578314}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7137, "output": 1077, "cost_usd": 0.025044, "seconds": 8.94, "at": 1793411058.1869261}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6674, "output": 1014, "cost_usd": 0.001174, "seconds": 5.45, "at": 1793411063.6386673}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12078, "output": 2158, "cost_usd": 0.002287, "seconds": 12.88, "at": 1793411076.5247252}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17050, "output": 7210, "cost_usd": 0.00531, "seconds": 36.13, "at": 1793411080.215797}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10951, "output": 5457, "cost_usd": 0.003824, "seconds": 28.14, "at": 1793411083.2994616}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7773, "output": 919, "cost_usd": 0.024736, "seconds": 8.16, "at": 1793411088.3773255}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7634, "output": 466, "cost_usd": 0.000996, "seconds": 2.51, "at": 1793411090.8843892}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14506, "output": 3480, "cost_usd": 0.003191, "seconds": 18.46, "at": 1793411094.983088}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12804, "output": 2707, "cost_usd": 0.002634, "seconds": 14.73, "at": 1793411105.6123836}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17518, "output": 3302, "cost_usd": 0.003403, "seconds": 17.32, "at": 1793411112.300542}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15514, "output": 2308, "cost_usd": 0.002705, "seconds": 12.49, "at": 1793411118.1064699}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8085, "output": 911, "cost_usd": 0.02528, "seconds": 6.78, "at": 1793411119.0823946}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 411, "cost_usd": 0.000421, "seconds": 1.7, "at": 1793411120.7925608}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 413, "cost_usd": 0.000524, "seconds": 2.04, "at": 1793411121.1428413}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 914, "cost_usd": 0.000757, "seconds": 3.17, "at": 1793411122.277086}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16562, "output": 7878, "cost_usd": 0.005595, "seconds": 41.36, "at": 1793411124.6603246}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 17639, "output": 1073, "cost_usd": 0.0023, "seconds": 3.6, "at": 1793411125.1987903}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7848, "output": 822, "cost_usd": 0.023916, "seconds": 6.49, "at": 1793411131.1566174}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6218, "output": 975, "cost_usd": 0.001109, "seconds": 5.03, "at": 1793411136.188223}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18382, "output": 3765, "cost_usd": 0.003721, "seconds": 20.61, "at": 1793411138.719986}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6351, "output": 2933, "cost_usd": 0.002102, "seconds": 15.41, "at": 1793411139.2217286}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7837, "output": 949, "cost_usd": 0.025164, "seconds": 7.11, "at": 1793411145.8386607}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5263, "output": 6511, "cost_usd": 0.003782, "seconds": 26.22, "at": 1793411147.0418358}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3193, "output": 329, "cost_usd": 0.000484, "seconds": 1.76, "at": 1793411147.6177104}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2175, "output": 402, "cost_usd": 0.000418, "seconds": 1.82, "at": 1793411147.6682408}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3017, "output": 913, "cost_usd": 0.000758, "seconds": 3.14, "at": 1793411149.0025747}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 29144, "output": 5429, "cost_usd": 0.005629, "seconds": 24.7, "at": 1793411150.7599416}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16267, "output": 1010, "cost_usd": 0.002132, "seconds": 3.19, "at": 1793411151.254823}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6072, "output": 273, "cost_usd": 0.000744, "seconds": 1.74, "at": 1793411151.7833886}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11631, "output": 3415, "cost_usd": 0.002871, "seconds": 18.2, "at": 1793411154.3895564}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7662, "output": 2586, "cost_usd": 0.002059, "seconds": 13.33, "at": 1793411165.2988703}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5291, "output": 6081, "cost_usd": 0.00357, "seconds": 25.36, "at": 1793411173.0529299}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11084, "output": 4662, "cost_usd": 0.003439, "seconds": 24.21, "at": 1793411174.9711435}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 26327, "output": 5681, "cost_usd": 0.005473, "seconds": 25.15, "at": 1793411177.364004}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14967, "output": 4571, "cost_usd": 0.003782, "seconds": 23.81, "at": 1793411178.2031586}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11181, "output": 4409, "cost_usd": 0.003323, "seconds": 21.89, "at": 1793411199.2566385}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18349, "output": 4567, "cost_usd": 0.004118, "seconds": 24.18, "at": 1793411202.387105}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8348, "output": 830, "cost_usd": 0.024996, "seconds": 6.47, "at": 1793411208.8549962}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 368, "cost_usd": 0.0004, "seconds": 1.45, "at": 1793411211.263865}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 309, "cost_usd": 0.000472, "seconds": 1.57, "at": 1793411211.3938694}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16745, "output": 6749, "cost_usd": 0.005049, "seconds": 36.79, "at": 1793411211.7668533}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 723, "cost_usd": 0.000662, "seconds": 2.58, "at": 1793411212.4100835}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14537, "output": 1138, "cost_usd": 0.002023, "seconds": 3.98, "at": 1793411215.6727085}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6250, "output": 295, "cost_usd": 0.000772, "seconds": 1.78, "at": 1793411216.350955}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7224, "output": 994, "cost_usd": 0.024388, "seconds": 8.97, "at": 1793411220.7433844}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6390, "output": 685, "cost_usd": 0.000981, "seconds": 3.63, "at": 1793411224.3745687}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8242, "output": 2936, "cost_usd": 0.002292, "seconds": 14.73, "at": 1793411231.1713102}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11664, "output": 2881, "cost_usd": 0.002607, "seconds": 16.43, "at": 1793411240.80311}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5277, "output": 7504, "cost_usd": 0.00428, "seconds": 30.35, "at": 1793411248.3302636}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 23698, "output": 6904, "cost_usd": 0.005822, "seconds": 32.11, "at": 1793411248.5959957}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17316, "output": 11399, "cost_usd": 0.007431, "seconds": 56.13, "at": 1793411255.392596}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14338, "output": 3822, "cost_usd": 0.003345, "seconds": 19.94, "at": 1793411260.750613}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 9333, "output": 788, "cost_usd": 0.026546, "seconds": 6.41, "at": 1793411261.80084}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6261, "output": 678, "cost_usd": 0.000965, "seconds": 3.56, "at": 1793411265.3591394}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 13610, "output": 4425, "cost_usd": 0.003573, "seconds": 22.16, "at": 1793411270.7566922}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11835, "output": 2036, "cost_usd": 0.002201, "seconds": 11.09, "at": 1793411276.4545245}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17686, "output": 3933, "cost_usd": 0.003735, "seconds": 20.87, "at": 1793411281.6253006}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8160, "output": 902, "cost_usd": 0.02534, "seconds": 6.42, "at": 1793411288.0422459}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3181, "output": 289, "cost_usd": 0.000463, "seconds": 1.43, "at": 1793411290.2537591}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2163, "output": 400, "cost_usd": 0.000416, "seconds": 1.58, "at": 1793411290.3915331}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3005, "output": 804, "cost_usd": 0.000702, "seconds": 2.7, "at": 1793411291.528036}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8227, "output": 1035, "cost_usd": 0.00134, "seconds": 3.11, "at": 1793411293.6212518}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5651, "output": 273, "cost_usd": 0.000702, "seconds": 1.3, "at": 1793411294.1611297}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14211, "output": 3359, "cost_usd": 0.003101, "seconds": 17.83, "at": 1793411294.2898364}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17631, "output": 3059, "cost_usd": 0.003293, "seconds": 17.34, "at": 1793411311.670115}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8019, "output": 3744, "cost_usd": 0.002674, "seconds": 18.51, "at": 1793411314.140157}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 18991, "output": 9496, "cost_usd": 0.006647, "seconds": 46.45, "at": 1793411317.2055042}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 17150, "output": 4978, "cost_usd": 0.004204, "seconds": 22.6, "at": 1793411317.3854322}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7745, "output": 1083, "cost_usd": 0.02632, "seconds": 7.33, "at": 1793411318.9988127}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 310, "cost_usd": 0.000473, "seconds": 1.5, "at": 1793411321.2401054}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 400, "cost_usd": 0.000416, "seconds": 1.59, "at": 1793411321.3183856}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5244, "output": 6029, "cost_usd": 0.003539, "seconds": 25.22, "at": 1793411322.5604734}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 776, "cost_usd": 0.000688, "seconds": 2.93, "at": 1793411322.6806378}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 8524, "output": 931, "cost_usd": 0.026358, "seconds": 7.13, "at": 1793411324.3397717}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9423, "output": 1244, "cost_usd": 0.001564, "seconds": 4.48, "at": 1793411325.9367197}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6361, "output": 477, "cost_usd": 0.000875, "seconds": 2.27, "at": 1793411326.2401063}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7699, "output": 440, "cost_usd": 0.00099, "seconds": 2.26, "at": 1793411326.6036887}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 14295, "output": 2564, "cost_usd": 0.002711, "seconds": 14.07, "at": 1793411340.7122343}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8503, "output": 3475, "cost_usd": 0.002588, "seconds": 17.39, "at": 1793411345.2669458}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11954, "output": 4549, "cost_usd": 0.00347, "seconds": 24.02, "at": 1793411346.5825052}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 17801, "output": 5187, "cost_usd": 0.004374, "seconds": 25.02, "at": 1793411351.8187299}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5312, "output": 6639, "cost_usd": 0.003851, "seconds": 27.05, "at": 1793411354.9715464}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 16869, "output": 3012, "cost_usd": 0.003193, "seconds": 16.57, "at": 1793411357.283798}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 20509, "output": 2878, "cost_usd": 0.00349, "seconds": 16.63, "at": 1793411373.9169633}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12444, "output": 4272, "cost_usd": 0.00338, "seconds": 23.27, "at": 1793411378.2495368}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 18127, "output": 6815, "cost_usd": 0.00522, "seconds": 33.06, "at": 1793411379.6434612}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7991, "output": 895, "cost_usd": 0.024932, "seconds": 6.9, "at": 1793411380.8228605}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 345, "cost_usd": 0.000388, "seconds": 1.44, "at": 1793411382.2754364}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 255, "cost_usd": 0.000445, "seconds": 1.55, "at": 1793411382.381153}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 780, "cost_usd": 0.00069, "seconds": 2.86, "at": 1793411383.7019947}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9002, "output": 928, "cost_usd": 0.001364, "seconds": 2.88, "at": 1793411385.714752}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7816, "output": 924, "cost_usd": 0.024872, "seconds": 7.82, "at": 1793411387.46735}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5653, "output": 752, "cost_usd": 0.000941, "seconds": 3.05, "at": 1793411388.2066402}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6567, "output": 488, "cost_usd": 0.000901, "seconds": 2.74, "at": 1793411390.2105627}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5236, "output": 5274, "cost_usd": 0.003161, "seconds": 22.41, "at": 1793411404.7139502}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8848, "output": 3442, "cost_usd": 0.002606, "seconds": 17.88, "at": 1793411407.3835933}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12686, "output": 3261, "cost_usd": 0.002899, "seconds": 17.77, "at": 1793411407.985092}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 17092, "output": 5237, "cost_usd": 0.004328, "seconds": 24.41, "at": 1793411410.9329808}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17715, "output": 6756, "cost_usd": 0.00515, "seconds": 34.77, "at": 1793411413.0195923}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7454, "output": 969, "cost_usd": 0.024598, "seconds": 8.18, "at": 1793411421.2038028}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6888, "output": 856, "cost_usd": 0.001117, "seconds": 4.31, "at": 1793411425.5172021}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15030, "output": 3516, "cost_usd": 0.003261, "seconds": 18.96, "at": 1793411426.9487028}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11706, "output": 3378, "cost_usd": 0.00286, "seconds": 18.01, "at": 1793411428.9437332}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13020, "output": 2630, "cost_usd": 0.002617, "seconds": 14.47, "at": 1793411439.991005}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18366, "output": 3124, "cost_usd": 0.003399, "seconds": 16.63, "at": 1793411443.5843318}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7718, "output": 866, "cost_usd": 0.024096, "seconds": 6.22, "at": 1793411449.8089616}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2163, "output": 391, "cost_usd": 0.000412, "seconds": 1.64, "at": 1793411451.4527168}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3181, "output": 295, "cost_usd": 0.000466, "seconds": 2.24, "at": 1793411452.065312}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3005, "output": 839, "cost_usd": 0.00072, "seconds": 3.64, "at": 1793411453.4698672}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14415, "output": 1037, "cost_usd": 0.00196, "seconds": 3.47, "at": 1793411455.9661977}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 16378, "output": 3215, "cost_usd": 0.003245, "seconds": 17.99, "at": 1793411457.978961}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5784, "output": 408, "cost_usd": 0.000782, "seconds": 1.97, "at": 1793411459.563279}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16519, "output": 7097, "cost_usd": 0.0052, "seconds": 34.62, "at": 1793411463.565439}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6374, "output": 873, "cost_usd": 0.021478, "seconds": 6.91, "at": 1793411470.4771836}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6962, "output": 858, "cost_usd": 0.001125, "seconds": 4.29, "at": 1793411474.771538}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8285, "output": 2925, "cost_usd": 0.002291, "seconds": 15.42, "at": 1793411476.2680025}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5244, "output": 6139, "cost_usd": 0.003594, "seconds": 25.94, "at": 1793411477.4194236}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 19620, "output": 4126, "cost_usd": 0.004025, "seconds": 21.9, "at": 1793411479.8817852}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8288, "output": 916, "cost_usd": 0.025736, "seconds": 6.52, "at": 1793411486.4045575}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 189, "cost_usd": 0.000412, "seconds": 0.94, "at": 1793411487.3577213}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 329, "cost_usd": 0.00038, "seconds": 1.28, "at": 1793411487.6941378}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 22322, "output": 6609, "cost_usd": 0.005537, "seconds": 31.42, "at": 1793411488.1041465}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 756, "cost_usd": 0.000678, "seconds": 2.72, "at": 1793411489.1419454}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8760, "output": 906, "cost_usd": 0.001329, "seconds": 2.97, "at": 1793411490.743137}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12378, "output": 3103, "cost_usd": 0.002789, "seconds": 17.1, "at": 1793411491.8694909}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6705, "output": 385, "cost_usd": 0.000863, "seconds": 1.89, "at": 1793411493.3983989}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 13481, "output": 3649, "cost_usd": 0.003173, "seconds": 18.72, "at": 1793411506.823923}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8632, "output": 3029, "cost_usd": 0.002378, "seconds": 14.92, "at": 1793411509.7489605}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5312, "output": 5659, "cost_usd": 0.003361, "seconds": 23.24, "at": 1793411510.9649785}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15286, "output": 4153, "cost_usd": 0.003605, "seconds": 21.39, "at": 1793411513.2607124}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 17966, "output": 5542, "cost_usd": 0.004568, "seconds": 25.93, "at": 1793411517.527135}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18768, "output": 3118, "cost_usd": 0.003436, "seconds": 17.07, "at": 1793411530.3339658}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11394, "output": 3677, "cost_usd": 0.002978, "seconds": 18.86, "at": 1793411536.3872068}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8021, "output": 968, "cost_usd": 0.025722, "seconds": 7.14, "at": 1793411537.4787717}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 329, "cost_usd": 0.00038, "seconds": 1.55, "at": 1793411539.0347078}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 355, "cost_usd": 0.000495, "seconds": 1.62, "at": 1793411539.1121736}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 846, "cost_usd": 0.000723, "seconds": 2.86, "at": 1793411540.356901}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 18620, "output": 7292, "cost_usd": 0.005508, "seconds": 35.62, "at": 1793411542.4411788}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 11166, "output": 1072, "cost_usd": 0.001653, "seconds": 3.36, "at": 1793411542.8970516}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6274, "output": 524, "cost_usd": 0.000889, "seconds": 2.34, "at": 1793411544.262606}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6624, "output": 1034, "cost_usd": 0.023588, "seconds": 8.82, "at": 1793411551.2672706}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 8230, "output": 733, "cost_usd": 0.00119, "seconds": 4.09, "at": 1793411555.3585286}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5236, "output": 5939, "cost_usd": 0.003493, "seconds": 24.4, "at": 1793411563.4607053}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 18007, "output": 4582, "cost_usd": 0.004092, "seconds": 21.22, "at": 1793411564.8571162}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9233, "output": 4245, "cost_usd": 0.003046, "seconds": 21.11, "at": 1793411566.6701028}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16559, "output": 6018, "cost_usd": 0.004665, "seconds": 31.25, "at": 1793411567.6421552}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 14143, "output": 3574, "cost_usd": 0.003201, "seconds": 18.99, "at": 1793411574.349288}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7310, "output": 874, "cost_usd": 0.02336, "seconds": 7.07, "at": 1793411574.711506}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6814, "output": 689, "cost_usd": 0.001026, "seconds": 3.08, "at": 1793411577.7951944}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12504, "output": 3704, "cost_usd": 0.003102, "seconds": 18.43, "at": 1793411585.1007624}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 17071, "output": 3151, "cost_usd": 0.003283, "seconds": 17.59, "at": 1793411591.9371338}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12096, "output": 2845, "cost_usd": 0.002632, "seconds": 15.78, "at": 1793411593.5794306}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 20193, "output": 2716, "cost_usd": 0.003377, "seconds": 15.12, "at": 1793411607.056305}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8077, "output": 1044, "cost_usd": 0.026594, "seconds": 7.61, "at": 1793411614.6691997}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14694, "output": 4223, "cost_usd": 0.003581, "seconds": 21.8, "at": 1793411615.3790846}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3181, "output": 340, "cost_usd": 0.000488, "seconds": 1.77, "at": 1793411616.4482381}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2163, "output": 411, "cost_usd": 0.000422, "seconds": 1.8, "at": 1793411616.4819}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3005, "output": 742, "cost_usd": 0.000672, "seconds": 2.86, "at": 1793411617.5504837}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15498, "output": 906, "cost_usd": 0.002003, "seconds": 2.86, "at": 1793411619.7601917}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6154, "output": 419, "cost_usd": 0.000825, "seconds": 2.17, "at": 1793411621.504088}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17531, "output": 8436, "cost_usd": 0.005971, "seconds": 41.1, "at": 1793411626.2048757}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18552, "output": 3278, "cost_usd": 0.003494, "seconds": 17.89, "at": 1793411633.2662463}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8611, "output": 2185, "cost_usd": 0.001954, "seconds": 11.03, "at": 1793411633.4586194}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7762, "output": 896, "cost_usd": 0.024484, "seconds": 7.38, "at": 1793411633.5815856}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6674, "output": 384, "cost_usd": 0.000859, "seconds": 2.1, "at": 1793411635.6840522}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8342, "output": 982, "cost_usd": 0.026504, "seconds": 7.07, "at": 1793411640.3390863}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 187, "cost_usd": 0.000411, "seconds": 1.07, "at": 1793411641.4225192}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 407, "cost_usd": 0.00042, "seconds": 1.57, "at": 1793411641.914606}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5244, "output": 6205, "cost_usd": 0.003627, "seconds": 25.5, "at": 1793411642.0086987}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 771, "cost_usd": 0.000686, "seconds": 2.76, "at": 1793411643.116508}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 12704, "output": 1167, "cost_usd": 0.001854, "seconds": 3.84, "at": 1793411645.669877}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5439, "output": 554, "cost_usd": 0.000821, "seconds": 2.43, "at": 1793411647.090205}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 24706, "output": 5889, "cost_usd": 0.005415, "seconds": 27.69, "at": 1793411648.3384538}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13133, "output": 2714, "cost_usd": 0.00267, "seconds": 15.03, "at": 1793411650.7138996}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7633, "output": 2760, "cost_usd": 0.002143, "seconds": 13.86, "at": 1793411662.2352507}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5304, "output": 5714, "cost_usd": 0.003387, "seconds": 24.13, "at": 1793411666.0675063}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 17089, "output": 3127, "cost_usd": 0.003272, "seconds": 17.38, "at": 1793411668.0972085}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11567, "output": 4047, "cost_usd": 0.00318, "seconds": 21.57, "at": 1793411669.9100945}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 20834, "output": 5091, "cost_usd": 0.004629, "seconds": 23.74, "at": 1793411670.32063}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10495, "output": 3106, "cost_usd": 0.002603, "seconds": 16.68, "at": 1793411687.0018396}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 20571, "output": 3693, "cost_usd": 0.003904, "seconds": 20.72, "at": 1793411688.8217275}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8821, "output": 955, "cost_usd": 0.027192, "seconds": 7.02, "at": 1793411695.8449244}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 399, "cost_usd": 0.000415, "seconds": 1.66, "at": 1793411697.510244}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 388, "cost_usd": 0.000512, "seconds": 1.79, "at": 1793411697.655857}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 834, "cost_usd": 0.000717, "seconds": 2.91, "at": 1793411698.7735426}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5730, "output": 334, "cost_usd": 0.00074, "seconds": 1.71, "at": 1793411701.683078}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14380, "output": 1213, "cost_usd": 0.002044, "seconds": 4.23, "at": 1793411702.3717787}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16418, "output": 7103, "cost_usd": 0.005193, "seconds": 34.96, "at": 1793411704.875394}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7085, "output": 939, "cost_usd": 0.02356, "seconds": 7.62, "at": 1793411712.495065}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7092, "output": 2568, "cost_usd": 0.001993, "seconds": 13.05, "at": 1793411714.746734}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6978, "output": 420, "cost_usd": 0.000908, "seconds": 2.67, "at": 1793411715.1733804}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5236, "output": 6134, "cost_usd": 0.003591, "seconds": 24.79, "at": 1793411722.3233323}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 14940, "output": 7190, "cost_usd": 0.005089, "seconds": 35.53, "at": 1793411722.5290384}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21228, "output": 5166, "cost_usd": 0.004706, "seconds": 24.4, "at": 1793411727.557755}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6560, "output": 815, "cost_usd": 0.02127, "seconds": 7.02, "at": 1793411729.5553896}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12232, "output": 2571, "cost_usd": 0.002509, "seconds": 14.57, "at": 1793411729.742265}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6047, "output": 386, "cost_usd": 0.000798, "seconds": 2.03, "at": 1793411731.5858593}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11127, "output": 2037, "cost_usd": 0.002131, "seconds": 11.94, "at": 1793411743.5285308}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14356, "output": 2502, "cost_usd": 0.002687, "seconds": 14.76, "at": 1793411744.506673}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11299, "output": 3712, "cost_usd": 0.002986, "seconds": 19.9, "at": 1793411747.4614863}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13343, "output": 3194, "cost_usd": 0.002931, "seconds": 17.55, "at": 1793411761.0818145}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16604, "output": 3643, "cost_usd": 0.003482, "seconds": 19.64, "at": 1793411764.1515787}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7197, "output": 908, "cost_usd": 0.023474, "seconds": 6.78, "at": 1793411770.9364228}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3181, "output": 279, "cost_usd": 0.000458, "seconds": 1.51, "at": 1793411772.4644754}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2163, "output": 444, "cost_usd": 0.000438, "seconds": 1.76, "at": 1793411772.7055957}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3005, "output": 718, "cost_usd": 0.00066, "seconds": 2.82, "at": 1793411773.7781994}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 10529, "output": 928, "cost_usd": 0.001517, "seconds": 2.95, "at": 1793411775.8300323}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6286, "output": 351, "cost_usd": 0.000804, "seconds": 1.93, "at": 1793411777.6844044}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16689, "output": 3788, "cost_usd": 0.003563, "seconds": 21.14, "at": 1793411782.2260764}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7781, "output": 926, "cost_usd": 0.024822, "seconds": 7.2, "at": 1793411789.429837}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 275, "cost_usd": 0.000455, "seconds": 1.47, "at": 1793411790.917326}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 401, "cost_usd": 0.000416, "seconds": 1.58, "at": 1793411791.018747}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8427, "output": 2523, "cost_usd": 0.002104, "seconds": 12.76, "at": 1793411791.8948545}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 826, "cost_usd": 0.000713, "seconds": 2.93, "at": 1793411792.375923}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 10158, "output": 903, "cost_usd": 0.001467, "seconds": 2.9, "at": 1793411794.2282226}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6208, "output": 366, "cost_usd": 0.000804, "seconds": 1.82, "at": 1793411795.3804364}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5274, "output": 7399, "cost_usd": 0.004227, "seconds": 29.52, "at": 1793411802.2538912}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16716, "output": 11271, "cost_usd": 0.007307, "seconds": 55.8, "at": 1793411803.2655773}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7061, "output": 2377, "cost_usd": 0.001895, "seconds": 12.02, "at": 1793411807.4168582}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 23282, "output": 6605, "cost_usd": 0.005631, "seconds": 31.76, "at": 1793411808.4393497}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 8806, "output": 887, "cost_usd": 0.026482, "seconds": 7.37, "at": 1793411810.638723}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6432, "output": 1186, "cost_usd": 0.001236, "seconds": 5.32, "at": 1793411815.9560094}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5304, "output": 6694, "cost_usd": 0.003877, "seconds": 28.44, "at": 1793411819.485389}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 18195, "output": 6612, "cost_usd": 0.005125, "seconds": 31.5, "at": 1793411826.6707344}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12715, "output": 4046, "cost_usd": 0.003295, "seconds": 21.33, "at": 1793411829.774302}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11904, "output": 3644, "cost_usd": 0.003012, "seconds": 20.3, "at": 1793411836.2623594}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12354, "output": 3908, "cost_usd": 0.003189, "seconds": 20.33, "at": 1793411847.0050108}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14856, "output": 4898, "cost_usd": 0.003935, "seconds": 24.94, "at": 1793411861.208116}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18072, "output": 3261, "cost_usd": 0.003438, "seconds": 17.05, "at": 1793411878.2610762}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8036, "output": 886, "cost_usd": 0.024932, "seconds": 6.82, "at": 1793411885.080803}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 255, "cost_usd": 0.000445, "seconds": 1.25, "at": 1793411887.0196736}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 419, "cost_usd": 0.000425, "seconds": 1.72, "at": 1793411887.4830267}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 888, "cost_usd": 0.000744, "seconds": 2.89, "at": 1793411888.6661174}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9826, "output": 1127, "cost_usd": 0.001546, "seconds": 3.96, "at": 1793411891.1900637}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5868, "output": 412, "cost_usd": 0.000793, "seconds": 1.95, "at": 1793411891.8562737}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8665, "output": 324, "cost_usd": 0.001028, "seconds": 1.87, "at": 1793411895.070009}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17395, "output": 9772, "cost_usd": 0.006626, "seconds": 48.7, "at": 1793411895.70461}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 18406, "output": 15242, "cost_usd": 0.009462, "seconds": 73.17, "at": 1793411902.9430966}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7213, "output": 891, "cost_usd": 0.023336, "seconds": 7.67, "at": 1793411903.3722339}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7178, "output": 855, "cost_usd": 0.001145, "seconds": 6.42, "at": 1793411909.7986064}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7781, "output": 1055, "cost_usd": 0.026112, "seconds": 7.88, "at": 1793411910.828019}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8982, "output": 3287, "cost_usd": 0.002542, "seconds": 16.92, "at": 1793411912.002157}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 18144, "output": 4381, "cost_usd": 0.004005, "seconds": 21.17, "at": 1793411913.3108273}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7740, "output": 1047, "cost_usd": 0.001298, "seconds": 5.67, "at": 1793411916.50485}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5215, "output": 6910, "cost_usd": 0.003976, "seconds": 28.18, "at": 1793411922.1879876}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13054, "output": 3116, "cost_usd": 0.002863, "seconds": 16.63, "at": 1793411926.4294689}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13433, "output": 1985, "cost_usd": 0.002336, "seconds": 11.8, "at": 1793411928.3105536}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11538, "output": 3766, "cost_usd": 0.003037, "seconds": 19.74, "at": 1793411941.9327326}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15863, "output": 2577, "cost_usd": 0.002875, "seconds": 14.73, "at": 1793411943.0397763}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15882, "output": 3349, "cost_usd": 0.003263, "seconds": 17.76, "at": 1793411944.1883023}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18383, "output": 2412, "cost_usd": 0.003044, "seconds": 13.1, "at": 1793411956.1479752}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18688, "output": 3033, "cost_usd": 0.003385, "seconds": 17.27, "at": 1793411961.463747}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7447, "output": 946, "cost_usd": 0.024354, "seconds": 6.87, "at": 1793411963.0164914}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 329, "cost_usd": 0.000381, "seconds": 1.25, "at": 1793411964.9861271}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 279, "cost_usd": 0.000457, "seconds": 1.54, "at": 1793411965.2808816}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 602, "cost_usd": 0.000601, "seconds": 2.17, "at": 1793411965.9190009}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7771, "output": 706, "cost_usd": 0.00113, "seconds": 2.26, "at": 1793411967.7868288}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7781, "output": 942, "cost_usd": 0.024982, "seconds": 6.35, "at": 1793411967.8159473}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6218, "output": 486, "cost_usd": 0.000865, "seconds": 2.08, "at": 1793411969.9415865}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 396, "cost_usd": 0.000414, "seconds": 1.64, "at": 1793411970.8414}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 360, "cost_usd": 0.000498, "seconds": 2.49, "at": 1793411971.7036304}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 855, "cost_usd": 0.000728, "seconds": 3.25, "at": 1793411972.4641783}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16755, "output": 6280, "cost_usd": 0.004816, "seconds": 32.32, "at": 1793411974.2548513}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 10387, "output": 1073, "cost_usd": 0.001575, "seconds": 3.67, "at": 1793411975.6609695}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5810, "output": 497, "cost_usd": 0.00083, "seconds": 2.49, "at": 1793411976.400447}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6951, "output": 890, "cost_usd": 0.022802, "seconds": 7.76, "at": 1793411982.0243518}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6064, "output": 371, "cost_usd": 0.000792, "seconds": 2.12, "at": 1793411984.1503537}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8455, "output": 3044, "cost_usd": 0.002367, "seconds": 15.68, "at": 1793411985.648784}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15614, "output": 4606, "cost_usd": 0.003864, "seconds": 21.93, "at": 1793411990.7920482}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9246, "output": 3334, "cost_usd": 0.002592, "seconds": 15.91, "at": 1793411993.17078}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12156, "output": 2249, "cost_usd": 0.00234, "seconds": 12.72, "at": 1793411996.876273}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5246, "output": 6976, "cost_usd": 0.004013, "seconds": 28.68, "at": 1793412003.8405988}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21917, "output": 5976, "cost_usd": 0.00518, "seconds": 27.62, "at": 1793412004.101609}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5217, "output": 6948, "cost_usd": 0.003996, "seconds": 28.31, "at": 1793412006.9840794}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14768, "output": 2460, "cost_usd": 0.002707, "seconds": 13.93, "at": 1793412010.807474}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 13322, "output": 3331, "cost_usd": 0.002998, "seconds": 18.28, "at": 1793412025.2674477}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11307, "output": 4090, "cost_usd": 0.003176, "seconds": 21.63, "at": 1793412025.4765081}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17840, "output": 2645, "cost_usd": 0.003106, "seconds": 14.86, "at": 1793412025.6642635}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7685, "output": 775, "cost_usd": 0.02312, "seconds": 5.79, "at": 1793412031.4516618}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 329, "cost_usd": 0.00038, "seconds": 1.34, "at": 1793412032.8062649}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 423, "cost_usd": 0.000529, "seconds": 1.91, "at": 1793412033.3814402}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 876, "cost_usd": 0.000738, "seconds": 2.85, "at": 1793412034.3237474}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6486, "output": 427, "cost_usd": 0.000862, "seconds": 1.97, "at": 1793412037.4789343}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15022, "output": 1133, "cost_usd": 0.002069, "seconds": 4.05, "at": 1793412037.8118618}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8296, "output": 304, "cost_usd": 0.000982, "seconds": 1.67, "at": 1793412040.2532594}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8455, "output": 2687, "cost_usd": 0.002189, "seconds": 13.49, "at": 1793412053.753451}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21876, "output": 4674, "cost_usd": 0.004525, "seconds": 21.7, "at": 1793412060.2973998}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16776, "output": 7450, "cost_usd": 0.005403, "seconds": 36.2, "at": 1793412061.6796112}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5215, "output": 6912, "cost_usd": 0.003978, "seconds": 29.27, "at": 1793412062.1012185}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7933, "output": 900, "cost_usd": 0.024866, "seconds": 7.45, "at": 1793412069.1647081}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6194, "output": 860, "cost_usd": 0.001049, "seconds": 4.83, "at": 1793412073.9994016}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17931, "output": 10208, "cost_usd": 0.006897, "seconds": 51.43, "at": 1793412076.6977794}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11190, "output": 3728, "cost_usd": 0.002983, "seconds": 19.86, "at": 1793412081.9632614}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7448, "output": 970, "cost_usd": 0.024596, "seconds": 8.24, "at": 1793412084.9450262}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11890, "output": 2386, "cost_usd": 0.002382, "seconds": 13.35, "at": 1793412087.346163}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7668, "output": 824, "cost_usd": 0.001179, "seconds": 4.67, "at": 1793412089.612256}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14632, "output": 3241, "cost_usd": 0.003084, "seconds": 17.75, "at": 1793412105.096089}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13968, "output": 3082, "cost_usd": 0.002938, "seconds": 16.66, "at": 1793412106.271637}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15223, "output": 6313, "cost_usd": 0.004679, "seconds": 32.19, "at": 1793412114.1546066}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17640, "output": 2792, "cost_usd": 0.00316, "seconds": 15.5, "at": 1793412120.5975802}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6717, "output": 800, "cost_usd": 0.021434, "seconds": 7.03, "at": 1793412121.187556}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 5981, "output": 631, "cost_usd": 0.000914, "seconds": 3.32, "at": 1793412124.5109627}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 16774, "output": 3841, "cost_usd": 0.003598, "seconds": 20.12, "at": 1793412126.3945453}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7848, "output": 1067, "cost_usd": 0.026366, "seconds": 8.15, "at": 1793412128.7482114}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 370, "cost_usd": 0.000401, "seconds": 1.42, "at": 1793412130.1847193}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 312, "cost_usd": 0.000474, "seconds": 1.75, "at": 1793412130.5123847}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 713, "cost_usd": 0.000657, "seconds": 2.52, "at": 1793412131.2928104}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14174, "output": 824, "cost_usd": 0.001829, "seconds": 2.55, "at": 1793412133.4948382}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6268, "output": 435, "cost_usd": 0.000844, "seconds": 2.3, "at": 1793412134.8840935}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11855, "output": 1946, "cost_usd": 0.002158, "seconds": 11.17, "at": 1793412135.6830707}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 19496, "output": 3148, "cost_usd": 0.003524, "seconds": 16.91, "at": 1793412143.3013027}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7732, "output": 992, "cost_usd": 0.025384, "seconds": 6.95, "at": 1793412150.2511969}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13953, "output": 2974, "cost_usd": 0.002882, "seconds": 15.95, "at": 1793412151.6355867}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 266, "cost_usd": 0.000451, "seconds": 1.53, "at": 1793412151.7958899}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9281, "output": 3379, "cost_usd": 0.002618, "seconds": 16.28, "at": 1793412151.995981}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 403, "cost_usd": 0.000418, "seconds": 1.78, "at": 1793412152.0444195}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 848, "cost_usd": 0.000724, "seconds": 2.99, "at": 1793412153.2635272}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8994, "output": 819, "cost_usd": 0.001309, "seconds": 2.54, "at": 1793412154.7545717}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 25496, "output": 4728, "cost_usd": 0.004914, "seconds": 21.78, "at": 1793412156.036475}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6208, "output": 404, "cost_usd": 0.000823, "seconds": 2.05, "at": 1793412156.5851243}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5287, "output": 8344, "cost_usd": 0.004701, "seconds": 34.83, "at": 1793412165.043288}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17159, "output": 2717, "cost_usd": 0.003074, "seconds": 15.05, "at": 1793412166.6822362}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7683, "output": 2214, "cost_usd": 0.001875, "seconds": 11.16, "at": 1793412169.0661438}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7256, "output": 865, "cost_usd": 0.023162, "seconds": 6.35, "at": 1793412173.0322487}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 418, "cost_usd": 0.000425, "seconds": 1.55, "at": 1793412174.589808}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 357, "cost_usd": 0.000496, "seconds": 1.91, "at": 1793412174.9623854}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5217, "output": 5751, "cost_usd": 0.003397, "seconds": 23.66, "at": 1793412175.7287374}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 758, "cost_usd": 0.000679, "seconds": 2.75, "at": 1793412175.8061996}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 20339, "output": 4581, "cost_usd": 0.004324, "seconds": 21.51, "at": 1793412177.0885315}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14365, "output": 624, "cost_usd": 0.001749, "seconds": 2.23, "at": 1793412177.6102626}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6804, "output": 633, "cost_usd": 0.000997, "seconds": 3.28, "at": 1793412180.1856942}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10842, "output": 3310, "cost_usd": 0.002739, "seconds": 16.9, "at": 1793412181.9435213}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8497, "output": 2626, "cost_usd": 0.002163, "seconds": 13.19, "at": 1793412193.3918545}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10535, "output": 3714, "cost_usd": 0.00291, "seconds": 19.05, "at": 1793412196.1395898}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5222, "output": 5435, "cost_usd": 0.00324, "seconds": 22.21, "at": 1793412196.8225307}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21394, "output": 4364, "cost_usd": 0.004321, "seconds": 20.35, "at": 1793412198.6901617}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15677, "output": 6464, "cost_usd": 0.0048, "seconds": 32.27, "at": 1793412214.2144837}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10591, "output": 3461, "cost_usd": 0.00279, "seconds": 17.71, "at": 1793412216.4052992}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6749, "output": 720, "cost_usd": 0.020698, "seconds": 6.47, "at": 1793412220.6892416}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 5453, "output": 444, "cost_usd": 0.000767, "seconds": 2.5, "at": 1793412223.1880348}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11530, "output": 2400, "cost_usd": 0.002353, "seconds": 14.06, "at": 1793412237.252166}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15024, "output": 8182, "cost_usd": 0.005593, "seconds": 42.07, "at": 1793412238.2073736}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6737, "output": 789, "cost_usd": 0.021364, "seconds": 6.88, "at": 1793412245.0916035}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 5979, "output": 673, "cost_usd": 0.000934, "seconds": 3.36, "at": 1793412248.4521863}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15366, "output": 6839, "cost_usd": 0.004956, "seconds": 35.42, "at": 1793412251.8222263}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14004, "output": 2863, "cost_usd": 0.002832, "seconds": 16.56, "at": 1793412253.818467}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6870, "output": 843, "cost_usd": 0.02217, "seconds": 7.24, "at": 1793412259.0659626}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 5885, "output": 655, "cost_usd": 0.000916, "seconds": 3.76, "at": 1793412262.831038}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11182, "output": 2875, "cost_usd": 0.002556, "seconds": 16.23, "at": 1793412264.681812}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11272, "output": 1564, "cost_usd": 0.001909, "seconds": 9.23, "at": 1793412272.0598564}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17264, "output": 3619, "cost_usd": 0.003536, "seconds": 19.44, "at": 1793412273.260725}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7787, "output": 901, "cost_usd": 0.024584, "seconds": 6.75, "at": 1793412280.014434}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 407, "cost_usd": 0.00042, "seconds": 1.59, "at": 1793412281.6151912}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 384, "cost_usd": 0.00051, "seconds": 1.95, "at": 1793412281.985287}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 730, "cost_usd": 0.000665, "seconds": 2.64, "at": 1793412282.683476}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6204, "output": 417, "cost_usd": 0.000829, "seconds": 1.93, "at": 1793412285.8237152}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16225, "output": 1108, "cost_usd": 0.002177, "seconds": 3.9, "at": 1793412286.314079}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 12940, "output": 2754, "cost_usd": 0.002671, "seconds": 16.33, "at": 1793412288.3962133}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13882, "output": 4795, "cost_usd": 0.003786, "seconds": 25.29, "at": 1793412289.9721918}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9882, "output": 2885, "cost_usd": 0.002431, "seconds": 14.37, "at": 1793412301.6583767}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16158, "output": 2610, "cost_usd": 0.002921, "seconds": 15.42, "at": 1793412303.8215432}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5243, "output": 6381, "cost_usd": 0.003715, "seconds": 26.93, "at": 1793412308.5713258}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7141, "output": 795, "cost_usd": 0.022232, "seconds": 6.02, "at": 1793412309.838866}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3177, "output": 261, "cost_usd": 0.000448, "seconds": 1.26, "at": 1793412311.1149375}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2159, "output": 329, "cost_usd": 0.00038, "seconds": 1.5, "at": 1793412311.3526635}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17632, "output": 4162, "cost_usd": 0.003844, "seconds": 21.87, "at": 1793412311.8404078}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3001, "output": 825, "cost_usd": 0.000713, "seconds": 2.76, "at": 1793412312.6192312}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 11205, "output": 790, "cost_usd": 0.001515, "seconds": 2.83, "at": 1793412314.3453412}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 23060, "output": 5910, "cost_usd": 0.005261, "seconds": 27.83, "at": 1793412314.9003768}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8431, "output": 939, "cost_usd": 0.026252, "seconds": 7.33, "at": 1793412319.168151}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 329, "cost_usd": 0.000381, "seconds": 1.32, "at": 1793412320.4971359}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 393, "cost_usd": 0.000514, "seconds": 1.88, "at": 1793412321.0645375}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 860, "cost_usd": 0.00073, "seconds": 2.92, "at": 1793412322.1219819}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16888, "output": 1216, "cost_usd": 0.002297, "seconds": 4.42, "at": 1793412325.897858}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6189, "output": 404, "cost_usd": 0.000821, "seconds": 3.08, "at": 1793412326.7715602}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7017, "output": 3173, "cost_usd": 0.002288, "seconds": 15.89, "at": 1793412330.0638533}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 18062, "output": 4350, "cost_usd": 0.003981, "seconds": 19.43, "at": 1793412334.4212291}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11230, "output": 4500, "cost_usd": 0.003373, "seconds": 23.78, "at": 1793412338.7634313}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5222, "output": 6814, "cost_usd": 0.003929, "seconds": 28.1, "at": 1793412339.4757507}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7769, "output": 2947, "cost_usd": 0.00225, "seconds": 14.52, "at": 1793412342.707604}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5219, "output": 5718, "cost_usd": 0.003381, "seconds": 24.12, "at": 1793412344.6377738}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 23711, "output": 5484, "cost_usd": 0.005113, "seconds": 26.16, "at": 1793412352.832159}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11637, "output": 3783, "cost_usd": 0.003055, "seconds": 19.74, "at": 1793412359.2236397}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11244, "output": 3405, "cost_usd": 0.002827, "seconds": 18.6, "at": 1793412371.4353135}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16127, "output": 9804, "cost_usd": 0.006515, "seconds": 48.16, "at": 1793412386.9265442}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15934, "output": 6833, "cost_usd": 0.00501, "seconds": 35.46, "at": 1793412394.6866922}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7213, "output": 1025, "cost_usd": 0.024676, "seconds": 8.12, "at": 1793412395.0433836}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6827, "output": 888, "cost_usd": 0.001127, "seconds": 4.66, "at": 1793412399.7118764}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6354, "output": 871, "cost_usd": 0.021418, "seconds": 7.44, "at": 1793412402.1262531}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6302, "output": 405, "cost_usd": 0.000833, "seconds": 2.26, "at": 1793412404.3933997}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15411, "output": 7539, "cost_usd": 0.005311, "seconds": 38.08, "at": 1793412409.5195122}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11845, "output": 2829, "cost_usd": 0.002599, "seconds": 15.08, "at": 1793412414.7972991}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6740, "output": 885, "cost_usd": 0.02233, "seconds": 7.53, "at": 1793412417.0550947}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12289, "output": 2386, "cost_usd": 0.002422, "seconds": 14.05, "at": 1793412418.4462347}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6351, "output": 455, "cost_usd": 0.000863, "seconds": 2.26, "at": 1793412419.3219936}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14115, "output": 3071, "cost_usd": 0.002947, "seconds": 16.97, "at": 1793412431.7679884}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14605, "output": 2873, "cost_usd": 0.002897, "seconds": 15.98, "at": 1793412434.4293084}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11945, "output": 3071, "cost_usd": 0.00273, "seconds": 17.11, "at": 1793412436.4338048}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16689, "output": 2886, "cost_usd": 0.003112, "seconds": 16.94, "at": 1793412448.7098076}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17619, "output": 2821, "cost_usd": 0.003172, "seconds": 15.85, "at": 1793412450.282784}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7350, "output": 853, "cost_usd": 0.02323, "seconds": 6.51, "at": 1793412455.2175627}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 272, "cost_usd": 0.000454, "seconds": 1.34, "at": 1793412456.5777686}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7481, "output": 792, "cost_usd": 0.022882, "seconds": 6.39, "at": 1793412456.6755545}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14973, "output": 3850, "cost_usd": 0.003422, "seconds": 20.26, "at": 1793412456.6934533}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 388, "cost_usd": 0.00041, "seconds": 1.65, "at": 1793412456.876808}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 832, "cost_usd": 0.000716, "seconds": 2.87, "at": 1793412458.1064458}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 282, "cost_usd": 0.000459, "seconds": 1.49, "at": 1793412459.005897}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 388, "cost_usd": 0.00041, "seconds": 1.58, "at": 1793412459.0897763}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 11207, "output": 1067, "cost_usd": 0.001654, "seconds": 3.73, "at": 1793412460.6847188}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 943, "cost_usd": 0.000772, "seconds": 3.37, "at": 1793412460.8907022}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5665, "output": 452, "cost_usd": 0.000793, "seconds": 2.1, "at": 1793412461.457787}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8214, "output": 928, "cost_usd": 0.001285, "seconds": 2.8, "at": 1793412462.2340186}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6018, "output": 384, "cost_usd": 0.000794, "seconds": 1.82, "at": 1793412464.4768765}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18665, "output": 2795, "cost_usd": 0.003264, "seconds": 15.49, "at": 1793412472.2050908}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8336, "output": 744, "cost_usd": 0.024112, "seconds": 5.66, "at": 1793412477.8621883}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8749, "output": 3146, "cost_usd": 0.002448, "seconds": 15.33, "at": 1793412478.0884876}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7106, "output": 2714, "cost_usd": 0.002068, "seconds": 13.39, "at": 1793412478.7692719}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 442, "cost_usd": 0.000437, "seconds": 1.8, "at": 1793412479.677725}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 320, "cost_usd": 0.000478, "seconds": 1.88, "at": 1793412479.7620404}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 704, "cost_usd": 0.000652, "seconds": 2.57, "at": 1793412480.4530327}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 19127, "output": 4443, "cost_usd": 0.004134, "seconds": 20.91, "at": 1793412482.4842076}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6506, "output": 604, "cost_usd": 0.000953, "seconds": 2.49, "at": 1793412484.3453112}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14400, "output": 1155, "cost_usd": 0.002018, "seconds": 4.36, "at": 1793412484.5884671}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5243, "output": 6804, "cost_usd": 0.003926, "seconds": 28.38, "at": 1793412485.280662}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 20977, "output": 4840, "cost_usd": 0.004518, "seconds": 22.98, "at": 1793412486.259627}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5275, "output": 6092, "cost_usd": 0.003573, "seconds": 24.81, "at": 1793412491.2043705}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11130, "output": 3435, "cost_usd": 0.002831, "seconds": 17.58, "at": 1793412502.9135494}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9451, "output": 3297, "cost_usd": 0.002594, "seconds": 16.99, "at": 1793412502.9509025}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5262, "output": 6204, "cost_usd": 0.003628, "seconds": 26.05, "at": 1793412505.763117}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11399, "output": 4493, "cost_usd": 0.003386, "seconds": 22.21, "at": 1793412513.4132788}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 25896, "output": 6197, "cost_usd": 0.005688, "seconds": 28.82, "at": 1793412514.1844923}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11380, "output": 3515, "cost_usd": 0.002896, "seconds": 19.5, "at": 1793412533.681952}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16049, "output": 6143, "cost_usd": 0.004676, "seconds": 32.9, "at": 1793412535.81361}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7060, "output": 762, "cost_usd": 0.02174, "seconds": 6.56, "at": 1793412542.377973}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 5697, "output": 394, "cost_usd": 0.000767, "seconds": 2.35, "at": 1793412544.7324224}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17258, "output": 7323, "cost_usd": 0.005387, "seconds": 35.94, "at": 1793412549.3571286}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 8277, "output": 834, "cost_usd": 0.024894, "seconds": 6.97, "at": 1793412556.3352044}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11771, "output": 2136, "cost_usd": 0.002245, "seconds": 12.58, "at": 1793412557.3091686}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6586, "output": 803, "cost_usd": 0.00106, "seconds": 4.27, "at": 1793412560.6058512}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16285, "output": 7617, "cost_usd": 0.005437, "seconds": 36.46, "at": 1793412570.1448863}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13975, "output": 2664, "cost_usd": 0.00273, "seconds": 14.57, "at": 1793412571.8812673}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12069, "output": 2342, "cost_usd": 0.002378, "seconds": 13.46, "at": 1793412574.066549}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7276, "output": 868, "cost_usd": 0.023232, "seconds": 7.23, "at": 1793412577.3785787}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6924, "output": 767, "cost_usd": 0.001076, "seconds": 4.31, "at": 1793412581.6883996}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17081, "output": 3631, "cost_usd": 0.003524, "seconds": 19.22, "at": 1793412591.1060328}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14233, "output": 3509, "cost_usd": 0.003178, "seconds": 18.06, "at": 1793412592.1264977}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12064, "output": 2581, "cost_usd": 0.002497, "seconds": 14.45, "at": 1793412596.1383433}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7461, "output": 884, "cost_usd": 0.023762, "seconds": 6.84, "at": 1793412597.9426525}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 367, "cost_usd": 0.000501, "seconds": 1.7, "at": 1793412600.597697}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 442, "cost_usd": 0.000437, "seconds": 1.78, "at": 1793412600.6729357}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 843, "cost_usd": 0.000722, "seconds": 2.84, "at": 1793412601.746762}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9580, "output": 1132, "cost_usd": 0.001524, "seconds": 4.01, "at": 1793412604.894725}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6229, "output": 533, "cost_usd": 0.000889, "seconds": 2.46, "at": 1793412605.679846}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14554, "output": 3257, "cost_usd": 0.003084, "seconds": 18.2, "at": 1793412614.3403027}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17717, "output": 4141, "cost_usd": 0.003842, "seconds": 23.23, "at": 1793412615.3548348}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9387, "output": 2913, "cost_usd": 0.002395, "seconds": 14.66, "at": 1793412621.4943643}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8051, "output": 1033, "cost_usd": 0.026432, "seconds": 6.96, "at": 1793412622.3208828}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 356, "cost_usd": 0.000496, "seconds": 1.76, "at": 1793412624.096201}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 442, "cost_usd": 0.000437, "seconds": 1.78, "at": 1793412624.106335}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16810, "output": 3928, "cost_usd": 0.003645, "seconds": 18.52, "at": 1793412624.300761}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 829, "cost_usd": 0.000715, "seconds": 2.85, "at": 1793412625.193227}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8878, "output": 1182, "cost_usd": 0.001479, "seconds": 3.88, "at": 1793412628.419553}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7054, "output": 511, "cost_usd": 0.000961, "seconds": 2.39, "at": 1793412629.6723115}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17358, "output": 3016, "cost_usd": 0.003244, "seconds": 15.83, "at": 1793412630.1713052}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5255, "output": 6132, "cost_usd": 0.003592, "seconds": 26.61, "at": 1793412633.9290347}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7793, "output": 856, "cost_usd": 0.024146, "seconds": 6.52, "at": 1793412636.6950057}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2180, "output": 356, "cost_usd": 0.000396, "seconds": 1.43, "at": 1793412639.0713875}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3198, "output": 337, "cost_usd": 0.000488, "seconds": 1.65, "at": 1793412639.2937636}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3022, "output": 846, "cost_usd": 0.000725, "seconds": 3.16, "at": 1793412640.8134549}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8009, "output": 1010, "cost_usd": 0.001306, "seconds": 3.04, "at": 1793412642.6585774}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6831, "output": 461, "cost_usd": 0.000914, "seconds": 2.54, "at": 1793412644.6398203}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9050, "output": 2798, "cost_usd": 0.002304, "seconds": 14.48, "at": 1793412645.3671346}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10511, "output": 3420, "cost_usd": 0.002761, "seconds": 18.62, "at": 1793412652.5546}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5305, "output": 7158, "cost_usd": 0.00411, "seconds": 29.78, "at": 1793412653.9518132}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15728, "output": 5935, "cost_usd": 0.00454, "seconds": 27.25, "at": 1793412656.424145}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9728, "output": 2993, "cost_usd": 0.002469, "seconds": 14.45, "at": 1793412660.3390026}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 18045, "output": 4763, "cost_usd": 0.004186, "seconds": 22.59, "at": 1793412666.309389}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5313, "output": 6072, "cost_usd": 0.003567, "seconds": 24.89, "at": 1793412670.6833954}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11684, "output": 4920, "cost_usd": 0.003628, "seconds": 25.08, "at": 1793412681.507971}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 14200, "output": 7555, "cost_usd": 0.005197, "seconds": 37.71, "at": 1793412690.270444}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11268, "output": 3660, "cost_usd": 0.002957, "seconds": 19.79, "at": 1793412690.4773333}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6092, "output": 926, "cost_usd": 0.021444, "seconds": 8.09, "at": 1793412698.3592656}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6108, "output": 397, "cost_usd": 0.000809, "seconds": 2.3, "at": 1793412700.6632044}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11154, "output": 2106, "cost_usd": 0.002168, "seconds": 11.9, "at": 1793412712.5638204}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17669, "output": 6446, "cost_usd": 0.00499, "seconds": 33.52, "at": 1793412715.0334773}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7798, "output": 967, "cost_usd": 0.025266, "seconds": 7.96, "at": 1793412722.9997478}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6516, "output": 510, "cost_usd": 0.000907, "seconds": 2.71, "at": 1793412725.7158453}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16493, "output": 7486, "cost_usd": 0.005392, "seconds": 37.46, "at": 1793412727.9361465}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13422, "output": 3665, "cost_usd": 0.003175, "seconds": 19.64, "at": 1793412732.200708}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7968, "output": 931, "cost_usd": 0.025246, "seconds": 8.18, "at": 1793412736.119274}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12439, "output": 2364, "cost_usd": 0.002426, "seconds": 13.12, "at": 1793412738.8396106}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6286, "output": 766, "cost_usd": 0.001012, "seconds": 3.93, "at": 1793412740.0499358}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16734, "output": 3612, "cost_usd": 0.003479, "seconds": 19.58, "at": 1793412751.7853713}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14989, "output": 3723, "cost_usd": 0.00336, "seconds": 19.22, "at": 1793412758.0574248}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7882, "output": 946, "cost_usd": 0.025224, "seconds": 7.65, "at": 1793412759.4370043}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11953, "output": 3390, "cost_usd": 0.00289, "seconds": 19.42, "at": 1793412759.473437}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 329, "cost_usd": 0.00038, "seconds": 1.29, "at": 1793412760.7391734}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 435, "cost_usd": 0.000535, "seconds": 2.06, "at": 1793412761.5103397}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 729, "cost_usd": 0.000665, "seconds": 2.84, "at": 1793412762.3048608}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6750, "output": 555, "cost_usd": 0.000953, "seconds": 2.44, "at": 1793412765.7631621}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14389, "output": 1110, "cost_usd": 0.001994, "seconds": 3.88, "at": 1793412765.8382907}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18971, "output": 3179, "cost_usd": 0.003487, "seconds": 17.49, "at": 1793412775.5440536}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15245, "output": 3613, "cost_usd": 0.003331, "seconds": 19.41, "at": 1793412778.8881886}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8892, "output": 2359, "cost_usd": 0.002069, "seconds": 12.09, "at": 1793412779.2410789}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8345, "output": 928, "cost_usd": 0.02597, "seconds": 6.79, "at": 1793412782.3332527}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 403, "cost_usd": 0.000418, "seconds": 1.63, "at": 1793412783.9809923}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 312, "cost_usd": 0.000474, "seconds": 1.99, "at": 1793412784.3357334}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 679, "cost_usd": 0.00064, "seconds": 2.51, "at": 1793412784.869311}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5216, "output": 6149, "cost_usd": 0.003596, "seconds": 25.23, "at": 1793412785.994788}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6127, "output": 533, "cost_usd": 0.000879, "seconds": 2.3, "at": 1793412788.9098618}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 15453, "output": 1214, "cost_usd": 0.002152, "seconds": 4.33, "at": 1793412789.0943136}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21202, "output": 6177, "cost_usd": 0.005209, "seconds": 31.25, "at": 1793412797.8203351}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 19113, "output": 4294, "cost_usd": 0.004058, "seconds": 22.58, "at": 1793412801.4671645}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5279, "output": 5476, "cost_usd": 0.003266, "seconds": 23.22, "at": 1793412807.227686}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9102, "output": 3413, "cost_usd": 0.002617, "seconds": 16.96, "at": 1793412807.2304008}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 9141, "output": 864, "cost_usd": 0.026922, "seconds": 6.05, "at": 1793412807.521616}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2180, "output": 329, "cost_usd": 0.000382, "seconds": 1.33, "at": 1793412808.8573396}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3198, "output": 325, "cost_usd": 0.000482, "seconds": 1.58, "at": 1793412809.1126423}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3022, "output": 713, "cost_usd": 0.000659, "seconds": 2.57, "at": 1793412810.1133914}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 10029, "output": 1060, "cost_usd": 0.001533, "seconds": 3.49, "at": 1793412813.0171065}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6889, "output": 419, "cost_usd": 0.000898, "seconds": 2.28, "at": 1793412813.8748434}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 23582, "output": 5593, "cost_usd": 0.005155, "seconds": 25.52, "at": 1793412815.4941585}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11864, "output": 4778, "cost_usd": 0.003575, "seconds": 23.85, "at": 1793412821.6747773}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5313, "output": 4967, "cost_usd": 0.003015, "seconds": 20.18, "at": 1793412829.0631468}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9831, "output": 2915, "cost_usd": 0.002441, "seconds": 14.7, "at": 1793412830.0399644}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11608, "output": 2835, "cost_usd": 0.002578, "seconds": 15.05, "at": 1793412830.5436752}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 16784, "output": 4549, "cost_usd": 0.003953, "seconds": 21.25, "at": 1793412834.9772675}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 9909, "output": 3648, "cost_usd": 0.002815, "seconds": 19.1, "at": 1793412854.0805478}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17417, "output": 6680, "cost_usd": 0.005082, "seconds": 33.53, "at": 1793412855.205059}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7077, "output": 921, "cost_usd": 0.023364, "seconds": 7.06, "at": 1793412862.2660272}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15447, "output": 6002, "cost_usd": 0.004546, "seconds": 31.83, "at": 1793412862.373114}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 7325, "output": 838, "cost_usd": 0.001151, "seconds": 4.64, "at": 1793412866.910995}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6527, "output": 836, "cost_usd": 0.021414, "seconds": 6.87, "at": 1793412869.2427673}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6587, "output": 434, "cost_usd": 0.000876, "seconds": 2.6, "at": 1793412871.85148}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12479, "output": 2639, "cost_usd": 0.002567, "seconds": 14.99, "at": 1793412881.9038363}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12289, "output": 2349, "cost_usd": 0.002403, "seconds": 13.58, "at": 1793412885.434131}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 13936, "output": 8422, "cost_usd": 0.005605, "seconds": 42.42, "at": 1793412896.50093}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15011, "output": 2936, "cost_usd": 0.002969, "seconds": 16.05, "at": 1793412897.9581125}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7236, "output": 1044, "cost_usd": 0.024912, "seconds": 8.77, "at": 1793412905.2772398}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14699, "output": 3921, "cost_usd": 0.00343, "seconds": 20.02, "at": 1793412905.452554}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6006, "output": 759, "cost_usd": 0.00098, "seconds": 3.99, "at": 1793412909.2672029}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17703, "output": 3712, "cost_usd": 0.003626, "seconds": 21.9, "at": 1793412919.860012}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18099, "output": 2714, "cost_usd": 0.003167, "seconds": 14.57, "at": 1793412920.0232832}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 10551, "output": 2426, "cost_usd": 0.002268, "seconds": 14.01, "at": 1793412923.283023}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7567, "output": 932, "cost_usd": 0.024454, "seconds": 6.91, "at": 1793412926.9377458}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7298, "output": 1044, "cost_usd": 0.025036, "seconds": 7.84, "at": 1793412927.69826}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3179, "output": 267, "cost_usd": 0.000451, "seconds": 1.48, "at": 1793412928.4366424}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2161, "output": 399, "cost_usd": 0.000416, "seconds": 1.59, "at": 1793412928.5450864}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 301, "cost_usd": 0.000468, "seconds": 1.49, "at": 1793412929.2021763}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 554, "cost_usd": 0.000493, "seconds": 2.08, "at": 1793412929.7838695}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3003, "output": 841, "cost_usd": 0.000721, "seconds": 2.88, "at": 1793412929.8476992}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 734, "cost_usd": 0.000667, "seconds": 2.57, "at": 1793412930.2908306}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 10430, "output": 1030, "cost_usd": 0.001558, "seconds": 3.59, "at": 1793412932.4835336}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 14322, "output": 1025, "cost_usd": 0.001945, "seconds": 3.57, "at": 1793412933.0098717}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6317, "output": 380, "cost_usd": 0.000822, "seconds": 1.84, "at": 1793412933.5588381}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 13323, "output": 3303, "cost_usd": 0.002984, "seconds": 18.6, "at": 1793412941.8803291}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6216, "output": 597, "cost_usd": 0.00092, "seconds": 2.67, "at": 1793412944.4952981}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 7677, "output": 3040, "cost_usd": 0.002288, "seconds": 15.47, "at": 1793412949.1984882}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5246, "output": 5763, "cost_usd": 0.003406, "seconds": 24.44, "at": 1793412954.246958}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5279, "output": 6377, "cost_usd": 0.003716, "seconds": 26.05, "at": 1793412954.62189}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 19356, "output": 4971, "cost_usd": 0.004421, "seconds": 22.82, "at": 1793412957.1694489}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9281, "output": 2476, "cost_usd": 0.002166, "seconds": 12.57, "at": 1793412958.0259917}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 21062, "output": 5020, "cost_usd": 0.004616, "seconds": 23.69, "at": 1793412958.0479553}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 16753, "output": 4696, "cost_usd": 0.004023, "seconds": 24.31, "at": 1793412966.1948283}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8321, "output": 926, "cost_usd": 0.025902, "seconds": 6.89, "at": 1793412973.087196}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11354, "output": 2985, "cost_usd": 0.002628, "seconds": 15.53, "at": 1793412973.5635757}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2180, "output": 399, "cost_usd": 0.000418, "seconds": 1.63, "at": 1793412974.7300096}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3198, "output": 313, "cost_usd": 0.000476, "seconds": 1.64, "at": 1793412974.745942}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3022, "output": 834, "cost_usd": 0.000719, "seconds": 2.89, "at": 1793412976.003516}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 9409, "output": 1180, "cost_usd": 0.001531, "seconds": 3.94, "at": 1793412979.1939802}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11246, "output": 4047, "cost_usd": 0.003148, "seconds": 21.54, "at": 1793412979.5860975}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6233, "output": 494, "cost_usd": 0.00087, "seconds": 2.54, "at": 1793412979.6879823}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5311, "output": 4827, "cost_usd": 0.002945, "seconds": 20.76, "at": 1793412995.524696}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8917, "output": 3321, "cost_usd": 0.002552, "seconds": 16.33, "at": 1793412997.3544414}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 14969, "output": 5073, "cost_usd": 0.004033, "seconds": 25.83, "at": 1793412999.3921177}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 5525, "output": 910, "cost_usd": 0.02015, "seconds": 7.49, "at": 1793413006.8855655}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6505, "output": 893, "cost_usd": 0.001097, "seconds": 5.9, "at": 1793413012.7911994}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 17263, "output": 6721, "cost_usd": 0.005087, "seconds": 33.73, "at": 1793413013.4192257}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 17569, "output": 7583, "cost_usd": 0.005548, "seconds": 34.19, "at": 1793413014.244776}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7339, "output": 746, "cost_usd": 0.022138, "seconds": 6.64, "at": 1793413020.056664}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6569, "output": 458, "cost_usd": 0.000886, "seconds": 3.11, "at": 1793413023.170782}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12038, "output": 2536, "cost_usd": 0.002472, "seconds": 13.85, "at": 1793413026.6396432}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 12508, "output": 4585, "cost_usd": 0.003543, "seconds": 23.75, "at": 1793413037.994006}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11947, "output": 3090, "cost_usd": 0.00274, "seconds": 17.78, "at": 1793413040.9540308}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14790, "output": 2857, "cost_usd": 0.002907, "seconds": 16.42, "at": 1793413043.060085}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15011, "output": 3239, "cost_usd": 0.003121, "seconds": 18.41, "at": 1793413059.3633685}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17572, "output": 3934, "cost_usd": 0.003724, "seconds": 22.39, "at": 1793413065.4529335}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 19655, "output": 6424, "cost_usd": 0.005177, "seconds": 33.0, "at": 1793413070.9942179}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7757, "output": 1044, "cost_usd": 0.025954, "seconds": 7.67, "at": 1793413073.127397}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17951, "output": 3343, "cost_usd": 0.003467, "seconds": 18.69, "at": 1793413078.0515313}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 8098, "output": 1026, "cost_usd": 0.026456, "seconds": 8.13, "at": 1793413079.128636}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 8232, "output": 889, "cost_usd": 0.001268, "seconds": 4.67, "at": 1793413083.797983}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8051, "output": 953, "cost_usd": 0.025632, "seconds": 6.76, "at": 1793413084.8130608}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2160, "output": 399, "cost_usd": 0.000416, "seconds": 1.62, "at": 1793413086.4470446}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3178, "output": 356, "cost_usd": 0.000496, "seconds": 1.69, "at": 1793413086.5200963}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3002, "output": 766, "cost_usd": 0.000683, "seconds": 2.64, "at": 1793413087.4726877}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 11877, "output": 1112, "cost_usd": 0.001744, "seconds": 3.81, "at": 1793413090.7938879}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6919, "output": 583, "cost_usd": 0.000983, "seconds": 2.86, "at": 1793413093.3726978}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 13151, "output": 3255, "cost_usd": 0.002943, "seconds": 18.01, "at": 1793413101.8076956}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8419, "output": 2765, "cost_usd": 0.002224, "seconds": 13.48, "at": 1793413106.870665}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5214, "output": 6015, "cost_usd": 0.003529, "seconds": 25.06, "at": 1793413111.5411298}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 18715, "output": 5121, "cost_usd": 0.004432, "seconds": 24.0, "at": 1793413115.5901625}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 16133, "output": 3519, "cost_usd": 0.003373, "seconds": 18.7, "at": 1793413120.5129976}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 10943, "output": 3917, "cost_usd": 0.003053, "seconds": 20.51, "at": 1793413136.0990033}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 19189, "output": 3226, "cost_usd": 0.003532, "seconds": 17.31, "at": 1793413137.828209}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8175, "output": 910, "cost_usd": 0.02545, "seconds": 6.57, "at": 1793413144.4077187}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 2180, "output": 398, "cost_usd": 0.000417, "seconds": 1.46, "at": 1793413145.8733401}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3198, "output": 371, "cost_usd": 0.000505, "seconds": 1.85, "at": 1793413146.2719655}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 3022, "output": 808, "cost_usd": 0.000706, "seconds": 2.8, "at": 1793413147.2232418}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 13938, "output": 1083, "cost_usd": 0.001935, "seconds": 3.53, "at": 1793413150.1860907}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 6290, "output": 331, "cost_usd": 0.000794, "seconds": 2.03, "at": 1793413150.202335}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 15110, "output": 4899, "cost_usd": 0.00396, "seconds": 26.16, "at": 1793413162.2563825}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 8814, "output": 3039, "cost_usd": 0.002401, "seconds": 15.42, "at": 1793413167.2546084}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 6294, "output": 837, "cost_usd": 0.020958, "seconds": 7.72, "at": 1793413169.9757104}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6397, "output": 442, "cost_usd": 0.000861, "seconds": 2.19, "at": 1793413172.1653311}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 5311, "output": 6817, "cost_usd": 0.00394, "seconds": 29.48, "at": 1793413175.375877}
+{"node": "agent", "model": "claude-haiku-5-5", "input": 20782, "output": 5853, "cost_usd": 0.005005, "seconds": 27.19, "at": 1793413178.170285}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 11632, "output": 2558, "cost_usd": 0.002442, "seconds": 14.04, "at": 1793413186.2069087}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 14748, "output": 3070, "cost_usd": 0.00301, "seconds": 16.41, "at": 1793413202.617606}
+{"node": "Bull Researcher", "model": "claude-haiku-5-5", "input": 11355, "output": 4913, "cost_usd": 0.003592, "seconds": 27.14, "at": 1793413205.3176844}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 17892, "output": 2681, "cost_usd": 0.00313, "seconds": 15.17, "at": 1793413217.7863514}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 7789, "output": 821, "cost_usd": 0.023788, "seconds": 6.46, "at": 1793413224.2514682}
+{"node": "Bear Researcher", "model": "claude-haiku-5-5", "input": 16394, "output": 6139, "cost_usd": 0.004709, "seconds": 31.18, "at": 1793413236.503708}
+{"node": "Research Manager", "model": "claude-sonnet-5-5", "input": 7178, "output": 944, "cost_usd": 0.023796, "seconds": 7.63, "at": 1793413244.1310234}
+{"node": "Trader", "model": "claude-haiku-5-5", "input": 6291, "output": 727, "cost_usd": 0.000993, "seconds": 3.77, "at": 1793413247.9008648}
+{"node": "Aggressive Analyst", "model": "claude-haiku-5-5", "input": 12043, "output": 2567, "cost_usd": 0.002488, "seconds": 13.96, "at": 1793413261.863935}
+{"node": "Conservative Analyst", "model": "claude-haiku-5-5", "input": 15051, "output": 3239, "cost_usd": 0.003125, "seconds": 17.78, "at": 1793413279.6484113}
+{"node": "Neutral Analyst", "model": "claude-haiku-5-5", "input": 18389, "output": 3873, "cost_usd": 0.003775, "seconds": 20.76, "at": 1793413300.407005}
+{"node": "Portfolio Manager", "model": "claude-sonnet-5-5", "input": 8383, "output": 953, "cost_usd": 0.026296, "seconds": 6.99, "at": 1793413307.394726}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25289, "output": 344, "cost_usd": 0.054018, "seconds": 3.55, "at": 1793413325.178146}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25790, "output": 390, "cost_usd": 0.05548, "seconds": 3.65, "at": 1793413325.2615254}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 27355, "output": 365, "cost_usd": 0.05836, "seconds": 3.67, "at": 1793413325.2935224}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13810, "output": 320, "cost_usd": 0.03082, "seconds": 2.79, "at": 1793413327.968583}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 14567, "output": 348, "cost_usd": 0.032614, "seconds": 3.4, "at": 1793413328.6946185}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13323, "output": 412, "cost_usd": 0.030766, "seconds": 3.78, "at": 1793413329.0419517}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25590, "output": 427, "cost_usd": 0.05545, "seconds": 3.9, "at": 1793413331.9517646}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 27355, "output": 370, "cost_usd": 0.05841, "seconds": 3.38, "at": 1793413332.080899}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25281, "output": 384, "cost_usd": 0.054402, "seconds": 3.64, "at": 1793413332.7788343}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13106, "output": 386, "cost_usd": 0.030072, "seconds": 3.51, "at": 1793413335.464067}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 14567, "output": 362, "cost_usd": 0.032754, "seconds": 3.43, "at": 1793413335.5080159}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12564, "output": 395, "cost_usd": 0.029078, "seconds": 3.49, "at": 1793413336.2680197}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24683, "output": 391, "cost_usd": 0.053276, "seconds": 3.45, "at": 1793413339.002985}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 28217, "output": 377, "cost_usd": 0.060204, "seconds": 3.4, "at": 1793413339.1542315}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25558, "output": 433, "cost_usd": 0.055446, "seconds": 4.13, "at": 1793413340.500695}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13227, "output": 363, "cost_usd": 0.030084, "seconds": 3.38, "at": 1793413342.3824236}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 15181, "output": 379, "cost_usd": 0.034152, "seconds": 3.71, "at": 1793413342.8627732}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13513, "output": 405, "cost_usd": 0.031076, "seconds": 3.4, "at": 1793413343.8988445}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26241, "output": 406, "cost_usd": 0.056542, "seconds": 3.65, "at": 1793413346.1133897}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24232, "output": 376, "cost_usd": 0.052224, "seconds": 3.4, "at": 1793413346.3459423}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25137, "output": 353, "cost_usd": 0.053804, "seconds": 3.27, "at": 1793413347.2532387}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13980, "output": 381, "cost_usd": 0.03177, "seconds": 3.31, "at": 1793413349.423704}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13075, "output": 383, "cost_usd": 0.02998, "seconds": 3.47, "at": 1793413349.8145626}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12839, "output": 360, "cost_usd": 0.029278, "seconds": 3.26, "at": 1793413350.5194104}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25808, "output": 374, "cost_usd": 0.055356, "seconds": 3.46, "at": 1793413353.3647385}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26577, "output": 423, "cost_usd": 0.057384, "seconds": 4.0, "at": 1793413353.534608}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25137, "output": 374, "cost_usd": 0.054014, "seconds": 3.64, "at": 1793413354.1655376}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12963, "output": 366, "cost_usd": 0.029586, "seconds": 3.25, "at": 1793413356.6172993}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12839, "output": 333, "cost_usd": 0.029008, "seconds": 3.35, "at": 1793413357.5208895}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 14882, "output": 388, "cost_usd": 0.033644, "seconds": 4.05, "at": 1793413357.586882}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 22569, "output": 388, "cost_usd": 0.049018, "seconds": 3.2, "at": 1793413359.9126377}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25079, "output": 362, "cost_usd": 0.053778, "seconds": 3.38, "at": 1793413361.0672143}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26372, "output": 406, "cost_usd": 0.056804, "seconds": 3.94, "at": 1793413361.5564797}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12078, "output": 385, "cost_usd": 0.028006, "seconds": 3.34, "at": 1793413363.2543633}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13420, "output": 381, "cost_usd": 0.03065, "seconds": 3.43, "at": 1793413364.4985015}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12784, "output": 392, "cost_usd": 0.029488, "seconds": 3.63, "at": 1793413365.1842306}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25263, "output": 357, "cost_usd": 0.054096, "seconds": 3.09, "at": 1793413366.4395537}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24788, "output": 334, "cost_usd": 0.052916, "seconds": 3.13, "at": 1793413367.7072392}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25916, "output": 388, "cost_usd": 0.055712, "seconds": 3.51, "at": 1793413368.7854133}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13883, "output": 333, "cost_usd": 0.031096, "seconds": 3.02, "at": 1793413369.4589374}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13490, "output": 330, "cost_usd": 0.03028, "seconds": 3.34, "at": 1793413371.0434206}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13715, "output": 382, "cost_usd": 0.03125, "seconds": 3.31, "at": 1793413372.0981815}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24840, "output": 361, "cost_usd": 0.05329, "seconds": 3.38, "at": 1793413372.9167826}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24035, "output": 379, "cost_usd": 0.05186, "seconds": 3.36, "at": 1793413374.4790876}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24190, "output": 410, "cost_usd": 0.05248, "seconds": 3.56, "at": 1793413375.7457871}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12612, "output": 331, "cost_usd": 0.028534, "seconds": 3.24, "at": 1793413376.1540549}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12719, "output": 398, "cost_usd": 0.029418, "seconds": 3.54, "at": 1793413378.0228496}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13274, "output": 416, "cost_usd": 0.030708, "seconds": 3.45, "at": 1793413379.1990418}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26250, "output": 365, "cost_usd": 0.05615, "seconds": 3.55, "at": 1793413379.7859423}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24035, "output": 359, "cost_usd": 0.05166, "seconds": 3.37, "at": 1793413381.3907266}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25101, "output": 428, "cost_usd": 0.054482, "seconds": 3.6, "at": 1793413382.8813999}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 15038, "output": 387, "cost_usd": 0.033946, "seconds": 3.37, "at": 1793413383.1567569}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12719, "output": 402, "cost_usd": 0.029458, "seconds": 3.43, "at": 1793413384.825716}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12930, "output": 341, "cost_usd": 0.02927, "seconds": 3.35, "at": 1793413386.2334092}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23220, "output": 441, "cost_usd": 0.05085, "seconds": 4.11, "at": 1793413387.3400273}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23428, "output": 355, "cost_usd": 0.050406, "seconds": 3.44, "at": 1793413388.3465436}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23778, "output": 336, "cost_usd": 0.050916, "seconds": 3.38, "at": 1793413389.698267}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12726, "output": 336, "cost_usd": 0.028812, "seconds": 3.54, "at": 1793413390.881439}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12375, "output": 316, "cost_usd": 0.02791, "seconds": 2.91, "at": 1793413391.2607458}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12095, "output": 371, "cost_usd": 0.0279, "seconds": 3.63, "at": 1793413393.3355618}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24320, "output": 392, "cost_usd": 0.05256, "seconds": 3.68, "at": 1793413395.0228136}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25905, "output": 460, "cost_usd": 0.05641, "seconds": 4.13, "at": 1793413395.0947123}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23460, "output": 403, "cost_usd": 0.05095, "seconds": 3.55, "at": 1793413396.9612548}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13245, "output": 383, "cost_usd": 0.03032, "seconds": 3.59, "at": 1793413398.684675}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13428, "output": 386, "cost_usd": 0.030716, "seconds": 3.73, "at": 1793413398.7490406}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 11424, "output": 447, "cost_usd": 0.027318, "seconds": 3.88, "at": 1793413400.843992}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26417, "output": 375, "cost_usd": 0.056584, "seconds": 3.5, "at": 1793413402.3111174}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24555, "output": 382, "cost_usd": 0.05293, "seconds": 3.72, "at": 1793413402.587905}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25361, "output": 415, "cost_usd": 0.054872, "seconds": 3.76, "at": 1793413404.6923578}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13820, "output": 396, "cost_usd": 0.0316, "seconds": 3.6, "at": 1793413405.9085178}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13070, "output": 435, "cost_usd": 0.03049, "seconds": 3.6, "at": 1793413406.1860366}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13902, "output": 426, "cost_usd": 0.032064, "seconds": 3.43, "at": 1793413408.1247714}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26417, "output": 418, "cost_usd": 0.057014, "seconds": 3.57, "at": 1793413409.4846463}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23509, "output": 360, "cost_usd": 0.050618, "seconds": 3.55, "at": 1793413409.8110917}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25743, "output": 340, "cost_usd": 0.054886, "seconds": 3.17, "at": 1793413411.3783226}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12086, "output": 352, "cost_usd": 0.027692, "seconds": 3.16, "at": 1793413412.9671967}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13820, "output": 402, "cost_usd": 0.03166, "seconds": 3.9, "at": 1793413413.3851352}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13644, "output": 374, "cost_usd": 0.031028, "seconds": 3.79, "at": 1793413415.1727316}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24686, "output": 427, "cost_usd": 0.053642, "seconds": 4.21, "at": 1793413417.2563074}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 27174, "output": 467, "cost_usd": 0.059018, "seconds": 3.84, "at": 1793413417.3131611}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23918, "output": 380, "cost_usd": 0.051636, "seconds": 3.38, "at": 1793413418.651256}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12945, "output": 374, "cost_usd": 0.02963, "seconds": 3.27, "at": 1793413420.528077}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 14070, "output": 365, "cost_usd": 0.03179, "seconds": 3.3, "at": 1793413420.6128561}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13125, "output": 371, "cost_usd": 0.02996, "seconds": 3.12, "at": 1793413421.773495}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 22890, "output": 363, "cost_usd": 0.04941, "seconds": 3.25, "at": 1793413423.8613496}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 22659, "output": 377, "cost_usd": 0.049088, "seconds": 3.56, "at": 1793413424.2559378}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23842, "output": 351, "cost_usd": 0.051194, "seconds": 3.47, "at": 1793413425.318664}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12030, "output": 410, "cost_usd": 0.02816, "seconds": 3.43, "at": 1793413427.28772}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12127, "output": 375, "cost_usd": 0.028004, "seconds": 3.52, "at": 1793413427.7789726}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12762, "output": 385, "cost_usd": 0.029374, "seconds": 3.34, "at": 1793413428.6626773}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24396, "output": 370, "cost_usd": 0.052492, "seconds": 3.91, "at": 1793413431.278414}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23775, "output": 413, "cost_usd": 0.05168, "seconds": 3.84, "at": 1793413431.6954834}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23842, "output": 393, "cost_usd": 0.051614, "seconds": 3.59, "at": 1793413432.25744}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12805, "output": 371, "cost_usd": 0.02932, "seconds": 3.56, "at": 1793413434.8385315}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12762, "output": 337, "cost_usd": 0.028894, "seconds": 3.12, "at": 1793413435.378386}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13164, "output": 398, "cost_usd": 0.030308, "seconds": 3.71, "at": 1793413435.4051797}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24718, "output": 370, "cost_usd": 0.053136, "seconds": 3.44, "at": 1793413438.3609345}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26491, "output": 344, "cost_usd": 0.056422, "seconds": 3.55, "at": 1793413439.1192262}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26775, "output": 372, "cost_usd": 0.05727, "seconds": 5.87, "at": 1793413441.402074}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 14652, "output": 358, "cost_usd": 0.032884, "seconds": 3.21, "at": 1793413442.3282275}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12811, "output": 432, "cost_usd": 0.029942, "seconds": 4.15, "at": 1793413442.5123909}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 14023, "output": 392, "cost_usd": 0.031966, "seconds": 3.8, "at": 1793413445.2073627}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24027, "output": 364, "cost_usd": 0.051694, "seconds": 3.38, "at": 1793413445.7851136}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24918, "output": 429, "cost_usd": 0.054126, "seconds": 3.62, "at": 1793413446.2442224}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25201, "output": 360, "cost_usd": 0.054002, "seconds": 3.4, "at": 1793413448.6977272}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12933, "output": 386, "cost_usd": 0.029726, "seconds": 3.3, "at": 1793413449.0853794}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12575, "output": 369, "cost_usd": 0.02884, "seconds": 3.44, "at": 1793413449.682022}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12494, "output": 371, "cost_usd": 0.028698, "seconds": 3.26, "at": 1793413451.9539087}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26293, "output": 450, "cost_usd": 0.057086, "seconds": 3.89, "at": 1793413453.0657928}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24546, "output": 372, "cost_usd": 0.052812, "seconds": 3.41, "at": 1793413453.1791651}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26217, "output": 361, "cost_usd": 0.056044, "seconds": 3.42, "at": 1793413455.4516351}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12726, "output": 411, "cost_usd": 0.029562, "seconds": 3.59, "at": 1793413456.653085}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12643, "output": 356, "cost_usd": 0.028846, "seconds": 3.51, "at": 1793413456.6897051}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12854, "output": 351, "cost_usd": 0.029218, "seconds": 3.15, "at": 1793413458.601971}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 26007, "output": 331, "cost_usd": 0.055324, "seconds": 3.21, "at": 1793413459.9520657}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24546, "output": 405, "cost_usd": 0.053142, "seconds": 3.59, "at": 1793413460.2859936}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 25403, "output": 403, "cost_usd": 0.054836, "seconds": 3.89, "at": 1793413462.575902}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 14268, "output": 382, "cost_usd": 0.032356, "seconds": 3.43, "at": 1793413463.385927}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12643, "output": 341, "cost_usd": 0.028696, "seconds": 3.17, "at": 1793413463.4600425}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13890, "output": 341, "cost_usd": 0.03119, "seconds": 3.29, "at": 1793413465.86872}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23531, "output": 382, "cost_usd": 0.050882, "seconds": 3.48, "at": 1793413466.9445446}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23704, "output": 338, "cost_usd": 0.050788, "seconds": 3.69, "at": 1793413467.243814}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24527, "output": 377, "cost_usd": 0.052824, "seconds": 3.65, "at": 1793413469.5980937}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 13175, "output": 333, "cost_usd": 0.02968, "seconds": 3.42, "at": 1793413470.3657928}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12666, "output": 339, "cost_usd": 0.028722, "seconds": 3.26, "at": 1793413470.5024385}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12943, "output": 460, "cost_usd": 0.030486, "seconds": 4.18, "at": 1793413473.7781377}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 22688, "output": 431, "cost_usd": 0.049686, "seconds": 3.91, "at": 1793413474.3601608}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 23101, "output": 393, "cost_usd": 0.050132, "seconds": 3.92, "at": 1793413474.4995012}
+{"node": "decider:full", "model": "claude-sonnet-5-5", "input": 24910, "output": 352, "cost_usd": 0.05334, "seconds": 3.47, "at": 1793413477.3231723}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12889, "output": 358, "cost_usd": 0.029358, "seconds": 3.2, "at": 1793413477.5649912}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12501, "output": 399, "cost_usd": 0.028992, "seconds": 3.85, "at": 1793413478.3463101}
+{"node": "decider:single", "model": "claude-sonnet-5-5", "input": 12870, "output": 393, "cost_usd": 0.02967, "seconds": 3.77, "at": 1793413481.1014068}

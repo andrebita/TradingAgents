@@ -1,0 +1,93 @@
+{
+  "run_id": "exp2_pilot_full",
+  "cells_with_outcome": 45,
+  "cells_without_outcome": 15,
+  "holding": [
+    20.0
+  ],
+  "share_beating_benchmark": 0.5333333333333333,
+  "arms": {
+    "full": {
+      "cells": 45,
+      "coverage": 1.0,
+      "brier": 0.25430222222222226,
+      "mean_probability": 0.4617777777777778,
+      "share_above_50": 0.0,
+      "share_below_50": 0.8222222222222222,
+      "hit_rate_of_lean": 0.4594594594594595,
+      "rank_ic_mean_by_date": 0.054847768435002185
+    },
+    "single": {
+      "cells": 45,
+      "coverage": 1.0,
+      "brier": 0.25350444444444453,
+      "mean_probability": 0.47533333333333333,
+      "share_above_50": 0.08888888888888889,
+      "share_below_50": 0.7555555555555555,
+      "hit_rate_of_lean": 0.39473684210526316,
+      "rank_ic_mean_by_date": 0.020589713684421567
+    },
+    "original": {
+      "cells": 45,
+      "coverage": 1.0,
+      "brier": 0.2569711111111111,
+      "mean_probability": 0.4495555555555555,
+      "share_above_50": 0.022222222222222223,
+      "share_below_50": 0.8444444444444444,
+      "hit_rate_of_lean": 0.46153846153846156,
+      "rank_ic_mean_by_date": 0.03911714903669291
+    }
+  },
+  "paired_full_minus_single": {
+    "cells": 45,
+    "windows": 3,
+    "mean_delta": 0.0007977777777777793,
+    "mean_delta_by_window": {
+      "2026-07-06": 0.00314,
+      "2026-08-03": -0.00152,
+      "2026-08-31": 0.000773
+    },
+    "mean_of_window_means": 0.0007977777777777792,
+    "ci95_over_windows": [
+      -0.00499096915932974,
+      0.006586524714885298
+    ],
+    "sign_flip_p_over_windows": 0.75
+  },
+  "paired_original_minus_single": {
+    "cells": 45,
+    "windows": 3,
+    "mean_delta": 0.0034666666666666665,
+    "mean_delta_by_window": {
+      "2026-07-06": 0.002833,
+      "2026-08-03": -0.010433,
+      "2026-08-31": 0.018
+    },
+    "mean_of_window_means": 0.003466666666666667,
+    "ci95_over_windows": [
+      -0.0318786168101729,
+      0.03881195014350623
+    ],
+    "sign_flip_p_over_windows": 0.75
+  },
+  "failed_decisions": [],
+  "repeat_spread_pp": {
+    "cells": 12,
+    "mean": 0.5833333333333334,
+    "max": 2.0
+  },
+  "cost_usd_by_node": {
+    "Aggressive Analyst": 0.1542,
+    "Bear Researcher": 0.3284,
+    "Bull Researcher": 0.1871,
+    "Conservative Analyst": 0.193,
+    "Neutral Analyst": 0.2107,
+    "Portfolio Manager": 1.5014,
+    "Research Manager": 1.4146,
+    "Trader": 0.0597,
+    "agent": 0.9035,
+    "decider:full": 3.5489,
+    "decider:single": 1.9886
+  },
+  "cost_usd_total": 10.4902
+}
