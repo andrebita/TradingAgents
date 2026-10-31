@@ -981,8 +981,41 @@ falhas de reconstrução em vez de contorná-las.
    qualidade, valor e QVM depois, porque exigem o histórico dos demonstrativos.
 3. **Atribuição com fatores do NEFIN (§7).**
 
-**Pendente antes de calcular o §8:** a definição de "resultado bom em 5 anos" escolhida pelo investidor. Ela entra
-neste registro antes de qualquer número.
+**Resultado bom em 5 anos (escolha do investidor, congelada antes de calcular o §8).** Bom é terminar os 5 anos
+com **mais patrimônio, depois da liquidação e dos impostos, do que se tudo tivesse ficado no Tesouro Selic**, com
+os mesmos aportes nas mesmas datas.
+
+- **Medida primária:** a probabilidade de ganhar do Tesouro Selic, estimada de duas formas:
+  - nas janelas históricas de 60 meses, com um início a cada mês;
+  - num bootstrap circular de blocos de 12 meses dos retornos mensais conjuntos das classes, com 10.000
+    caminhos de 60 meses e semente 521.
+
+  As janelas se sobrepõem e o bootstrap reamostra a mesma história, então nenhuma das duas cria observações
+  independentes.
+- **Também publicados:**
+  - o tamanho da perda contra a Selic quando ela acontece: mediana e percentil 5%;
+  - a probabilidade de ganho real positivo;
+  - TIR real, queda máxima diária, pior janela e tempo de recuperação.
+- **Políticas comparadas** (§8):
+  - (A) 40% BOVA11, 60% Selic;
+  - (B) 60% BOVA11, 40% Selic;
+  - (C) 20% BOVA11, 40% ações globais, 40% Selic;
+  - 80% em ações, só como diagnóstico.
+
+  Todas partem de R$ 125 mil mais R$ 3 mil por mês. As escalas de R$ 100 mil e R$ 150 mil são sensibilidades.
+- **Regra de decisão:**
+  - a política recomendada é a de maior probabilidade no bootstrap;
+  - um empate de até 5 pontos se resolve pela menor perda no percentil 5%;
+  - se nenhuma política ganhar da Selic em mais de 50% dos caminhos, a recomendação volta ao investidor como
+    "o risco não compensou no histórico", sem escolha automática.
+- **Execução simplificada no módulo de alocação, declarada antes:**
+  - passo mensal, com decisão e execução no último pregão do mês;
+  - cotas de ETF em frações, porque os valores são grandes perto do preço da cota;
+  - 0,15% por ordem de ETF;
+  - IR de 15% sobre o ganho de ETF, sem isenção, com preço médio;
+  - Tesouro Selic com taxa de custódia de 0,20% ao ano e IR regressivo por lote, cobrado no resgate e na
+    liquidação final.
+  - A queda máxima diária vem do período inteiro, com as posições fixas entre as decisões mensais.
 
 ## Custo estimado da execução com LLM
 
