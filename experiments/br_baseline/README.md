@@ -942,6 +942,48 @@ própria, com o aviso de que não mostrou vantagem firme depois dos atritos.
   Dividendos acima de R$ 50 mil por mês da mesma empresa pagam 10% desde 2026 (Lei 15.270/2025), o que não
   alcança carteiras deste tamanho.
 
+## Revisão 5: pré-registro da disputa de ações e da alocação (31/10/2026, antes de qualquer resultado)
+
+**Origem.** A revisão 5 pôs a regra de dividendos em julgamento, do zero. O veredito foi não usá-la como motor da
+carteira. O revisor propôs um protocolo, registrado **sem alterações** em `protocols/protocolo_r5.md`
+(sha256 `5e1a908671a41b527f7ab4103e7f8a8ef63fa2a41c8d66e253dee8444ab449b9`). A checagem exploratória do NEFIN
+2001–2011 feita pelo revisor está em `protocols/calculos_r5_nefin.py`
+(sha256 `ae10c9b55fc2afce149c18a531993be613609e2aad27baf28d1c2d478185f1d8`). Nenhum número da disputa foi
+calculado antes deste registro.
+
+**Decisões do investidor (31/10/2026).**
+- **Horizonte:** 5 anos.
+- **Objetivo:** a **maior chance de um resultado bom em 5 anos**, e não o maior patrimônio esperado.
+- **Exterior:** liberado, via ETFs negociados na B3.
+- **Queda de 30%:** o investidor quer o diretor financeiro para decidir. O comitê precisa de um plano de crise
+  escrito antes da crise.
+- **API:** nenhuma reunião paga até os testes. Para validar o fluxo, só modelos baratos.
+
+**Desvios conhecidos, declarados antes de rodar.** Valem para o protocolo §2 e §3; o protocolo manda publicar
+falhas de reconstrução em vez de contorná-las.
+
+1. **Empresas que saíram da bolsa.** O Yahoo não as tem. Sem as séries históricas da B3 (COTAHIST), o universo
+   da disputa de ações tem viés de sobrevivência. Pelo §2, o retrospectivo fica então **sem valor
+   confirmatório** para os trechos afetados.
+2. **JCP contra dividendos.** O Yahoo não separa. Aplica-se o limite do §3: resultados com 0% e com 100% dos
+   proventos tratados como JCP.
+3. **Data de pagamento dos proventos.** O Yahoo só tem a data ex. A data de pagamento é aproximada como a data
+   ex mais 30 dias, com o recebível no patrimônio entre as duas.
+4. **Versões dos demonstrativos da CVM.** Só a última versão está disponível. Uma reapresentação posterior pode
+   faltar no passado (§2).
+5. **Ações globais.** O WRLD11 só existe desde 2021. Antes disso, a série é uma reconstrução hipotética com VT,
+   câmbio PTAX, retenção de 30% sobre os dividendos americanos e a taxa do WRLD11, sempre apresentada à parte
+   (§8).
+
+**Ordem de execução.**
+1. **Módulo de alocação (§8).** É o que mais pesa no objetivo do investidor.
+2. **Motor comum e disputa de seleção (§1–§6).** Momentum e baixa volatilidade primeiro, porque usam só preços;
+   qualidade, valor e QVM depois, porque exigem o histórico dos demonstrativos.
+3. **Atribuição com fatores do NEFIN (§7).**
+
+**Pendente antes de calcular o §8:** a definição de "resultado bom em 5 anos" escolhida pelo investidor. Ela entra
+neste registro antes de qualquer número.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
