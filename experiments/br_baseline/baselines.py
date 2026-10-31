@@ -167,20 +167,32 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("--out", required=True)
     p.add_argument("--tickers", required=True)
-    p.add_argument("--start", required=True)
-    p.add_argument("--end", required=True)
+    p.add_argument("--start", help="first grid date (with --end and --every), unless --dates")
+    p.add_argument("--end")
     p.add_argument("--every", type=int, default=7)
+    p.add_argument("--dates", help="comma-separated analysis dates; replaces the start/end/every grid, so the "
+                                   "cells match a run made on explicit dates")
     p.add_argument("--holding", type=int, default=5)
     p.add_argument("--label", default=None)
     p.add_argument("--random-seeds", type=int, default=1000)
     args = p.parse_args()
 
+    if not args.dates and not (args.start and args.end):
+        p.error("give --start and --end, or --dates")
+    if args.dates:
+        analysis_dates = [pd.Timestamp(d.strip()) for d in args.dates.split(",") if d.strip()]
+        args.start, args.end = min(analysis_dates).strftime("%Y-%m-%d"), max(analysis_dates).strftime("%Y-%m-%d")
+    else:
+        analysis_dates = grid(args.start, args.end, args.every)
     label = args.label or f"{args.start}_{args.end}"
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     tickers = [t.strip() for t in args.tickers.split(",") if t.strip()]
     lo = (datetime.strptime(args.start, "%Y-%m-%d") - timedelta(days=420)).strftime("%Y-%m-%d")
-    hi = (datetime.strptime(args.end, "%Y-%m-%d") + timedelta(days=30)).strftime("%Y-%m-%d")
+    # Reach far enough past the last date for its holding window to trade: about
+    # 7 calendar days per 5 sessions, plus room for holidays (the end is exclusive).
+    hi = (datetime.strptime(args.end, "%Y-%m-%d")
+          + timedelta(days=args.holding * 7 // 5 + 15)).strftime("%Y-%m-%d")
     # Today's bar is the live session, not a close: drop it as settlement does.
     today = pd.Timestamp.now().normalize()
     bench = closes(BENCH, lo, hi)
@@ -193,7 +205,7 @@ def main():
         if s.empty:
             missing.append(t)
             continue
-        for date in grid(args.start, args.end, args.every):
+        for date in analysis_dates:
             o = outcome(s, bench, date, args.holding)
             if o is None:
                 continue
@@ -214,11 +226,13 @@ def main():
                "generated_at": datetime.now().isoformat(timespec="seconds"), "strategies": {}}
     # Blocks span at least six weeks and twice the holding window, in grid dates:
     # a holding window of h sessions covers about h*7/5 calendar days.
-    block = max(-(-42 // args.every), -(-(2 * args.holding * 7 // 5) // args.every))
+    step = (int(np.median(np.diff([d.toordinal() for d in analysis_dates]))) if len(analysis_dates) > 1
+            else args.every)
+    block = max(-(-42 // step), -(-(2 * args.holding * 7 // 5) // step))
     # The requested grid, not just the dates that produced cells: a missing date
     # stays a gap in calendar time instead of joining its neighbours.
     # Dates past the last settled one are not abstentions, only too recent.
-    grid_dates = [d.strftime("%Y-%m-%d") for d in grid(args.start, args.end, args.every)
+    grid_dates = [d.strftime("%Y-%m-%d") for d in analysis_dates
                   if d.strftime("%Y-%m-%d") <= cells["date"].max()]
     summary["block_dates"] = block
     for k in strategies:

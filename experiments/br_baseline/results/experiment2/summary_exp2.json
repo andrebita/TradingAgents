@@ -20,11 +20,11 @@
   "missing": [],
   "start": "2026-07-06",
   "end": "2026-09-29",
-  "every_days": 28,
+  "every_days": 7,
   "holding_sessions": 20,
   "benchmark": "^BVSP",
   "cost_round_trip": 0.002,
-  "generated_at": "2026-10-31T02:24:56",
+  "generated_at": "2026-10-31T02:50:46",
   "strategies": {
     "always_long": {
       "cells": 60,
@@ -32,15 +32,15 @@
       "long": 60,
       "short": 0,
       "hold": 0,
-      "hit_rate": 0.5,
-      "mean_signed_alpha": -0.004708183939859234,
-      "mean_signed_alpha_net": -0.006708183939859236,
-      "mean_alpha_long": -0.004708183939859234,
+      "hit_rate": 0.5166666666666667,
+      "mean_signed_alpha": -0.003546621160530026,
+      "mean_signed_alpha_net": -0.0055466211605300275,
+      "mean_alpha_long": -0.003546621160530026,
       "mean_alpha_short_cells": null,
-      "t_stat": -0.4192580042589432,
+      "t_stat": -0.28550406930136396,
       "ci95_signed_alpha": [
-        -0.026261521295407375,
-        0.018934388119253853
+        -0.027064584543431653,
+        0.02232366824530499
       ],
       "ci95_signed_alpha_blocks": null,
       "block_dates": 2
@@ -48,18 +48,18 @@
     "mom_20d": {
       "cells": 60,
       "directional": 60,
-      "long": 34,
-      "short": 26,
+      "long": 33,
+      "short": 27,
       "hold": 0,
       "hit_rate": 0.4666666666666667,
-      "mean_signed_alpha": -0.009336723140526046,
-      "mean_signed_alpha_net": -0.011336723140526047,
-      "mean_alpha_long": -0.012392565070928188,
-      "mean_alpha_short_cells": 0.005340622154615551,
-      "t_stat": -0.8350798283825551,
+      "mean_signed_alpha": -0.018585741247145474,
+      "mean_signed_alpha_net": -0.020585741247145475,
+      "mean_alpha_long": -0.020120329461523184,
+      "mean_alpha_short_cells": 0.016710133429572723,
+      "t_stat": -1.524280188632607,
       "ci95_signed_alpha": [
-        -0.030745179494350582,
-        0.01178996159409908
+        -0.04137197944648421,
+        0.0039164274519817265
       ],
       "ci95_signed_alpha_blocks": null,
       "block_dates": 2
@@ -67,18 +67,18 @@
     "mom_60d": {
       "cells": 60,
       "directional": 60,
-      "long": 23,
-      "short": 37,
+      "long": 24,
+      "short": 36,
       "hold": 0,
-      "hit_rate": 0.48333333333333334,
-      "mean_signed_alpha": 0.003885074352826094,
-      "mean_signed_alpha_net": 0.001885074352826092,
-      "mean_alpha_long": -0.001073621200478009,
-      "mean_alpha_short_cells": -0.006967506723798914,
-      "t_stat": 0.3457967789182491,
+      "hit_rate": 0.45,
+      "mean_signed_alpha": 0.006122280444341686,
+      "mean_signed_alpha_net": 0.004122280444341684,
+      "mean_alpha_long": 0.003219574104764575,
+      "mean_alpha_short_cells": -0.00805741800405976,
+      "t_stat": 0.49352084726753653,
       "ci95_signed_alpha": [
-        -0.017806466189837653,
-        0.026767593789522825
+        -0.01715034641897303,
+        0.031000726918504144
       ],
       "ci95_signed_alpha_blocks": null,
       "block_dates": 2
@@ -89,15 +89,15 @@
       "long": 49,
       "short": 11,
       "hold": 0,
-      "hit_rate": 0.5166666666666667,
-      "mean_signed_alpha": 0.009468794223642937,
-      "mean_signed_alpha_net": 0.007468794223642935,
-      "mean_alpha_long": 0.0029146593574185934,
-      "mean_alpha_short_cells": -0.03866448590046046,
-      "t_stat": 0.8470349445475549,
+      "hit_rate": 0.5333333333333333,
+      "mean_signed_alpha": 0.011055972455230332,
+      "mean_signed_alpha_net": 0.00905597245523033,
+      "mean_alpha_long": 0.004597562017163452,
+      "mean_alpha_short_cells": -0.039825255315710066,
+      "t_stat": 0.8954177034736398,
       "ci95_signed_alpha": [
-        -0.011400148216929393,
-        0.03111408846704326
+        -0.012407924805185601,
+        0.03490217661144584
       ],
       "ci95_signed_alpha_blocks": null,
       "block_dates": 2
@@ -105,18 +105,18 @@
     "reversal_5d": {
       "cells": 60,
       "directional": 60,
-      "long": 28,
-      "short": 32,
+      "long": 27,
+      "short": 33,
       "hold": 0,
-      "hit_rate": 0.36666666666666664,
-      "mean_signed_alpha": -0.01291630409330989,
-      "mean_signed_alpha_net": -0.014916304093309891,
-      "mean_alpha_long": -0.018883380035538348,
-      "mean_alpha_short_cells": 0.00769511264385999,
-      "t_stat": -1.1615282801191087,
+      "hit_rate": 0.4,
+      "mean_signed_alpha": -0.00828293686630976,
+      "mean_signed_alpha_net": -0.010282936866309761,
+      "mean_alpha_long": -0.013143953363155316,
+      "mean_alpha_short_cells": 0.004305741550708848,
+      "t_stat": -0.6688400786323659,
       "ci95_signed_alpha": [
-        -0.034563724116903144,
-        0.008566445580148166
+        -0.03367292870312002,
+        0.016124905948161072
       ],
       "ci95_signed_alpha_blocks": null,
       "block_dates": 2
@@ -124,18 +124,18 @@
     "px_gt_sma50": {
       "cells": 60,
       "directional": 60,
-      "long": 33,
-      "short": 27,
+      "long": 31,
+      "short": 29,
       "hold": 0,
-      "hit_rate": 0.48333333333333334,
-      "mean_signed_alpha": -0.003684840816749435,
-      "mean_signed_alpha_net": -0.005684840816749437,
-      "mean_alpha_long": -0.007630022506007881,
-      "mean_alpha_short_cells": -0.0011370479145664432,
-      "t_stat": -0.327941326874378,
+      "hit_rate": 0.4666666666666667,
+      "mean_signed_alpha": -0.013085409918715872,
+      "mean_signed_alpha_net": -0.015085409918715873,
+      "mean_alpha_long": -0.01609551394765732,
+      "mean_alpha_short_cells": 0.009867712508468116,
+      "t_stat": -1.062678896583879,
       "ci95_signed_alpha": [
-        -0.024991885160766694,
-        0.017869441467067062
+        -0.035698813690844114,
+        0.01053599217217023
       ],
       "ci95_signed_alpha_blocks": null,
       "block_dates": 2
@@ -146,15 +146,15 @@
       "long": 34,
       "short": 26,
       "hold": 0,
-      "hit_rate": 0.4,
-      "mean_signed_alpha": -0.014766517258116455,
-      "mean_signed_alpha_net": -0.016766517258116457,
-      "mean_alpha_long": -0.017183559880566784,
-      "mean_alpha_short_cells": 0.011605769213373716,
-      "t_stat": -1.3325988854339192,
+      "hit_rate": 0.4166666666666667,
+      "mean_signed_alpha": -0.013138101955669633,
+      "mean_signed_alpha_net": -0.015138101955669635,
+      "mean_alpha_long": -0.014721814514293816,
+      "mean_alpha_short_cells": 0.011067093225161084,
+      "t_stat": -1.0670404784708039,
       "ci95_signed_alpha": [
-        -0.0355413335522056,
-        0.007450502994593316
+        -0.03602462694590217,
+        0.011929736351099804
       ],
       "ci95_signed_alpha_blocks": null,
       "block_dates": 2
@@ -186,118 +186,118 @@
     "hit_rate": {
       "p2.5": 0.36666666666666664,
       "p50": 0.5,
-      "p97.5": 0.6333333333333333
+      "p97.5": 0.6166666666666667
     },
     "mean_signed_alpha": {
-      "p2.5": -0.022415126208267983,
-      "p50": -0.0006072435205075259,
-      "p97.5": 0.02223882265563507
+      "p2.5": -0.02477826545229282,
+      "p50": -0.0005829579444039297,
+      "p97.5": 0.024605877240544617
     }
   },
   "per_ticker_alpha": [
     {
       "ticker": "ABEV3.SA",
       "count": 4,
-      "mean": -0.00625,
-      "std": 0.05135,
+      "mean": -0.01304,
+      "std": 0.03879,
       "share_beating_ibov": 0.25
     },
     {
       "ticker": "B3SA3.SA",
       "count": 4,
-      "mean": 0.01638,
-      "std": 0.08541,
+      "mean": 0.01036,
+      "std": 0.09728,
       "share_beating_ibov": 0.75
     },
     {
       "ticker": "BBAS3.SA",
       "count": 4,
-      "mean": -0.02056,
-      "std": 0.10122,
+      "mean": -0.02706,
+      "std": 0.11393,
       "share_beating_ibov": 0.75
     },
     {
       "ticker": "BBDC4.SA",
       "count": 4,
-      "mean": -0.03192,
-      "std": 0.05101,
+      "mean": -0.04178,
+      "std": 0.06717,
       "share_beating_ibov": 0.25
     },
     {
       "ticker": "EQTL3.SA",
       "count": 4,
-      "mean": -0.02784,
-      "std": 0.06066,
+      "mean": -0.03403,
+      "std": 0.06776,
       "share_beating_ibov": 0.25
     },
     {
       "ticker": "GGBR4.SA",
       "count": 4,
-      "mean": 0.02897,
-      "std": 0.09813,
+      "mean": 0.04794,
+      "std": 0.11359,
       "share_beating_ibov": 0.5
     },
     {
       "ticker": "LREN3.SA",
       "count": 4,
-      "mean": -0.0712,
-      "std": 0.09956,
+      "mean": -0.0747,
+      "std": 0.10046,
       "share_beating_ibov": 0.25
     },
     {
       "ticker": "PETR4.SA",
       "count": 4,
-      "mean": 0.08726,
-      "std": 0.05867,
+      "mean": 0.09115,
+      "std": 0.06357,
       "share_beating_ibov": 1.0
     },
     {
       "ticker": "PRIO3.SA",
       "count": 4,
-      "mean": 0.05961,
-      "std": 0.13518,
+      "mean": 0.06348,
+      "std": 0.14188,
       "share_beating_ibov": 0.75
     },
     {
       "ticker": "RADL3.SA",
       "count": 4,
-      "mean": -0.02303,
-      "std": 0.07487,
+      "mean": -0.02291,
+      "std": 0.07479,
       "share_beating_ibov": 0.5
     },
     {
       "ticker": "RENT3.SA",
       "count": 4,
-      "mean": -0.04099,
-      "std": 0.13703,
+      "mean": -0.04996,
+      "std": 0.14776,
       "share_beating_ibov": 0.25
     },
     {
       "ticker": "SBSP3.SA",
       "count": 4,
-      "mean": -0.03604,
-      "std": 0.07743,
-      "share_beating_ibov": 0.25
+      "mean": -0.03332,
+      "std": 0.07918,
+      "share_beating_ibov": 0.5
     },
     {
       "ticker": "SUZB3.SA",
       "count": 4,
-      "mean": 0.03837,
-      "std": 0.093,
+      "mean": 0.05416,
+      "std": 0.12043,
       "share_beating_ibov": 0.75
     },
     {
       "ticker": "VALE3.SA",
       "count": 4,
-      "mean": -0.04514,
-      "std": 0.07743,
+      "mean": -0.04526,
+      "std": 0.07744,
       "share_beating_ibov": 0.25
     },
     {
       "ticker": "WEGE3.SA",
       "count": 4,
-      "mean": 0.00176,
-      "std": 0.0319,
+      "mean": 0.02178,
+      "std": 0.05451,
       "share_beating_ibov": 0.75
     }
   ]

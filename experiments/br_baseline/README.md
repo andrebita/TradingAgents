@@ -313,6 +313,36 @@ trader e equipe de risco) melhora a previsão em relação a um decisor único c
 - **Como ler o resultado:** com 4 janelas é um piloto. Ele permite abandonar uma configuração, corrigir
   a medição ou decidir ampliar; não permite afirmar superioridade.
 
+## Experimento 2: resultado (`exp2_pilot_full`, 60 células, 4 janelas, US$ 10,49)
+
+Avaliação com `experiment2_eval.py` (`results/experiment2/exp2_eval.json`). As 60 células têm
+desfecho; 51,7% delas bateram o Ibovespa em 20 pregões.
+
+| Braço | Brier | Prob. média | Acima de 50% | Abaixo de 50% | IC de ranking (média das datas) |
+|---|---|---|---|---|---|
+| completo (pacote + deliberação) | 0,2528 | 46,1% | 0% | 87% | +0,08 |
+| único (só o pacote) | 0,2506 | 47,5% | 8% | 78% | +0,09 |
+| original (gestor do grafo) | 0,2578 | 44,6% | 2% | 85% | −0,02 |
+| sempre 50% | 0,2500 | 50% | — | — | — |
+
+- **Completo menos único:** +0,0022 de Brier por célula. Médias por janela: +0,0031, −0,0015, +0,0008 e
+  +0,0065. IC95 entre janelas de −0,0032 a +0,0076; p de troca de sinais 0,375. Não há diferença detectável.
+- **Calibração:** os três braços são sistematicamente pessimistas (média de 45% a 47,5% contra 51,7% de
+  acerto real). Mesmo centrados na taxa real (ajuste feito dentro da própria amostra, só para ilustrar), o
+  Brier fica em ~0,249: não há discriminação além da taxa de base.
+- **IC de ranking por data** (completo): +0,12, +0,54, −0,50 e +0,17. É ruído com 15 ações por data.
+- **Variabilidade:** as 15 células de 06/07 rodaram duas vezes do zero. Diferença média de 1,6 p.p. no
+  completo, 1,1 no único e 2,3 no gestor original. Repetindo só o decisor sobre o mesmo pacote, 0,6 p.p.
+- **Custo:** analistas US$ 0,90; meio do grafo (debate, plano, trader, risco, gestor) US$ 4,05;
+  decisor completo US$ 3,55; decisor único US$ 1,99. O braço completo custa cerca de 3 vezes o único
+  (~US$ 8,50 contra ~US$ 2,90) sem ganho mensurável.
+- **Baselines nas mesmas células:** todos dentro da faixa do aleatório (36,7% a 61,7% de acerto).
+
+Leitura: neste piloto, nem o sistema multiagente completo nem um decisor único com as mesmas evidências
+mostram capacidade de prever o retorno relativo ao Ibovespa em 20 pregões. O processamento depois dos
+analistas não melhora a previsão e triplica o custo. Com 4 janelas, isso não exclui uma vantagem pequena,
+mas uma vantagem grande seria visível.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
