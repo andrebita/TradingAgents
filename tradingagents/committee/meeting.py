@@ -64,10 +64,10 @@ def orders_json(plan) -> list[dict]:
 def rule_decision(alloc: dict, failure: str | None = None) -> director.DirectorDecision:
     """The rule's figures, as the decision of a meeting without the director (by choice or by failure)."""
     if failure:
-        letter = (f"O diretor não respondeu nesta reunião ({failure}). As decisões abaixo são as da regra, "
-                  "conferidas pela política, sem a leitura dele.")
+        letter = (f"O diretor não respondeu nesta reunião ({failure}). O plano acima é o da regra, conferido pela "
+                  "política, sem a leitura do diretor.")
     else:
-        letter = "Reunião sem LLM: as decisões abaixo são as da regra, sem leitura do diretor."
+        letter = "Reunião sem LLM: o plano acima é o da regra, sem leitura do diretor."
     return director.DirectorDecision(
         letter=letter, contribution_to_stocks=alloc["rule_contribution_to_stocks"],
         monthly_transfer_to_stocks=alloc["rule_monthly_transfer"],
@@ -92,11 +92,12 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
         for x in wealth.listed:
             quantities[x.code.strip().upper()] = quantities.get(x.code.strip().upper(), 0.0) + x.quantity
         px = b3_market.histories(set(quantities))
-        market = {}
+        market, closes = {}, []
         for code, quantity in quantities.items():
             close = px[code]["Close"].loc[:pd.Timestamp(today)] if code in px else pd.Series(dtype=float)
             if len(close) and (pd.Timestamp(today) - close.index[-1]).days <= PRICE_MAX_AGE_DAYS:
                 market[code] = quantity * float(close.iloc[-1])
+                closes.append(close.index[-1].date())
         alloc = analysts.allocation(policy, wealth, market, contribution)
         values = wealth.valuation(market).of_class("acoes")
         models = analysts.Models(config, Budget(policy.budget_usd)) if use_llm else None
@@ -122,12 +123,14 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
         reports = [fixed, equities, risk, tax, macro]
 
         decision = rule_decision(alloc)
+        director_ran = False
         if models is not None:
             try:
                 decision = director.ask(models.llm(policy.models.director, effort="high",
                                                    max_output=analysts.DIRECTOR_MAX_OUTPUT),
                                         policy, alloc, reports, orders_json(eq.plan), budget=models.budget,
                                         max_output=analysts.DIRECTOR_MAX_OUTPUT)
+                director_ran = True
             except Exception as exc:  # a refusal, an invalid answer or the budget: the rule decides
                 logger.warning("The director failed: %s", exc)
                 decision = rule_decision(alloc, f"{type(exc).__name__}: {exc}"[:200])
@@ -145,7 +148,9 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
             Shadow(out / "sombra_diretor.json").record(eq.day.isoformat(), targets)
 
     spent = models.spent if models else 0.0
-    letter = render(eq.day, policy, alloc, checked, final, reports, spent, models)
+    data = {"wealth_as_of": wealth.as_of, "prices_as_of": max(closes) if closes else None,
+            "director": policy.models.director if director_ran else None}
+    letter = render(eq.day, policy, wealth, alloc, checked, final, reports, spent, models, data)
     path = out / f"carta_{eq.day.isoformat()}.md"
     path.write_text(letter, encoding="utf-8")
     with (out / "decisoes.jsonl").open("a", encoding="utf-8") as fh:
@@ -161,34 +166,74 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
     return Meeting(letter, path, spent, checked, reports)
 
 
-def render(day: date, policy: InvestmentPolicy, alloc: dict, checked: director.Checked, final, reports: list,
-           spent: float, models) -> str:
-    d = checked.decision
-    out = [f"# Comitê de Investimentos: reunião de {day.isoformat()}", "",
-           "> Recomendações para sua decisão, dentro da sua política de investimentos. Não é garantia de resultado.",
-           "", f"## Carta do Diretor Financeiro ({policy.models.director})", "", d.letter.strip(), "",
-           "## Decisões do mês, conferidas pela política", "",
-           "| | Hoje | Alvo da política |", "|---|---|---|",
-           f"| Reserva de emergência (caixa e pós-fixado diário) | {brl(alloc['reserve_eligible'])} "
-           f"| {brl(alloc['reserve_target'])} ({policy.reserve_months} meses) |",
-           f"| Ações (do patrimônio investível) | {brl(alloc['stocks'])} ({pct(alloc['stock_share_of_investable']).lstrip('+')}) "
-           f"| {pct(policy.stock_target, 0).lstrip('+')} |",
-           f"| Fundos listados (FII, Fiagro, Infra) | {brl(alloc['listed_funds'])} "
-           f"({pct(alloc['listed_funds_share_of_investable']).lstrip('+')}) | até {pct(policy.listed_funds_max, 0).lstrip('+')} |",
-           "", f"- Aporte do mês: {brl(alloc['contribution'])}, dos quais **{brl(checked.contribution_to_stocks)} "
-           "para ações**" + (f" e **{brl(checked.to_reserve)} para completar a reserva**" if checked.to_reserve else "")
-           + ".",
-           f"- Transferência da renda fixa para ações: **{brl(checked.transfer)}** "
-           f"(regra: {brl(alloc['rule_monthly_transfer'])} por mês em {alloc['transition_months']} meses)"
-           + (", saindo de " + ", ".join(f"{n} ({brl(v)})" for n, v in checked.transfer_sources)
-              if checked.transfer_sources else "") + "."]
+def flows(alloc: dict, checked: director.Checked) -> list[tuple[str, str, float]]:
+    """The month's money movements, (from, to, R$), as the policy check allowed them."""
+    out = []
+    if checked.to_reserve:
+        out.append(("Aporte", "Reserva de emergência (pós-fixado diário)", checked.to_reserve))
+    if checked.contribution_to_stocks:
+        out.append(("Aporte", "Ações (ordens abaixo)", checked.contribution_to_stocks))
+    out += [(name, "Ações (ordens abaixo)", amount) for name, amount in checked.transfer_sources]
+    out += [(a.instrument, "Renda fixa (resgate)", a.amount) for a in checked.fixed_income_actions
+            if a.action == "resgatar"]
+    out += [("Aporte e resgates", a.instrument, a.amount) for a in checked.fixed_income_actions
+            if a.action == "aplicar"]
     if checked.to_daily_post_fixed:
-        out.append(f"- Fica na renda fixa pós-fixada de liquidez diária: {brl(checked.to_daily_post_fixed)}.")
+        out.append(("Aporte e resgates", "Renda fixa pós-fixada de liquidez diária", checked.to_daily_post_fixed))
+    return out
+
+
+def render(day: date, policy: InvestmentPolicy, wealth: Wealth, alloc: dict, checked: director.Checked, final,
+           reports: list, spent: float, models, data: dict | None = None) -> str:
+    """The letter: the checked plan first, to approve item by item; the director's letter and the reports after."""
+    data = data or {}
+    d = checked.decision
+
+    def share(v: float) -> str:
+        return pct(v, 1).lstrip("+")
+
+    eligible_out = sum(a.amount for a in checked.fixed_income_actions if a.action == "resgatar"
+                       and any(x.name == a.instrument and x.reserve_eligible for x in wealth.fixed_income))
+    eligible_in = sum(a.amount for a in checked.fixed_income_actions if a.action == "aplicar"
+                      and a.kind == "tesouro_selic")
+    reserve_after = (alloc["reserve_eligible"] + checked.to_reserve + checked.to_daily_post_fixed - checked.transfer
+                     - eligible_out + eligible_in)
+    base = alloc["investable"] + alloc["contribution"]
+    stocks_after = alloc["stocks"] + checked.contribution_to_stocks + checked.transfer
+    out = [f"# Comitê de Investimentos: reunião de {day.isoformat()}", "",
+           "> Recomendações para sua decisão, dentro da sua política de investimentos. Não é garantia de resultado. "
+           "Nada é executado sem você.", "",
+           "## 1. Plano do mês, conferido pela política", "",
+           "### Dados usados", "",
+           f"- Saldos informados em: **{data.get('wealth_as_of') or 'data não informada'}**.",
+           f"- Cotações de: {data.get('prices_as_of') or 'sem cotação'}; posições sem cotação recente entram pelo "
+           "valor informado."]
+    if alloc.get("unvalued"):
+        out.append("- **Sem valor:** " + "; ".join(alloc["unvalued"]) + ". Sem transferência para ações até completar.")
+    out += ["", "### Onde o patrimônio está", "",
+            "| | Hoje | Depois do plano | Política |", "|---|---|---|---|",
+            f"| Reserva de emergência (caixa e pós-fixado diário) | {brl(alloc['reserve_eligible'])} "
+            f"| {brl(reserve_after)} | {brl(alloc['reserve_target'])} ({policy.reserve_months} meses) |",
+            f"| Ações, % do investível | {brl(alloc['stocks'])} ({share(alloc['stock_share_of_investable'])}) "
+            f"| {brl(stocks_after)} ({share(stocks_after / base if base else 0)}) "
+            f"| alvo {share(policy.stock_target)}, teto {share(policy.stock_target + policy.band)} |",
+            f"| Fundos listados (FII, Fiagro, Infra) | {brl(alloc['listed_funds'])} "
+            f"({share(alloc['listed_funds_share_of_investable'])}) | {brl(alloc['listed_funds'])} "
+            f"| até {share(policy.listed_funds_max)}; acima disso, sem dinheiro novo |"]
+    if alloc.get("international"):
+        out.append(f"| Internacional (ETF, BDR) | {brl(alloc['international'])} | {brl(alloc['international'])} "
+                   "| sem alvo na política |")
     if alloc["reserve_deficit"]:
-        out.append(f"- Reserva de emergência incompleta: faltam {brl(alloc['reserve_deficit'])}. Nada sai da renda "
-                   "fixa para ações até completá-la.")
-    if alloc["listed_funds_above_ceiling"]:
-        out.append("- Fundos listados acima do teto: não recebem dinheiro novo até voltar à faixa (nada é vendido).")
+        out.append(f"\nReserva incompleta: faltam {brl(alloc['reserve_deficit'])}. O aporte a completa primeiro, e "
+                   "nada sai da renda fixa para ações até lá.")
+
+    moves = flows(alloc, checked)
+    out += ["", "### Movimentações", ""]
+    if moves:
+        out += ["| De | Para | Valor |", "|---|---|---|"] + [f"| {a} | {b} | {brl(v)} |" for a, b, v in moves]
+    else:
+        out.append("Nenhuma.")
+
     out += ["", "### Ordens de ações", ""]
     if final.orders:
         out += ["| Ordem | Ação | Quantidade | Valor | Motivo |", "|---|---|---|---|---|"]
@@ -196,20 +241,34 @@ def render(day: date, policy: InvestmentPolicy, alloc: dict, checked: director.C
     else:
         out.append("Nenhuma.")
     if final.deferred:
-        out.append("\nVendas adiadas para manter a isenção de IR: " + ", ".join(f"{o.code} {o.quantity}"
-                                                                           for o in final.deferred))
+        out.append("\nVendas adiadas para manter a isenção de IR (a rotina as retoma no mês seguinte): "
+                   + ", ".join(f"{o.code} {o.quantity}" for o in final.deferred))
     if checked.deferred:
         out.append("\nCompras adiadas pelo diretor: " + "; ".join(f"{x.code} ({x.reason})" for x in checked.deferred))
-    if checked.fixed_income_actions:
-        out += ["", "### Renda fixa", "", "| Ação | Título | Valor | Motivo |", "|---|---|---|---|"]
-        out += [f"| {a.action} | {a.instrument} | {brl(a.amount)} | {a.reason} |" for a in checked.fixed_income_actions]
-    if d.escalations or checked.escalations:
-        out += ["", "### Para você decidir ou confirmar", ""]
-        out += [f"- {e}" for e in checked.escalations + list(d.escalations)]
-    if checked.adjustments:
-        out += ["", "### Ajustes feitos pela checagem da política", ""] + [f"- {a}" for a in checked.adjustments]
+    out += [f"\nIR estimado sobre as vendas de ações: **{brl(final.estimated_tax)}** (vendas do mês "
+            f"{brl(final.sales_this_month)}; isenção até R$ 20.000,00). Prejuízo a compensar depois: "
+            f"{brl(final.loss_carryforward_after)}."]
+    out += [f"- {n}" for n in final.notes]
+    if any(a.action == "manter" for a in checked.fixed_income_actions):
+        out.append("\nManter: " + "; ".join(f"{a.instrument} ({a.reason})" for a in checked.fixed_income_actions
+                                             if a.action == "manter"))
 
-    out += ["", "## Relatórios dos analistas", ""]
+    escalations = checked.escalations + list(d.escalations)
+    if escalations:
+        out += ["", "### Para você decidir ou confirmar", ""] + [f"- {e}" for e in escalations]
+    out += ["", "### Aprovação", "", "- [ ] Movimentações de dinheiro", "- [ ] Ordens de ações"]
+    if any(a.action != "manter" for a in checked.fixed_income_actions):
+        out.append("- [ ] Resgates e aplicações de renda fixa")
+    if checked.adjustments:
+        out += ["", "### O que a checagem mudou na decisão do diretor", ""] + [f"- {a}" for a in checked.adjustments]
+
+    if data.get("director"):
+        out += ["", f"## 2. Carta do Diretor Financeiro ({data['director']})", "",
+                "_Escrita antes da checagem da política: onde divergir do plano acima, vale o plano._", "",
+                d.letter.strip(), ""]
+    else:
+        out += ["", "## 2. Sem carta do diretor nesta reunião", "", d.letter.strip(), ""]
+    out += ["", "## 3. Relatórios dos analistas", ""]
     for r in reports:
         model = {"Analista de Renda Fixa": policy.models.fixed_income, "Analista de Risco": policy.models.risk,
                  "Analista Tributário": policy.models.tax, "Analista Macro": policy.models.macro}.get(r.role)

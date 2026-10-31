@@ -254,7 +254,12 @@ def test_a_meeting_without_models_follows_the_rule_and_keeps_its_record(tmp_path
     kw = review.call_args.kwargs
     assert kw["rules"].excluded_sectors == ("Telecom",)
     assert (kw["sold_earlier_this_month"], kw["gain_earlier_this_month"], kw["loss_carryforward"]) == (5000, 800, 1200)
-    assert "Reunião sem LLM" in m.letter and "## Relatórios dos analistas" in m.letter
+    assert "Reunião sem LLM" in m.letter and "## 3. Relatórios dos analistas" in m.letter
+    # Review 3, C10: the checked plan comes first, as flows to approve, with the balances after it.
+    letter = m.letter
+    assert letter.index("## 1. Plano do mês") < letter.index("## 2. Sem carta do diretor")
+    assert "| Aporte | Ações (ordens abaixo) | R$ 2.000,00 |" in letter and "- [ ] Ordens de ações" in letter
+    assert "Saldos informados em: **data não informada**" in letter
     assert m.checked.contribution_to_stocks == 2000
     # AAAA3 already holds R$ 10,000, above its equal share: the new money goes to NEWA3.
     orders = {o.split("|")[2].strip() for o in m.letter.splitlines() if o.startswith("| compra")}
