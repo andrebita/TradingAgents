@@ -198,5 +198,46 @@ def logout(plan: Annotated[Plan, typer.Argument(help="The plan to sign out of")]
         console.print("Not signed in to ChatGPT.")
 
 
+carteira = typer.Typer(help="Carteira de dividendos das grandes da B3: seleção por regra, ordens com IR, "
+                            "alertas por LLM e carteira-sombra.")
+app.add_typer(carteira, name="carteira")
+
+
+@carteira.command("revisar")
+def carteira_revisar(
+    arquivo: str = typer.Option(None, "--carteira", help="JSON com posições e caixa (mesmo formato de --portfolio)"),
+    aporte: float = typer.Option(0.0, "--aporte", help="Dinheiro novo a investir nesta revisão, em R$"),
+    data: str = typer.Option(None, "--data", help="Data da revisão, AAAA-MM-DD (padrão: último pregão)"),
+    rebalancear: bool = typer.Option(
+        None, "--rebalancear/--sem-rebalancear", help="Força ou impede o rebalanceamento (padrão: junho e dezembro)"
+    ),
+    sem_llm: bool = typer.Option(False, "--sem-llm", help="Não chama o LLM: sem alertas nem risco de corte"),
+    orcamento: float = typer.Option(1.0, "--orcamento", help="Teto de gasto com LLM nesta execução, em US$"),
+    vendas_no_mes: float = typer.Option(0.0, "--vendas-no-mes", help="Vendas de ações já feitas neste mês, em R$"),
+    ganho_no_mes: float = typer.Option(0.0, "--ganho-no-mes", help="Ganho líquido dessas vendas, em R$"),
+    prejuizo_acumulado: float = typer.Option(
+        0.0, "--prejuizo-acumulado", help="Prejuízo de meses anteriores ainda a compensar, em R$"
+    ),
+):
+    """Revisa a carteira: seleção, ordens sugeridas com IR estimado, alertas da semana e carteira-sombra."""
+    from datetime import date as _date
+
+    from rich.markdown import Markdown
+
+    from tradingagents.dividend_portfolio.routine import review
+
+    try:
+        book = load_portfolio(arquivo) if arquivo else None
+        day = _date.fromisoformat(data) if data else None
+        result = review(book, contribution=aporte, as_of=day, rebalance=rebalancear, use_llm=not sem_llm,
+                        budget_usd=orcamento, sold_earlier_this_month=vendas_no_mes,
+                        gain_earlier_this_month=ganho_no_mes, loss_carryforward=prejuizo_acumulado)
+    except Exception as exc:  # a bad file, a missing key or an unreachable source is a setup error
+        console.print(f"[red]{escape(str(exc))}[/red]")
+        raise typer.Exit(code=1) from None
+    console.print(Markdown(result.report))
+    console.print(f"\nRelatório salvo em {result.report_path}")
+
+
 if __name__ == "__main__":
     app()
