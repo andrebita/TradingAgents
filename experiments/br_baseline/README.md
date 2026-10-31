@@ -777,6 +777,29 @@ ganha de ficar sempre em ações? O filtro de tendência falhou (4,0% contra 5,8
 
 (B) é reportada como secundária, contra a carteira de dividendos.
 
+## Ações ou CDI pelo valuation: resultado (`allocation.py`, US$ 0)
+
+Foram 166 meses (fev/2013 a out/2026), 48% deles em ações, com 7 trocas.
+
+| | Retorno anual | Maior queda | Diferença mensal | t | Janelas de 36 meses positivas |
+|---|---|---|---|---|---|
+| **(A) Ibovespa ou CDI** | **6,7%** | −37% | −0,15% | −0,49 | 42% |
+| Ibovespa, comprar e manter | 7,6% | −37% | — | — | — |
+| (B) Dividendos ou CDI | 10,4% | −45% | −0,35% | −1,06 | 14% |
+| Carteira de dividendos semestral | 13,9% | −54% | — | — | — |
+| CDI | 9,9% | 0% | — | — | — |
+
+**Veredito: reprovado.** A alternância rendeu menos que ficar sempre em ações, nas duas versões, e não reduziu a
+queda máxima do Ibovespa. Ela ficou no CDI em anos fortes para a bolsa (2017, 2018, 2025) e não protegeu de forma
+consistente.
+
+Dado de contexto: de 2013 a 2026, o CDI (9,9%) rendeu mais que o Ibovespa (7,6%), e a carteira de dividendos
+(13,9%) rendeu mais que os dois. Em out/2026 o sinal está no CDI: rendimento mediano de 4,6% contra juro real de
+9,5%.
+
+Leitura: tanto o filtro de tendência quanto o de valuation falham em decidir *quando* estar em ações no Brasil. A
+alocação entre ações e renda fixa fica a critério do investidor, e a rotina cuida da parte em ações.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
