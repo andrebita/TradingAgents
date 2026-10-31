@@ -64,7 +64,12 @@ tradingagents comite reunir --politica ~/.tradingagents/minha/politica.json \
     - um ETF diz em que classe conta: `"asset_class": "acoes"`, `"internacional"` ou `"renda_fixa"`;
     - BDRs contam como internacional;
     - o bloco `tax` traz o que você já vendeu de ações no mês, o ganho dessas vendas e o prejuízo acumulado.
-  - **Na política:** `max_drawdown_tolerance` é a maior queda que você aceita (0.20 = 20%).
+  - **Na política:**
+    - `max_drawdown_tolerance` é a maior queda do patrimônio investível que você aceita (0.20 = 20%). Sem
+      ela, o comitê pede o número em vez de supor um. O analista de risco mostra a queda de cada mistura
+      num estresse simultâneo: ações −59%, fundos −30%, renda fixa estável.
+    - `fixed_income_kinds` limita onde o dinheiro novo de renda fixa pode ir; por exemplo, `["tesouro_selic"]`
+      para tudo em Tesouro Selic.
 - **Modelo de cada membro:** fica na política. O padrão é Fable 5.1 para o diretor, Sonnet 5.5 para os analistas
   de renda fixa, risco e tributário, e Haiku 5.5 para os alertas e o macro.
 - **Custo medido:** US$ 0,63 por reunião, com teto configurável (`budget_usd`).

@@ -8,6 +8,9 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
+FixedIncomeKind = Literal["tesouro_selic", "tesouro_ipca", "tesouro_pre", "cdb", "lci", "lca"]
+FIXED_INCOME_KINDS = ("tesouro_selic", "tesouro_ipca", "tesouro_pre", "cdb", "lci", "lca")
+
 
 class Models(BaseModel):
     """The model each member of the committee runs on."""
@@ -33,10 +36,13 @@ class InvestmentPolicy(BaseModel):
     listed_funds_max: float = Field(0.15, ge=0, le=1, description="Ceiling for listed real-estate, agro and "
                                                                   "infrastructure funds")
     band: float = Field(0.05, ge=0, le=1, description="Drift tolerated before moving money between classes")
-    max_drawdown_tolerance: float = Field(0.20, gt=0, le=1, description="Largest fall of the investable wealth "
-                                                                        "the investor accepts")
+    max_drawdown_tolerance: float | None = Field(None, gt=0, le=1, description="Largest fall of the investable "
+                                                 "wealth the investor accepts; the committee asks until it is set")
     transition_months: int = Field(12, ge=1)
     private_issuer_max: float = Field(250_000.0, ge=0, description="Most in one private issuer: the FGC guarantee")
+    fixed_income_kinds: list[FixedIncomeKind] = Field(
+        default_factory=lambda: list(FIXED_INCOME_KINDS),
+        description="The kinds new fixed-income money may go to, e.g. only ['tesouro_selic']")
     excluded_sectors: list[str] = Field(default_factory=list)
     autonomy: Literal["recommend"] = "recommend"
     models: Models = Field(default_factory=Models)

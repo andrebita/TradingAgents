@@ -159,6 +159,10 @@ def check(decision: DirectorDecision, alloc: dict, wealth: Wealth, policy: Inves
     if wealth.as_of is None or (today and (today - wealth.as_of).days > 35):
         escalations.append(f"Os saldos são de {wealth.as_of or 'data não informada'}: atualize o patrimônio antes "
                            "de executar as ordens.")
+    if policy.max_drawdown_tolerance is None:
+        escalations.append("Defina na política a maior queda do patrimônio investível que você aceita sem mudar o "
+                           "plano (max_drawdown_tolerance). O analista de risco mostra as quedas históricas de cada "
+                           "mistura.")
     blocked = alloc["reserve_deficit"] or unvalued
     ceiling = 0.0 if blocked else min(2 * alloc["rule_monthly_transfer"], max(alloc["liquid_beyond_reserve"], 0.0))
     transfer = decision.monthly_transfer_to_stocks
@@ -229,9 +233,10 @@ def check(decision: DirectorDecision, alloc: dict, wealth: Wealth, policy: Inves
             actions.append(a.model_copy(update={"amount": round(amount, 2)}))
             continue
         # aplicar
-        if a.kind not in APPLY_KINDS:
-            notes.append(f"Aplicação em '{a.instrument}' desconsiderada: só títulos públicos e CDB, LCI ou LCA "
-                         "dentro do FGC.")
+        if a.kind not in APPLY_KINDS or a.kind not in policy.fixed_income_kinds:
+            allowed = ", ".join(k for k in APPLY_KINDS if k in policy.fixed_income_kinds)
+            notes.append(f"Aplicação em '{a.instrument}' desconsiderada: a política só permite dinheiro novo em "
+                         f"{allowed}.")
             continue
         amount, why = min(a.amount, max(money, 0.0)), "ao dinheiro liberado no mês"
         if a.kind in BANK_KINDS:

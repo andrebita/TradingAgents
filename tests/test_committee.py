@@ -253,6 +253,7 @@ def test_a_meeting_without_models_follows_the_rule_and_keeps_its_record(tmp_path
     # The investor's exclusions and tax records reach the equity routine (review 3, A3 and C5).
     kw = review.call_args.kwargs
     assert kw["rules"].excluded_sectors == ("Telecom",)
+    assert (kw["news_model"], kw["cut_model"]) == ("claude-haiku-5-5", "claude-sonnet-5-5")   # the policy's
     assert (kw["sold_earlier_this_month"], kw["gain_earlier_this_month"], kw["loss_carryforward"]) == (5000, 800, 1200)
     assert "Reunião sem LLM" in m.letter and "## 3. Relatórios dos analistas" in m.letter
     # Review 3, C10: the checked plan comes first, as flows to approve, with the balances after it.
@@ -309,3 +310,39 @@ def test_every_listed_class_counts_and_a_missing_value_stops_the_transfer():
     c = director.check(_decision(monthly_transfer_to_stocks=5000), alloc, wealth, _policy(), set(), date(2026, 10, 30))
     assert c.transfer == 0 and any("NOPX3" in e for e in c.escalations)
     assert any("atualize o patrimônio" in e for e in c.escalations)       # the balances have no date
+
+
+@pytest.mark.unit
+def test_new_fixed_income_money_goes_only_where_the_policy_allows_and_the_tolerance_is_asked():
+    # Review 4: the investor chose Tesouro Selic for all fixed income; the check allowed any kind.
+    policy, wealth = _policy(fixed_income_kinds=["tesouro_selic"]), _wealth()
+    alloc = analysts.allocation(policy, wealth, {"AAAA3": 10_000}, 2000)
+    act = director.FixedIncomeAction
+    decision = _decision(contribution_to_stocks=0, fixed_income_actions=[
+        act(action="aplicar", instrument="Tesouro IPCA+ 2035", kind="tesouro_ipca", amount=1000, reason="r"),
+        act(action="aplicar", instrument="Tesouro Selic 2031", kind="tesouro_selic", amount=1500, reason="r")])
+    c = director.check(decision, alloc, wealth, policy, set(), date(2026, 10, 30))
+    assert [a.instrument for a in c.fixed_income_actions] == ["Tesouro Selic 2031"]
+    assert any("só permite dinheiro novo em tesouro_selic" in n for n in c.adjustments)
+    # No tolerance in the policy: the committee asks for it instead of assuming 20%.
+    assert policy.max_drawdown_tolerance is None and any("max_drawdown_tolerance" in e for e in c.escalations)
+
+
+@pytest.mark.unit
+def test_the_rules_own_sector_concentration_is_flagged():
+    frame = pd.DataFrame({"code": [f"C{i}" for i in range(10)],
+                          "sector": ["Construção Civil"] * 3 + ["Bancos"] * 2 + [f"S{i}" for i in range(5)]})
+    warnings = meeting.target_warnings(SimpleNamespace(target_frame=frame))
+    assert len(warnings) == 1 and "3 ações de Construção Civil (30%" in warnings[0]
+
+
+@pytest.mark.unit
+def test_the_risk_facts_carry_a_simultaneous_stress_of_the_whole_mix():
+    returns = pd.DataFrame({"stocks_index": 0.01, "stocks_dividend": 0.01, "listed_funds": 0.0, "cdi": 0.008},
+                           index=pd.period_range("2020-01", periods=40, freq="M"))
+    alloc = analysts.allocation(_policy(), _wealth(), {"AAAA3": 10_000}, 2000)
+    with mock.patch.object(analysts, "class_returns", return_value=returns):
+        facts, warnings = analysts.risk_facts(_policy(), _wealth(), alloc, {"AAAA3": 10_000}, {"AAAA3": "Bancos"})
+    # Target 40% stocks and the funds capped at 15%: 0.4 x -59% + 0.15 x -30% = -28.1%.
+    assert facts["simultaneous_stress"]["target_mix"] == pytest.approx(-0.281)
+    assert any("Tolerância a quedas não informada" in w for w in warnings)

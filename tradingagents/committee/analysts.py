@@ -236,6 +236,10 @@ def stress(returns: pd.DataFrame, stock_share: float, funds_share: float, stock_
             "share_of_negative_12_month_windows": round(float((rolling < 0).mean()), 3)}
 
 
+SECTOR_WARNING = 0.25           # share of the stocks in one CVM sector that raises a warning
+STRESS_FALLS = {"stocks": -0.59, "listed_funds": -0.30, "fixed_income": 0.0}
+
+
 def risk_facts(policy, wealth, alloc: dict, stock_values: dict[str, float], sectors: dict[str, str]) -> tuple[dict, list]:
     investable = alloc["investable"] or 1.0
     returns = class_returns()
@@ -248,14 +252,23 @@ def risk_facts(policy, wealth, alloc: dict, stock_values: dict[str, float], sect
         by_sector[sectors.get(code, "não identificado")] = by_sector.get(sectors.get(code, "não identificado"), 0) + value
     warnings = []
     top_sector, top_value = max(by_sector.items(), key=lambda kv: kv[1]) if by_sector else ("", 0)
-    if top_value / stocks_total > 0.4:
+    if top_value / stocks_total > SECTOR_WARNING:
         warnings.append(f"{top_value / stocks_total:.0%} das ações num só setor ({top_sector}).")
     target_fall = stress(returns, *target, "stocks_dividend")["worst_drawdown"]
-    if -target_fall > policy.max_drawdown_tolerance:
+    tolerance = policy.max_drawdown_tolerance
+    if tolerance is None:
+        warnings.append("Tolerância a quedas não informada na política: o comitê não sabe se o mix-alvo cabe nela.")
+    elif -target_fall > tolerance:
         warnings.append(f"A pior queda histórica do mix-alvo ({target_fall:.0%}) passa da sua tolerância "
-                        f"(−{policy.max_drawdown_tolerance:.0%}).")
+                        f"(−{tolerance:.0%}).")
+    # A simultaneous fall, not a forecast: the rule's worst (−59%) in stocks, −30% in listed funds, Selic flat.
+    def simultaneous(stock_share, funds_share):
+        return round(STRESS_FALLS["stocks"] * stock_share + STRESS_FALLS["listed_funds"] * funds_share, 3)
     facts = {"history": f"{returns.index[0]} a {returns.index[-1]}, mensal, rebalanceado todo mês; reserva fora",
              "investor_drawdown_tolerance": policy.max_drawdown_tolerance,
+             "simultaneous_stress": {"assumed_falls": STRESS_FALLS,
+                                     "current_mix": simultaneous(*now), "target_mix": simultaneous(*target),
+                                     "stock_ceiling_mix": simultaneous(policy.stock_target_max, target[1])},
              "listed_funds_proxy": "XFIX11 desde dez/2020; antes, média de HGLG11 e KNRI11",
              "fixed_income_proxy": "CDI líquido de 15% de IR (aproximação)",
              "current_mix": {"stocks": round(now[0], 3), "listed_funds": round(now[1], 3),

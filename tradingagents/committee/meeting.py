@@ -56,6 +56,13 @@ def equity_facts(eq: routine.Result) -> dict:
             "weekly_alerts": {k: alert(v) for k, v in eq.alerts.items()}, "shadow_performance": eq.performance}
 
 
+def target_warnings(eq) -> list[str]:
+    """The rule has no sector limit: say when its target holds three or more of one sector."""
+    counts = eq.target_frame["sector"].fillna("não identificado").value_counts()
+    return [f"A seleção da regra tem {n} ações de {sector} ({n / len(eq.target_frame):.0%} da carteira-alvo): a "
+            "regra não limita setores." for sector, n in counts.items() if n >= 3]
+
+
 def orders_json(plan) -> list[dict]:
     return [{"side": o.side, "code": o.code, "quantity": o.quantity, "value": round(o.value, 2), "reason": o.reason}
             for o in plan.orders]
@@ -116,10 +123,12 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
             eq = routine.review(book, contribution=alloc["rule_contribution_to_stocks"] + alloc["rule_monthly_transfer"],
                                 as_of=today, use_llm=use_llm, budget_usd=policy.budget_usd / 3, budget=equity_budget,
                                 sold_earlier_this_month=sold, gain_earlier_this_month=gain, loss_carryforward=carried,
-                                config={**config, "results_dir": str(out)}, rules=rules)
+                                config={**config, "results_dir": str(out)}, rules=rules,
+                                news_model=policy.models.equities_news,
+                                cut_model=policy.models.equities_fundamentals)
             tax = analysts.tax(policy, wealth, eq.plan, models)
             fixed, risk, macro = (j.result() for j in jobs)
-        equities = analysts.Report(analysts.ROLES["equities"], equity_facts(eq))
+        equities = analysts.Report(analysts.ROLES["equities"], equity_facts(eq), warnings=target_warnings(eq))
         reports = [fixed, equities, risk, tax, macro]
 
         decision = rule_decision(alloc)
