@@ -1,0 +1,376 @@
+{
+ "design": "README, 'Revisão 5'",
+ "monthly_sample": "2009-01 a 2026-09",
+ "global_before_wrld11": "hypothetical: VT TR less 30% withholding and 0.36%/yr, at PTAX",
+ "policies": {
+  "A": {
+   "bova": 0.4,
+   "global": 0.0,
+   "selic": 0.6
+  },
+  "B": {
+   "bova": 0.6,
+   "global": 0.0,
+   "selic": 0.4
+  },
+  "C": {
+   "bova": 0.2,
+   "global": 0.4,
+   "selic": 0.4
+  },
+  "D_diagnostic": {
+   "bova": 0.2667,
+   "global": 0.5333,
+   "selic": 0.2
+  }
+ },
+ "results": {
+  "A_100k": {
+   "full_period": {
+    "final": 1945701,
+    "final_selic": 1907686,
+    "irr": 0.0886,
+    "irr_selic": 0.0869,
+    "tax_paid": 213134
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.4351,
+    "median_vs_selic": -0.0063,
+    "p5_vs_selic": -0.1797,
+    "median_shortfall_when_losing": -0.0569,
+    "p_real_gain": 0.3571
+   }
+  },
+  "B_100k": {
+   "full_period": {
+    "final": 1934020,
+    "final_selic": 1907686,
+    "irr": 0.0881,
+    "irr_selic": 0.0869,
+    "tax_paid": 211033
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.4286,
+    "median_vs_selic": -0.015,
+    "p5_vs_selic": -0.2563,
+    "median_shortfall_when_losing": -0.0873,
+    "p_real_gain": 0.3506
+   }
+  },
+  "C_100k": {
+   "full_period": {
+    "final": 2763263,
+    "final_selic": 1907686,
+    "irr": 0.1185,
+    "irr_selic": 0.0869,
+    "tax_paid": 357759
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.987,
+    "median_vs_selic": 0.0868,
+    "p5_vs_selic": 0.0112,
+    "median_shortfall_when_losing": -0.0062,
+    "p_real_gain": 0.9091
+   }
+  },
+  "D_diagnostic_100k": {
+   "full_period": {
+    "final": 3077347,
+    "final_selic": 1907686,
+    "irr": 0.1275,
+    "irr_selic": 0.0869,
+    "tax_paid": 412962
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.9805,
+    "median_vs_selic": 0.1162,
+    "p5_vs_selic": 0.0123,
+    "median_shortfall_when_losing": -0.0082,
+    "p_real_gain": 0.9481
+   }
+  },
+  "A_125k": {
+   "full_period": {
+    "final": 2058755,
+    "final_selic": 2018251,
+    "irr": 0.0886,
+    "irr_selic": 0.0869,
+    "tax_paid": 228664
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.461,
+    "median_vs_selic": -0.0057,
+    "p5_vs_selic": -0.1853,
+    "median_shortfall_when_losing": -0.0674,
+    "p_real_gain": 0.3766
+   },
+   "bootstrap": {
+    "n": 10000,
+    "p_beat_selic": 0.5283,
+    "median_vs_selic": 0.0084,
+    "p5_vs_selic": -0.1532,
+    "median_shortfall_when_losing": -0.0696,
+    "p_real_gain": 0.5673
+   },
+   "daily": {
+    "max_drawdown_daily": -0.1976,
+    "peak": "2020-01-23",
+    "trough": "2020-03-23",
+    "recovered": "2020-11-24",
+    "cagr_unit": 0.1002
+   },
+   "worst_window": {
+    "start": "2011-02",
+    "vs_selic": -0.2404
+   }
+  },
+  "B_125k": {
+   "full_period": {
+    "final": 2045775,
+    "final_selic": 2018251,
+    "irr": 0.0881,
+    "irr_selic": 0.0869,
+    "tax_paid": 226343
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.4351,
+    "median_vs_selic": -0.0148,
+    "p5_vs_selic": -0.2641,
+    "median_shortfall_when_losing": -0.097,
+    "p_real_gain": 0.3831
+   },
+   "bootstrap": {
+    "n": 10000,
+    "p_beat_selic": 0.5145,
+    "median_vs_selic": 0.0065,
+    "p5_vs_selic": -0.2231,
+    "median_shortfall_when_losing": -0.1021,
+    "p_real_gain": 0.5452
+   },
+   "daily": {
+    "max_drawdown_daily": -0.2926,
+    "peak": "2020-01-23",
+    "trough": "2020-03-23",
+    "recovered": "2020-12-04",
+    "cagr_unit": 0.0993
+   },
+   "worst_window": {
+    "start": "2011-02",
+    "vs_selic": -0.336
+   }
+  },
+  "C_125k": {
+   "full_period": {
+    "final": 2937079,
+    "final_selic": 2018251,
+    "irr": 0.1182,
+    "irr_selic": 0.0869,
+    "tax_paid": 384050
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.974,
+    "median_vs_selic": 0.0958,
+    "p5_vs_selic": 0.0099,
+    "median_shortfall_when_losing": -0.0071,
+    "p_real_gain": 0.9545
+   },
+   "bootstrap": {
+    "n": 10000,
+    "p_beat_selic": 0.7842,
+    "median_vs_selic": 0.0944,
+    "p5_vs_selic": -0.0927,
+    "median_shortfall_when_losing": -0.0505,
+    "p_real_gain": 0.8071
+   },
+   "daily": {
+    "max_drawdown_daily": -0.1906,
+    "peak": "2020-02-19",
+    "trough": "2020-03-23",
+    "recovered": "2020-06-05",
+    "cagr_unit": 0.1292
+   },
+   "worst_window": {
+    "start": "2021-04",
+    "vs_selic": -0.0129
+   }
+  },
+  "D_diagnostic_125k": {
+   "full_period": {
+    "final": 3294681,
+    "final_selic": 2018251,
+    "irr": 0.1277,
+    "irr_selic": 0.0869,
+    "tax_paid": 446925
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.9675,
+    "median_vs_selic": 0.1269,
+    "p5_vs_selic": 0.0104,
+    "median_shortfall_when_losing": -0.0063,
+    "p_real_gain": 0.9805
+   },
+   "bootstrap": {
+    "n": 10000,
+    "p_beat_selic": 0.7777,
+    "median_vs_selic": 0.1247,
+    "p5_vs_selic": -0.1242,
+    "median_shortfall_when_losing": -0.0668,
+    "p_real_gain": 0.8049
+   },
+   "daily": {
+    "max_drawdown_daily": -0.251,
+    "peak": "2020-02-19",
+    "trough": "2020-03-23",
+    "recovered": "2020-06-08",
+    "cagr_unit": 0.139
+   },
+   "worst_window": {
+    "start": "2021-04",
+    "vs_selic": -0.0166
+   }
+  },
+  "A_150k": {
+   "full_period": {
+    "final": 2172989,
+    "final_selic": 2128816,
+    "irr": 0.0887,
+    "irr_selic": 0.0869,
+    "tax_paid": 244403
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.461,
+    "median_vs_selic": -0.0072,
+    "p5_vs_selic": -0.1904,
+    "median_shortfall_when_losing": -0.0707,
+    "p_real_gain": 0.3896
+   }
+  },
+  "B_150k": {
+   "full_period": {
+    "final": 2157268,
+    "final_selic": 2128816,
+    "irr": 0.088,
+    "irr_selic": 0.0869,
+    "tax_paid": 241607
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.4351,
+    "median_vs_selic": -0.0154,
+    "p5_vs_selic": -0.271,
+    "median_shortfall_when_losing": -0.1034,
+    "p_real_gain": 0.3961
+   }
+  },
+  "C_150k": {
+   "full_period": {
+    "final": 3114638,
+    "final_selic": 2128816,
+    "irr": 0.1181,
+    "irr_selic": 0.0869,
+    "tax_paid": 411002
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.961,
+    "median_vs_selic": 0.1013,
+    "p5_vs_selic": 0.0068,
+    "median_shortfall_when_losing": -0.0073,
+    "p_real_gain": 0.9805
+   }
+  },
+  "D_diagnostic_150k": {
+   "full_period": {
+    "final": 3494683,
+    "final_selic": 2128816,
+    "irr": 0.1274,
+    "irr_selic": 0.0869,
+    "tax_paid": 477827
+   },
+   "windows_60m": {
+    "n": 154,
+    "p_beat_selic": 0.961,
+    "median_vs_selic": 0.131,
+    "p5_vs_selic": 0.0062,
+    "median_shortfall_when_losing": -0.0118,
+    "p_real_gain": 0.9935
+   }
+  }
+ },
+ "wrld11_check": {
+  "since": "2021-10-19",
+  "wrld11_cagr": 0.0837,
+  "reconstruction_cagr": 0.0843
+ },
+ "stress": {
+  "queda_simultanea": {
+   "A": -0.2463,
+   "B": -0.3429,
+   "C": -0.3228,
+   "D_diagnostic": -0.4015
+  },
+  "real_valoriza_20pct": {
+   "A": -0.1711,
+   "B": -0.2425,
+   "C": -0.2694,
+   "D_diagnostic": -0.3377
+  },
+  "juros_altos_bolsa_parada": {
+   "A": -0.1711,
+   "B": -0.2425,
+   "C": -0.2425,
+   "D_diagnostic": -0.3059
+  }
+ },
+ "exploratory_fx_neutral": {
+  "note": "post hoc; global returns less the real's mean monthly depreciation over the sample",
+  "fx_drift_annual": 0.0459,
+  "bootstrap": {
+   "C": {
+    "n": 10000,
+    "p_beat_selic": 0.6046,
+    "median_vs_selic": 0.0302,
+    "p5_vs_selic": -0.1444,
+    "median_shortfall_when_losing": -0.064,
+    "p_real_gain": 0.6619
+   },
+   "D_diagnostic": {
+    "n": 10000,
+    "p_beat_selic": 0.6001,
+    "median_vs_selic": 0.0372,
+    "p5_vs_selic": -0.1887,
+    "median_shortfall_when_losing": -0.0852,
+    "p_real_gain": 0.6474
+   }
+  }
+ },
+ "decision": {
+  "ranking_bootstrap": [
+   [
+    "C_125k",
+    0.7842,
+    -0.0927
+   ],
+   [
+    "A_125k",
+    0.5283,
+    -0.1532
+   ],
+   [
+    "B_125k",
+    0.5145,
+    -0.2231
+   ]
+  ],
+  "rule": "highest bootstrap P(beat Selic); ties within 5 points by the smaller 5th-pct loss; if none above 0.5, back to the investor"
+ }
+}

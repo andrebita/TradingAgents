@@ -1017,6 +1017,51 @@ os mesmos aportes nas mesmas datas.
     liquidação final.
   - A queda máxima diária vem do período inteiro, com as posições fixas entre as decisões mensais.
 
+## Revisão 5, módulo de alocação: resultado (`allocation_r5.py`, sem LLM, US$ 0)
+
+Amostra mensal de jan/2009 a set/2026. As políticas partem de R$ 125 mil, com R$ 3 mil por mês. "Ganhar" é
+terminar 5 anos com mais patrimônio, depois da liquidação e do IR, do que com tudo no Tesouro Selic.
+
+| Política | P(ganhar da Selic), bootstrap | P(ganhar), janelas históricas | Mediana contra a Selic | Percentil 5% | Queda máxima diária | TIR 2009–2026 |
+|---|---|---|---|---|---|---|
+| A: 40% BOVA11, 60% Selic | 53% | 46% | +0,8% | −15% | −20% | 8,9% |
+| B: 60% BOVA11, 40% Selic | 51% | 44% | +0,7% | −22% | −29% | 8,8% |
+| **C: 20% BOVA11, 40% global, 40% Selic** | **78%** | **97%** | **+9,4%** | **−9%** | **−19%** | **11,8%** |
+| D: 80% ações, só diagnóstico | 78% | 97% | +12,5% | −12% | −25% | 12,8% |
+| Tesouro Selic, os mesmos aportes | — | — | — | — | 0% | 8,7% |
+
+As escalas de R$ 100 mil e R$ 150 mil dão a mesma ordem, com diferenças de até 2,5 pontos nas probabilidades.
+
+**Veredito pela regra pré-registrada: política C.** É a de maior probabilidade no bootstrap, com folga sobre A e
+B, e também a de menor perda no percentil 5%.
+
+**Ressalvas que pesam tanto quanto o número:**
+- **A vantagem de C vem em grande parte do câmbio.**
+  - O real se desvalorizou 4,6% ao ano na amostra: o dólar foi de R$ 2,34 para R$ 5,42.
+  - A parte global rendeu 15,6% ao ano em reais, cerca de 10% em dólares.
+  - **Exploratório, feito depois de ver os resultados:** sem essa desvalorização média, a probabilidade de C
+    ganhar da Selic cai de 78% para **60%**, com mediana de +3%. Ainda fica acima de A e B, mas bem menos
+    folgada.
+- **A amostra começa perto do fundo de 2008** e pega a década forte das bolsas americanas. O bootstrap reamostra
+  essa mesma história; as 154 janelas de 5 anos equivalem a uns 3 períodos independentes.
+- **Ações brasileiras sozinhas empataram com a Selic.** A e B ficam perto de 50%, e B arrisca mais para o mesmo
+  resultado. Isso confirma o que já se via: de 2013 a 2026, o CDI ganhou do Ibovespa.
+- **A reconstrução do global é fiel.** De out/2021 a out/2026, ela rendeu 8,43% ao ano, contra 8,37% do WRLD11
+  real.
+
+**Estresses de 5 anos, com a Selic a 15% ao ano o tempo todo** (cenários, não previsões; resultado contra 100%
+Selic):
+
+| Cenário | A | B | C | D |
+|---|---|---|---|---|
+| Bolsa brasileira −50% e global −35% no primeiro mês, sem recuperação | −25% | −34% | −32% | −40% |
+| Real se valoriza 20% no primeiro mês, bolsas paradas | −17% | −24% | −27% | −34% |
+| Juros altos e bolsas paradas por 5 anos | −17% | −24% | −24% | −31% |
+
+**Correção antes deste resultado.** Na primeira rodada, os choques dos estresses caíam no mês 0, que o simulador
+não rende, e os três cenários saíram iguais. Os choques foram movidos para o mês 1. As probabilidades e as
+janelas não mudaram.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
