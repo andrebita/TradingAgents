@@ -748,6 +748,35 @@ Apesar de o critério de previsão ter sido atendido, a recomendação é **não
 de uma carteira que busca ganhar do Ibovespa. Ele serve como alerta e para quem prioriza a estabilidade da renda:
 21% menos cortes, ao custo de ~2,5 pontos de retorno ao ano.
 
+## Ações ou CDI pelo valuation: pré-registro (31/10/2026, antes de qualquer retorno calculado)
+
+**Pergunta.** Ficar em ações só quando elas estão baratas em relação à renda fixa, e no CDI no resto do tempo,
+ganha de ficar sempre em ações? O filtro de tendência falhou (4,0% contra 5,8% ao ano); este usa valuation.
+
+**Sinal (a cada fim de mês t, só com dados conhecidos em t).**
+- **Rendimento das ações:** mediana do DY24 das 50 empresas mais negociadas, com as regras de `dividend_tilt.py` e
+  preços corrigidos.
+- **Juro real:** Selic meta (SGS 432) em t menos o IPCA de 12 meses (SGS 13522) do último mês já divulgado. A
+  divulgação é contada 12 dias após o fim do mês.
+- **Spread:** rendimento das ações menos o juro real.
+- **Regra:** spread acima da **mediana histórica até t** (janela crescente, com pelo menos 36 meses) → ações; senão
+  → CDI.
+
+**Carteiras.**
+- **(A) Primária:** Ibovespa (`^BVSP`) ou CDI (SGS 12).
+- **(B)** a carteira de dividendos semestral (`curve_e_semiannual.csv`) ou CDI.
+- **Referências:** comprar e manter o Ibovespa e comprar e manter a carteira de dividendos.
+- **Execução:** mudança no mês seguinte ao sinal, com 0,1% de custo a cada troca.
+
+**Período.** Sinais de jan/2013 (os 36 meses de histórico do spread começam em 2010) a set/2026.
+
+**Critério para seguir (A contra Ibovespa):**
+1. Retorno anual maior **e** maior queda menor.
+2. Diferença positiva em pelo menos 60% das janelas de 36 meses.
+3. t ≥ 1,65 na diferença mensal.
+
+(B) é reportada como secundária, contra a carteira de dividendos.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
