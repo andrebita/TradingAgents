@@ -397,16 +397,21 @@ def test_a_worker_stopped_by_a_base_exception_stops_the_sweep(tmp_path, monkeypa
 @pytest.mark.unit
 def test_a_stopped_worker_stops_the_others_before_their_next_cell(tmp_path, monkeypatch):
     """A spend cap hit in one worker must not let the others keep calling the model."""
+    import threading
     import time
 
     class Stop(BaseException):
         pass
 
+    aapl_started = threading.Event()
+
     def propagate(self, ticker, trade_date, asset_type="stock", portfolio=None):
         self.calls.append((ticker, trade_date))
         if ticker == "NVDA":
+            aapl_started.wait(timeout=5)   # the other worker is mid-cell when the stop comes
             raise Stop
-        time.sleep(0.2)   # the other worker is mid-cell when the stop comes
+        aapl_started.set()
+        time.sleep(0.2)
 
     monkeypatch.setattr(_FakeGraph, "propagate", propagate)
     dates = ["2026-01-05", "2026-01-12", "2026-01-20"]

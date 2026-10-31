@@ -5,7 +5,9 @@ The CVM files are built in a temporary cache directory, so these run offline.
 """
 import copy
 import io
+import os
 import zipfile
+from datetime import datetime
 from unittest import mock
 
 import pytest
@@ -151,8 +153,35 @@ def test_a_missing_year_file_makes_an_empty_window_incomplete(cache):
     missing = mock.Mock(status_code=404)
     with mock.patch.object(cvm.requests, "get", return_value=missing):
         out = cvm.get_news("ITUB4.SA", "2026-12-28", "2027-01-04")
-    assert "Coverage incomplete: CVM has no ipe_cia_aberta_2027.zip file" in out
+    assert "Coverage incomplete:" in out and "CVM has no ipe_cia_aberta_2027.zip file" in out
     assert "may be missing data" in out and "absence of disclosures" not in out
+
+
+def _fetched_on(cache, day):
+    stamp = datetime.fromisoformat(day).timestamp()
+    os.utime(cache / "cvm" / "ipe_cia_aberta_2026.zip", (stamp, stamp))
+
+
+@pytest.mark.unit
+def test_a_window_past_the_last_delivery_of_a_fresh_file_is_incomplete(cache):
+    # CVM publishes the file about a week behind: fetched on 27 August, it holds
+    # deliveries up to 20 August, so a quiet 21-26 August says nothing yet.
+    _fetched_on(cache, "2026-08-27")
+    with mock.patch.object(cvm, "_cached_zip", side_effect=_cached_only(cache)):
+        out = cvm.get_news("ITUB4.SA", "2026-08-21", "2026-08-26")
+    assert "fetched 2026-08-27, holds deliveries only up to 2026-08-20" in out
+    assert "may be missing data" in out and "absence of disclosures" not in out
+
+
+@pytest.mark.unit
+def test_a_window_that_ended_long_before_the_fetch_is_complete(cache):
+    # Fetched two months after the window: whatever is missing was never delivered.
+    _fetched_on(cache, "2026-10-31")
+    with mock.patch.object(cvm, "_cached_zip", side_effect=_cached_only(cache)):
+        quiet = cvm.get_news("ITUB4.SA", "2026-08-21", "2026-08-26")
+        busy = cvm.get_news("ITUB4.SA", "2026-08-01", "2026-08-10")
+    assert "complete for the window, so this is an absence of disclosures" in quiet
+    assert "Coverage incomplete" not in quiet and "Coverage incomplete" not in busy
 
 
 @pytest.mark.unit

@@ -19,6 +19,10 @@ after ``D`` is therefore left out, and nothing tells the agents why: saying a
 period "was later restated" would itself be news from after ``D``. What
 cannot be reconstructed is the leaving-out itself, which happens only for
 documents re-delivered after ``D``.
+
+CVM rebuilds the current year's IPE file about once a week, so a fresh copy
+ends some days before it was fetched. A window reaching past its last delivery
+is reported as incomplete, not as a week without disclosures.
 """
 
 from __future__ import annotations
@@ -56,6 +60,11 @@ REQUEST_TIMEOUT = 60
 # the company's recent disclosure context; still nothing after the run date.
 _EARLIER_DAYS = 90
 _EARLIER_MAX = 8
+
+# A window that reaches past the last delivery in a file fetched within this
+# many days of the window's end may lack filings CVM has not added yet; a
+# window that ended long before the fetch is fully covered.
+_SETTLE_DAYS = 30
 
 # Monthly reports of the securities insiders hold (CVM Resolution 44, ex-
 # Instruction 358, art. 11) carry no subject and would crowd out the material
@@ -185,6 +194,33 @@ def issuer_for(code: str, as_of_date: str) -> tuple[str, str] | None:
     return None
 
 
+@functools.lru_cache(maxsize=16)
+def _last_delivery(path: str, mtime: float, member_suffix: str) -> date | None:
+    """The latest delivery date in an IPE file, across every issuer."""
+    days = {row.get("Data_Entrega", "")[:10] for row in _read_rows(path, mtime, member_suffix)}
+    parsed = []
+    for day in days:
+        try:
+            parsed.append(date.fromisoformat(day))
+        except ValueError:
+            continue
+    return max(parsed, default=None)
+
+
+def _lag_gap(path: Path, year: int, end: date, gaps: list[str]) -> None:
+    """Note in ``gaps`` when the window reaches past the last delivery of a recently fetched file."""
+    mtime = path.stat().st_mtime
+    last = _last_delivery(str(path), mtime, f"ipe_cia_aberta_{year}.csv")
+    fetched = datetime.fromtimestamp(mtime).date()
+    until = min(end, date(year, 12, 31))
+    if last is None or until < last or (fetched - until).days >= _SETTLE_DAYS:
+        return
+    note = (f"CVM's {year} filings file, fetched {fetched.isoformat()}, holds deliveries only up to "
+            f"{last.isoformat()} (CVM publishes it about a week behind), so later filings are not in it yet")
+    if note not in gaps:
+        gaps.append(note)
+
+
 def _filings(cnpj: str, start: date, end: date, gaps: list[str]) -> list[dict]:
     """The issuer's filings delivered in ``[start, end]``, latest version of each."""
     found: dict[str, dict] = {}
@@ -192,6 +228,7 @@ def _filings(cnpj: str, start: date, end: date, gaps: list[str]) -> list[dict]:
         path = _cached_zip(_IPE_URL.format(year=year), f"ipe_cia_aberta_{year}.zip", year, gaps)
         if path is None:
             continue
+        _lag_gap(path, year, end, gaps)
         for row in _rows(path, f"ipe_cia_aberta_{year}.csv"):
             if row.get("CNPJ_Companhia") != cnpj:
                 continue
