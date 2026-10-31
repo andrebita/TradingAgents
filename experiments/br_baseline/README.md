@@ -800,6 +800,59 @@ Dado de contexto: de 2013 a 2026, o CDI (9,9%) rendeu mais que o Ibovespa (7,6%)
 Leitura: tanto o filtro de tendência quanto o de valuation falham em decidir *quando* estar em ações no Brasil. A
 alocação entre ações e renda fixa fica a critério do investidor, e a rotina cuida da parte em ações.
 
+## Replay da rotina real: pré-registro (31/10/2026, antes de qualquer retorno calculado)
+
+**Pergunta.** A revisão 3 (A2, B1) apontou que a estratégia testada não é a executada: o backtest de dividendos
+rebalanceia uma carteira de valor fixo sem atrito, enquanto a rotina compra ações inteiras com aportes mensais,
+vende só dentro da isenção de R$ 20 mil, adia o resto, paga IR e congela a seleção entre rebalanceamentos. A
+vantagem histórica sobrevive a isso?
+
+**O que roda (`routine_replay.py`, sem LLM).** O código de produção, mês a mês:
+- **Seleção:** `selection.snapshot` e `selection.target` (as 50 mais negociadas, as 10 maiores DY24 entre as
+  constantes), com a regra atual de saltos de preço (`b3_market.clean`: só saltos que se desfazem são zerados; o
+  resto fica em quarentena por um ano).
+- **Ordens:** `orders.plan_orders`, com isenção, adiamento, vendas pendentes retomadas, prejuízo acumulado e IR
+  separado do caixa.
+- **Calendário:** decisão no último pregão de cada mês, de mar/2012 a set/2026. Rebalanceamento em junho e
+  dezembro; nos outros meses, a seleção congelada do último rebalanceamento e só compras. A primeira seleção é
+  a de mar/2012.
+- **Execução:** no fechamento do pregão seguinte. As vendas vêm primeiro; cada compra é limitada ao caixa
+  disponível. Custo de 0,15% sobre o valor de cada ordem.
+- **Proventos:** creditados em caixa na data ex, pela quantidade em carteira, brutos (o Yahoo não separa o JCP).
+  O caixa não rende.
+- **IR:** 15% sobre o ganho líquido do mês quando as vendas passam de R$ 20 mil, depois de compensar o prejuízo
+  acumulado; pago do caixa no mesmo mês.
+- **Dados:** os da seção "Dividendos entre as grandes": FCA 2010–2026 e preços do Yahoo até 30/10/2026, mesmo
+  cache.
+
+**Escalas (fluxos de caixa iguais para todos).**
+- **A:** começa do zero, com R$ 3.000 no último pregão de cada mês.
+- **B:** R$ 100.000 no início, mais R$ 3.000 por mês.
+
+**Comparações, com os mesmos fluxos e nas mesmas datas.**
+1. DIVO11, comprado a cada aporte, com frações e sem custo (preço ajustado, proventos reinvestidos).
+2. BOVA11, idem.
+3. CDI líquido de 15% de IR, aproximado.
+
+**Medidas.**
+- Valor final e total aportado.
+- TIR anual (retorno ponderado pelo dinheiro).
+- Retorno anual e maior queda da cota (retorno ponderado pelo tempo).
+- IR pago, meses com venda tributável, vendas adiadas e caixa parado médio.
+
+**Variante, reportada mas não decisiva:** rebalanceamento trimestral (mar/jun/set/dez), que foi a primária do
+backtest. A semestral foi adotada depois de ver as duas (B1, risco de seleção).
+
+**Decisão pré-registrada (escala B, semestral).**
+- Se a TIR da rotina **não superar a do DIVO11 em pelo menos 1 ponto ao ano**, a documentação passa a
+  recomendar o DIVO11 como veículo padrão para a parte em ações. Nesse caso a rotina fica como opção de quem
+  quer a regra própria, com o aviso de que ela não mostrou vantagem depois dos atritos.
+- Se superar, a rotina segue como está, com o aviso de que a vantagem não é estatisticamente firme (t de 1,41
+  no backtest).
+
+**Limitações conhecidas.** As mesmas do backtest: viés de sobrevivência do Yahoo, JCP bruto, um único caminho
+histórico. Além disso, o IR sobre proventos de 2026 não é modelado.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
