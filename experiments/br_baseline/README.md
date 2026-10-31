@@ -1141,6 +1141,64 @@ nenhum retorno, sinal de seleção ou carteira da disputa.
 **O que este resultado poderá ser, pelo próprio protocolo:** exploratório. O período 2012–2026 já foi explorado, e
 os desvios 1 e 4 afetam trechos da amostra. Ele serve para eliminar regras frágeis, não para provar uma vencedora.
 
+## Revisão 5, disputa de seleção: resultado (`contest_r5/`, sem LLM, US$ 0)
+
+Período de jun/2014 a out/2026, com R$ 50 mil iniciais e R$ 1.200 por mês, executor comum e IR por braço. Tudo
+está em `results/contest_r5/contest_report.json` e os critérios em `contest_criteria.json`.
+
+**Validação do executor:** comprando e mantendo uma única ação, o crescimento bate com a série ajustada do Yahoo
+(ITUB4 4,95 contra 4,98; SBSP3 7,19 contra 7,19). Caixa parado abaixo de 1% em todos os braços. Nenhum salto de
+preço sem explicação nas posições.
+
+| Braço | TIR após liquidação | TIR real | Retorno anual da cota | Queda máxima diária | À frente do BOVA11 nas 89 janelas de 60 meses |
+|---|---|---|---|---|---|
+| BOVA11 | 9,1% | 3,6% | 9,8% | −47% | — |
+| DIVO11 | **11,1%** | 5,4% | **10,7%** | −56% | 94% |
+| DY (a regra de dividendos) | 8,7% | 3,1% | 8,4% | −53% | 25% |
+| QVM | 8,5% | 3,0% | 9,4% | −44% | 63% |
+| V (valor) | 8,3% | 2,8% | 6,3% | −58% | 22% |
+| L (baixa volatilidade) | 7,9% | 2,4% | 6,9% | −36% | 26% |
+| Q (qualidade) | 5,5% | 0,1% | 6,3% | −42% | 16% |
+| M (momentum) | 3,5% | −1,8% | 4,9% | −43% | 9% |
+
+**Veredito pelos critérios congelados: nenhum seletor se qualifica.**
+- Os seis ficam atrás do BOVA11 e do DIVO11 em TIR e na cota. Todos os p-valores ajustados por Holm são 1,0; os
+  brutos vão de 0,56 a 0,93.
+- **O DIVO11 também não substitui o BOVA11.** Ele ficou à frente:
+  - +1,9 ponto de TIR e +0,85 ponto na cota;
+  - em 2 de 3 subperíodos;
+  - em 94% das janelas.
+
+  Mas não passou em três critérios:
+  - p bruto de 0,40;
+  - queda máxima 9 pontos maior (−56% contra −47%);
+  - vantagem que some sem 2016.
+- **Pela regra do protocolo, o BOVA11 continua o veículo padrão da parte Brasil.**
+
+**Leitura:**
+- **A regra de dividendos perde a vantagem com o universo completo.**
+  - TIR de 8,7%, contra 9,1% do BOVA11 e 11,1% do DIVO11. Ela só liderou em 2014–2018 (13,2% ao ano contra
+    11,5%).
+  - Mesmo sem nenhum IR sobre proventos, o limite mais favorável, ela termina com R$ 500 mil: acima do BOVA11
+    (R$ 465 mil), abaixo do DIVO11 (R$ 543 mil).
+- **A vantagem do backtest antigo vinha em parte do universo incompleto.**
+- **Atrito fiscal:** as carteiras de ações não pagaram IR, nem durante nem na liquidação, graças à isenção e ao
+  prejuízo acumulado. Os ETFs pagaram 15% no fim (R$ 42 mil e R$ 56 mil). Mesmo com essa vantagem, as ações
+  perderam.
+- **Dados faltantes:**
+  - Os braços V, M e L tiveram 13% das posições em códigos sem dados de proventos, e o retorno deles está
+    subestimado.
+  - A diferença para o BOVA11 (de 2,9 a 4,9 pontos na cota) é bem maior que o efeito plausível dessa falta.
+  - O QVM tem 6% nesses códigos e fica a 0,4 ponto do BOVA11. É o único empate.
+- **NEFIN:** nenhum alfa significativo.
+  - O DY carrega valor (HML 0,22) e momentum negativo (WML −0,14).
+  - O M carrega momentum (WML 0,20), mas com alfa de −4,8% ao ano (t = −1,76).
+
+**Ressalvas:**
+- O resultado é exploratório, pelo próprio protocolo.
+- A saída gradual nos últimos 12 meses (sensibilidade do §3) não foi rodada.
+- A atribuição setorial ficou de fora.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
