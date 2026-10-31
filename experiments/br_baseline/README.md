@@ -387,6 +387,48 @@ mostram capacidade de prever o retorno relativo ao Ibovespa em 20 pregões. O pr
 analistas não melhora a previsão e triplica o custo. Com 4 janelas, isso não exclui uma vantagem pequena,
 mas uma vantagem grande seria visível.
 
+## Experimento 3: pré-registro (31/10/2026, antes de qualquer resultado)
+
+**Pergunta.** O relatório de notícias melhora a previsão quando o analista lê o conteúdo de verdade, ou
+seja, o texto dos fatos relevantes e avisos da CVM e a imprensa brasileira? No experimento 2 ele via só os
+títulos dos documentos da CVM. Os relatórios antigos dizem literalmente "I could not see the content".
+
+**Desenho** (`experiment3.py`). Parte dos 60 pacotes congelados do experimento 2. Cada pacote é conferido
+pelo SHA-256 antes de ser usado.
+- **O que muda:** só o relatório de notícias (E2). O analista de notícias roda sozinho, como no grafo
+  (Haiku 5.5, esforço médio), com o vendor `b3`.
+- **O que fica igual, byte a byte:** mercado (E1), fundamentos (E3), snapshot (E4) e contrato.
+- **Decisor:** o do braço único do experimento 2 (Sonnet 5.5, esforço médio, mesmo prompt e esquema, sem
+  deliberação). Responde a dois braços: `new` (pacote com o E2 refeito) e `old` (pacote original, perguntado
+  de novo no mesmo dia e código).
+- **Auditoria:** o que o analista leu (cada chamada de ferramenta e sua saída) fica em
+  `*_news_inputs/`, para checar o filtro de data célula a célula.
+
+**Métricas.**
+- **Primária:** diferença de Brier pareada `new − old` por célula, com média por janela e depois entre as 4
+  janelas. IC t entre janelas e teste exato de troca de sinais; com 4 janelas, o menor p possível é 0,125.
+- **Secundárias:**
+  - probabilidade média, para ver se o pessimismo de 45% a 47% persiste;
+  - IC de ranking por data;
+  - deslocamento médio |new − old| comparado ao ruído do decisor |old − exp2|, que é a mesma pergunta feita
+    duas vezes;
+  - cobertura: células em que o analista recebeu texto da CVM e da imprensa.
+
+**O que o resultado pode e não pode dizer.**
+- Com 60 células e 4 janelas, só um efeito grande é detectável. No experimento 2, o IC da diferença entre
+  braços teve meia-largura de ~0,005 de Brier.
+- Um resultado nulo não prova que notícias não ajudam. Um Brier claramente abaixo de 0,25 nas 4 janelas
+  seria o primeiro sinal de discriminação.
+- **Limitação:** o modelo pode ter visto, no treino, notícias de jul–out/2026 sobre essas empresas; isso vale
+  igualmente para os dois braços.
+
+**Custo.** Teste de fumaça (1 célula): US$ 0,065, sendo US$ 0,004 do analista e US$ 0,03 por decisão.
+Previsão de ~US$ 3,90 para as 60 células, com teto de US$ 5.
+
+    python experiments/br_baseline/experiment3.py --run-id exp3_news --workers 3 --budget-usd 5
+    python experiments/br_baseline/experiment3_eval.py experiments/br_baseline/results/experiment3 exp3_news \
+        --out experiments/br_baseline/results/experiment3/exp3_eval.json
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
