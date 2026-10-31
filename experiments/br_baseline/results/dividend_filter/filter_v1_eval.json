@@ -1,0 +1,242 @@
+{
+  "cells": 420,
+  "assessed": 419,
+  "with_outcome": 404,
+  "failed": 0,
+  "cut_rate": 0.35396039603960394,
+  "auc_llm": 0.6925756236101064,
+  "auc_llm_ci95": [
+    0.6388048713451823,
+    0.7423410499043236
+  ],
+  "auc_rule": 0.49461458082147736,
+  "auc_rule_ci95": [
+    0.4526086145072939,
+    0.536985414784442
+  ],
+  "auc_llm_minus_rule_ci95": [
+    0.1436902106247946,
+    0.24659808260069505
+  ],
+  "brier_llm": 0.20998861386138612,
+  "brier_base_rate": 0.2286724340750907,
+  "mean_probability": 0.2688613861386139,
+  "flagged_llm": 51,
+  "cut_rate_if_flagged_llm": 0.6666666666666666,
+  "flagged_rule": 109,
+  "cut_rate_if_flagged_rule": 0.3577981651376147,
+  "passes": true,
+  "portfolio": {
+    "none": {
+      "cagr": 0.13884182851502436,
+      "cuts_held": 112
+    },
+    "llm": {
+      "cagr": 0.11423945619099474,
+      "cuts_held": 89
+    },
+    "rule": {
+      "cagr": 0.11076840000461141,
+      "cuts_held": 95
+    },
+    "llm_minus_none": {
+      "mean_semiannual": -0.014707824598864749,
+      "t": -1.6562106880302019,
+      "periods_positive": 9,
+      "periods": 28
+    },
+    "rule_minus_none": {
+      "mean_semiannual": -0.016659857584346023,
+      "t": -1.3022416564527293,
+      "periods_positive": 8,
+      "periods": 28
+    },
+    "llm_minus_rule": {
+      "mean_semiannual": 0.0019520329854812752,
+      "t": 0.17147052108985514
+    }
+  },
+  "probe": [
+    {
+      "code": "CPFE3",
+      "t": "2012-12-28",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "PSSA3",
+      "t": "2012-12-28",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "OIBR4",
+      "t": "2013-06-28",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "CMIG4",
+      "t": "2013-06-28",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "BRAP4",
+      "t": "2013-06-28",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "EGIE3",
+      "t": "2013-06-28",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "SBSP3",
+      "t": "2013-06-28",
+      "guess": "unknown",
+      "confidence": 10.0
+    },
+    {
+      "code": "OIBR4",
+      "t": "2013-12-30",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "BBAS3",
+      "t": "2013-12-30",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "CPFE3",
+      "t": "2013-12-30",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "BRAP4",
+      "t": "2014-06-30",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "ECOR3",
+      "t": "2014-12-30",
+      "guess": "Rumo S.A.",
+      "confidence": 5.0
+    },
+    {
+      "code": "GOAU4",
+      "t": "2015-12-30",
+      "guess": "unknown",
+      "confidence": 15.0
+    },
+    {
+      "code": "ABEV3",
+      "t": "2015-12-30",
+      "guess": "Ambev S.A.",
+      "confidence": 8.0
+    },
+    {
+      "code": "BBSE3",
+      "t": "2016-06-30",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "EGIE3",
+      "t": "2017-12-29",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "MOTV3",
+      "t": "2018-06-29",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "ITSA4",
+      "t": "2018-12-28",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "QUAL3",
+      "t": "2019-06-28",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "SANB11",
+      "t": "2019-06-28",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "BBAS3",
+      "t": "2019-06-28",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "CYRE3",
+      "t": "2020-12-30",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "SANB11",
+      "t": "2021-06-30",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "PCAR3",
+      "t": "2021-06-30",
+      "guess": "unknown",
+      "confidence": 5.0
+    },
+    {
+      "code": "PETR4",
+      "t": "2021-12-30",
+      "guess": "unknown",
+      "confidence": 10.0
+    },
+    {
+      "code": "GGBR4",
+      "t": "2021-12-30",
+      "guess": "unknown",
+      "confidence": 10.0
+    },
+    {
+      "code": "ITUB4",
+      "t": "2021-12-30",
+      "guess": "unknown",
+      "confidence": 8.0
+    },
+    {
+      "code": "GGBR4",
+      "t": "2022-12-29",
+      "guess": "unknown",
+      "confidence": 10.0
+    },
+    {
+      "code": "VBBR3",
+      "t": "2022-12-29",
+      "guess": "unknown",
+      "confidence": 10.0
+    },
+    {
+      "code": "GGBR4",
+      "t": "2023-06-30",
+      "guess": "unknown",
+      "confidence": 15.0
+    }
+  ],
+  "cost_usd": 3.1237
+}

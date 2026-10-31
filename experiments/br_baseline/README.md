@@ -705,6 +705,49 @@ anteriores (Yahoo). Retorno = do pregão seguinte à data até o próximo rebala
 - Brier contra a taxa de corte.
 - Cortes evitados.
 
+## Filtro de armadilhas de dividendo: resultado (`filter_v1`, US$ 3,12)
+
+Foram 419 avaliações e 30 testes de identificação, sem falhas. 404 candidatas têm desfecho conhecido, e 35% delas
+cortaram proventos em 30% ou mais.
+
+**Teste de vazamento.** Em 30 pacotes anonimizados, o modelo respondeu "unknown" em 28, errou um (chamou de
+Rumo uma ECOR3) e acertou um (ABEV3, com 8% de confiança). A anonimização funcionou.
+
+**Previsão do corte (primária).**
+
+| | AUC | IC95% (bootstrap das datas) | Brier |
+|---|---|---|---|
+| **LLM** | **0,693** | 0,639 a 0,742 | 0,210 (taxa base: 0,229) |
+| Regra sem LLM (prejuízo, queda de lucro, payout acima de 100%) | 0,495 | 0,453 a 0,537 | — |
+| LLM menos regra | — | +0,144 a +0,247 | — |
+
+- **Critério pré-registrado: atendido.** O IC do AUC fica acima de 0,5 e acima do AUC da regra.
+- **Marcação do LLM (probabilidade ≥ 50%):** 51 candidatas, das quais 67% cortaram.
+- **Marcação da regra:** 109 candidatas, das quais 36% cortaram, praticamente a taxa base.
+- **Checagem exploratória contra dividendo extraordinário** (proventos dos últimos 12 meses sobre a média dos 3
+  anos anteriores):
+  - essa regra simples atinge AUC de 0,62, e a razão DY12/DY24 de 0,64;
+  - dentro de cada terço de "extraordinário", o LLM mantém AUC de 0,66 a 0,71;
+  - portanto ele acrescenta informação além desse padrão.
+
+**Carteira (secundária, 28 semestres).**
+
+| Carteira das 10 maiores DY entre as 15 candidatas | Retorno anual | Cortes na carteira |
+|---|---|---|
+| Sem filtro | 13,9% | 112 |
+| Excluindo marcadas pelo LLM | 11,4% | 89 |
+| Excluindo marcadas pela regra | 11,1% | 95 |
+
+- **LLM menos sem filtro:** −1,5%/semestre, t = −1,66, positivo em 9 de 28 semestres.
+- **As marcadas pelo LLM renderam mais no semestre seguinte** (+10,7%) do que as não marcadas (+7,1%).
+
+Leitura: é a primeira habilidade mensurável do LLM neste projeto. Lendo demonstrativos anonimizados, ele prevê
+cortes de dividendo bem melhor que uma regra contábil e que o padrão de dividendo extraordinário. **Mas o mercado
+já precifica o corte:** as ações com corte provável estão baratas e se recuperam, e excluí-las reduz o retorno.
+Apesar de o critério de previsão ter sido atendido, a recomendação é **não** usar o filtro para excluir ações
+de uma carteira que busca ganhar do Ibovespa. Ele serve como alerta e para quem prioriza a estabilidade da renda:
+21% menos cortes, ao custo de ~2,5 pontos de retorno ao ano.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
