@@ -932,8 +932,15 @@ própria, com o aviso de que não mostrou vantagem firme depois dos atritos.
   dentro da isenção.
 - **Proventos:** o DIVO11 reinveste internamente e cobra taxa de administração, já embutida no preço. As ações
   pagam em conta: a rotina reinveste, mas um investidor pode querer usar a renda.
-- **Mesmas limitações do backtest:** viés de sobrevivência e JCP bruto. Ambos favorecem a rotina, o que reforça
-  o veredito.
+- **Mesmas limitações do backtest:** viés de sobrevivência e JCP bruto. O viés de sobrevivência tem sinal
+  incerto (revisão 4). O JCP bruto favorece a rotina, ainda mais desde 1º/1/2026, quando o IR retido no JCP
+  passou de 15% para 17,5% (LC 224/2025). O Yahoo não separa JCP de dividendo, então o efeito não foi calculado.
+- **Outros atritos não modelados:**
+  - os proventos entram na data ex, e não na de pagamento;
+  - o caixa parado não rende.
+
+  Dividendos acima de R$ 50 mil por mês da mesma empresa pagam 10% desde 2026 (Lei 15.270/2025), o que não
+  alcança carteiras deste tamanho.
 
 ## Custo estimado da execução com LLM
 

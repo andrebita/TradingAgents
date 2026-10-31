@@ -313,8 +313,16 @@ def tax_facts(policy, wealth, equity_plan) -> dict:
             "taxable_fixed_income": [{"name": x.name, "value": x.value, "liquidity_days": x.liquidity_days}
                                      for x in taxable],
             "tax_exempt_fixed_income": [x.name for x in wealth.fixed_income if x.tax_exempt],
-            "dividends": "isentos para pessoa física (confirmar as regras de 2026 para valores altos)",
-            "interest_on_capital": "JCP com 15% retido na fonte"}
+            "dividends": "isentos para pessoa física até R$ 50 mil por mês da mesma empresa; acima disso, 10% "
+                         "retidos sobre o total pago no mês (Lei 15.270/2025, desde jan/2026), salvo lucros até "
+                         "2025 com distribuição aprovada até 31/12/2025; tributação mínima anual para rendas "
+                         "acima de R$ 600 mil",
+            "interest_on_capital": "JCP com 17,5% retido na fonte desde 1º/1/2026 (LC 224/2025; antes, 15%)",
+            "listed_funds": "FII e Fiagro: rendimentos isentos se o fundo tiver ao menos 100 cotistas e você tiver "
+                            "menos de 10% das cotas (Lei 11.033, art. 3º); venda com 20% sobre o ganho, sem a "
+                            "isenção de R$ 20 mil. FI-Infra da Lei 12.431: alíquota zero nos rendimentos e na "
+                            "venda, se o enquadramento for confirmado no regulamento",
+            "etfs": "venda de ETF de ações: 15% sobre o ganho, sem a isenção de R$ 20 mil"}
 
 
 def tax(policy, wealth, equity_plan, models: Models | None) -> Report:
