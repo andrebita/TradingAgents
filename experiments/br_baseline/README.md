@@ -461,6 +461,67 @@ torna o relatório muito mais informativo para um leitor humano, mas não dá ao
 retorno relativo em 20 pregões. É o resultado esperado se essas informações já estão nos preços no dia D.
 O decisor reage a isso ficando perto de 50%, o que é a resposta coerente sem vantagem.
 
+## Piloto de insiders: pré-registro (31/10/2026, antes de qualquer retorno calculado)
+
+**Pergunta.** Ações cujos diretores e conselheiros compraram no mercado nos últimos meses rendem mais que o
+Ibovespa e que o universo líquido da B3? Nos EUA, compras de insiders são uma das evidências mais robustas
+de retorno superior em 6 a 12 meses. No Brasil o dado é público, mas pouco explorado.
+
+**Dados, sem LLM.**
+- **VLMO da CVM:** formulários mensais estruturados do art. 11 da Res. 44, de dez/2018 a set/2026, de 430 a
+  550 empresas por ano. Trazem cargo, compra ou venda à vista, data, quantidade, preço e volume.
+- **FCA:** códigos de negociação de cada empresa.
+- **Yahoo:** preços ajustados e volume.
+- **Valor de cada operação:** o volume informado. Quando vier zerado, o que é comum, a quantidade vezes o
+  fechamento da classe negociada (ON, PN, unit) no dia da operação.
+
+**Regra de data.** Um formulário só conta a partir da entrega da versão que a CVM mantém. O formulário
+reentregue conta da reentrega, o que é conservador.
+
+**Universo (a cada fim de mês t).**
+- Empresas com ação ou unit na B3 e um código representativo: o de maior mediana de volume financeiro nos 63
+  pregões até t.
+- Liquidez mínima: mediana de R$ 2 milhões por dia.
+- Preço no Yahoo.
+
+**Sinal primário.**
+- Saldo, em reais, das compras menos as vendas à vista de **diretores e conselheiros de administração**
+  (e vinculados), em ações e units da própria companhia.
+- Formulários dos 3 meses de referência anteriores a t, entregues até t.
+- Compra a empresa com saldo positivo.
+
+**Carteira.**
+- Pesos iguais entre as empresas do universo com saldo positivo. Com menos de 5 nomes, fica no universo
+  inteiro naquele mês, e esse mês é marcado.
+- Entrada no fechamento do pregão seguinte a t; saída no fechamento do pregão seguinte ao fim do mês
+  seguinte.
+- Rebalanceamento mensal, de mar/2019 a ago/2026 (90 meses).
+- Custo de 0,15% por lado sobre o giro.
+- Uma ação que sai da bolsa no meio do mês fica com o retorno até o último preço disponível.
+
+**Referências.**
+1. Ibovespa (`^BVSP`, índice de retorno total): o objetivo.
+2. Universo líquido com pesos iguais e o mesmo custo: isola o sinal do efeito de pesos iguais.
+
+**Métrica primária e critério para seguir.**
+- Diferença mensal, líquida de custos, entre a carteira e o universo com pesos iguais, com estatística t
+  sobre os meses.
+- **Segue se:** t ≥ 2; diferença positiva em pelo menos 5 dos 8 anos civis (2019–2026); e retorno anual
+  da carteira acima do Ibovespa no período, já líquido de custos.
+
+**Variantes secundárias, todas reportadas.**
+- (a) só controladores;
+- (b) diretores, conselheiros e controladores;
+- (c) só o terço com maior intensidade (saldo dividido pela mediana do volume financeiro);
+- (d) janela de 6 meses;
+- (e) a carteira das empresas com saldo **negativo**, que deveria render menos (teste de simetria).
+
+**Limitações conhecidas.**
+- O Yahoo não tem várias ações que saíram da bolsa. O número de empresas do VLMO sem preço é reportado.
+- A CVM mantém só a última versão de cada formulário.
+- Os "vinculados" (familiares, empresas ligadas) entram junto com o titular.
+- São 8 anos e um único caminho histórico.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
