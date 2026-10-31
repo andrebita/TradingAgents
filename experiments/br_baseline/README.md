@@ -661,6 +661,50 @@ Quase toda a vantagem sobre o Ibovespa vem de inclinar a carteira para dividendo
 A regra própria acrescenta ~1,4 ponto ao ano sobre o DIVO11, com t ≈ 1, e um giro que, para pessoa física com
 vendas acima de R$ 20 mil por mês, gera IR não modelado aqui.
 
+## Filtro de armadilhas de dividendo: pré-registro (31/10/2026, antes de qualquer resposta do LLM)
+
+**Pergunta.** Um LLM que lê os demonstrativos **anonimizados** identifica, entre as maiores pagadoras, as que
+vão cortar dividendos? E melhor que uma regra simples sem LLM?
+
+**Candidatas.**
+- A cada semestre (fins de junho e dezembro, de jun/2012 a jun/2026), as 15 de maior DY24 entre as 50 mais
+  negociadas com proventos nos 3 anos anteriores (regras de `dividend_tilt.py`).
+
+**O que o LLM lê.**
+- Até 3 DFPs e o ITR mais recente, como entregues à CVM até a data.
+- Tudo em percentual: demonstração de resultado e fluxo de caixa sobre a receita; balanço sobre o ativo total.
+- Crescimento anual, payout (proventos pagos no fluxo de caixa sobre o lucro) e proventos por ação por ano,
+  com o último igual a 100.
+- DY de 12 e de 24 meses e o setor.
+- Sem nome, ticker, CNPJ nem datas.
+
+**O que ele responde.** A probabilidade de os proventos por ação dos próximos 12 meses ficarem ao menos 30%
+abaixo dos últimos 12 meses.
+
+**Modelo e custo.** Sonnet 5.5, esforço baixo, saída estruturada; teto de US$ 10.
+
+**Teste de vazamento.** Em 30 pacotes sorteados, o modelo é perguntado que empresa é aquela; a taxa de acerto
+é reportada.
+
+**Regra sem LLM (a comparar).** Uma bandeira para cada um destes sinais no último ano fiscal: prejuízo; lucro
+caindo mais de 30%; proventos pagos acima do lucro. A nota vai de 0 a 3.
+
+**Desfecho.** Corte = proventos por ação com data ex nos 12 meses seguintes abaixo de 70% dos 12 meses
+anteriores (Yahoo). Retorno = do pregão seguinte à data até o próximo rebalanceamento, com preços corrigidos.
+
+**Métrica primária e critério para adotar o filtro na rotina.**
+- AUC da probabilidade do LLM para prever o corte, com IC95% por bootstrap das datas.
+- **Adota se:** o IC ficar acima de 0,5 **e** o AUC do LLM superar o da regra sem LLM.
+
+**Secundárias, todas reportadas.**
+- Carteira das 10 maiores DY entre as candidatas:
+  - sem filtro;
+  - excluindo as com probabilidade ≥ 50%;
+  - excluindo as com alguma bandeira da regra.
+- Diferença semestral pareada e t sobre os semestres.
+- Brier contra a taxa de corte.
+- Cortes evitados.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
