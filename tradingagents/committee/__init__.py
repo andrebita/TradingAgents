@@ -13,5 +13,5 @@ falls back to the rule where it does not hold. The investor approves.
 What the backtests support guides the design (``experiments/br_baseline``): a
 rule, not the model, chooses the stocks; the model reads, weighs, explains and
 catches risks. A shadow record keeps the director's choices next to the rule's,
-so whether his discretion helps is measured from here on.
+so whether its discretion helps is measured from here on.
 """

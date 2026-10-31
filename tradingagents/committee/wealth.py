@@ -42,11 +42,26 @@ class Listed(BaseModel):
     lent: bool = Field(False, description="Lent out (aluguel): still owned, held by the borrower")
 
 
+class TaxState(BaseModel):
+    """What the tax on stock sales depends on beyond this month's plan, from the investor's records."""
+    month: str | None = Field(None, description="AAAA-MM the month's figures refer to; in another month they are zero")
+    stock_sales_this_month: float = Field(0.0, ge=0, description="Stock sales already made this month, R$")
+    stock_gain_this_month: float = Field(0.0, description="Their net gain, R$; negative for a loss")
+    stock_loss_carryforward: float = Field(0.0, ge=0, description="Stock losses of earlier months still to offset")
+
+    def for_month(self, day: date) -> tuple[float, float, float]:
+        """(sales so far, gain so far, loss carried) for the month of ``day``."""
+        current = self.month == f"{day:%Y-%m}"
+        return (self.stock_sales_this_month if current else 0.0, self.stock_gain_this_month if current else 0.0,
+                self.stock_loss_carryforward)
+
+
 class Wealth(BaseModel):
     as_of: date | None = None
     cash: float = 0.0
     fixed_income: list[FixedIncome] = Field(default_factory=list)
     listed: list[Listed] = Field(default_factory=list)
+    tax: TaxState = Field(default_factory=TaxState)
     notes: list[str] = Field(default_factory=list)
 
     def stocks(self) -> list[Listed]:

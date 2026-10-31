@@ -23,11 +23,14 @@ logger = logging.getLogger(__name__)
 
 # A share or unit code: four letters and the class (PETR4, TAEE11).
 CODE = re.compile(r"^[A-Z]{4}(3|4|5|6|11)$")
-# A one-day rise above 100% or fall beyond 90% in a large B3 stock is a corporate action
-# Yahoo misadjusted (the Assai spin-off in PCAR3, Azul's 2026 reverse splits), not a
-# market move: that day's return is set to zero. Real crashes such as Americanas' -77%
-# stay.
+# A one-day rise above 100% or fall beyond 90% in a large B3 stock is either a misadjusted
+# corporate action or a real event. When the price undoes it within ``REVERSAL_SESSIONS``
+# (back within 25% of where it was), it was a data error: both days' returns are set to
+# zero (Azul's 2026 reverse splits). When it stays, it is kept as it is and flagged as
+# suspect: only a check against the event can tell a misadjusted spin-off (PCAR3 on
+# 2021-03-01) from a real crash, so the routine keeps such a stock out of new purchases.
 MAX_RISE, MAX_FALL = 1.0, -0.9
+REVERSAL_SESSIONS = 10
 PRICE_TTL = 12 * 60 * 60
 COLUMNS = ["Close", "Adj Close", "Volume", "Dividends"]
 
@@ -64,16 +67,33 @@ def companies(years: range | None = None) -> dict[str, Company]:
     return out
 
 
-def clean(frame: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
-    """``frame`` with misadjusted one-day jumps in Adj Close neutralized, and the days changed."""
-    returns = frame["Adj Close"].pct_change()
-    bad = returns[(returns > MAX_RISE) | (returns < MAX_FALL)].index
-    if not len(bad):
-        return frame, []
-    returns.loc[bad] = 0.0
+def clean(frame: pd.DataFrame) -> tuple[pd.DataFrame, list[str], list[str]]:
+    """``frame`` with reversed spikes in Adj Close neutralized, the days changed, and the suspect days.
+
+    The suspect days are also left in ``frame.attrs["suspect_days"]``.
+    """
+    adj = frame["Adj Close"]
+    returns = adj.pct_change()
+    extreme = returns[(returns > MAX_RISE) | (returns < MAX_FALL)].index
+    neutral: set = set()
+    suspect = []
+    for day in extreme:
+        if day in neutral:
+            continue
+        i = adj.index.get_loc(day)
+        before = adj.iloc[i - 1]
+        later = adj.iloc[i + 1:i + 1 + REVERSAL_SESSIONS]
+        back = later[(later / before).between(0.75, 1 / 0.75)]
+        if len(back):
+            neutral |= {day, back.index[0]}
+        else:
+            suspect.append(day.date().isoformat())
     fixed = frame.copy()
-    fixed["Adj Close"] = frame["Adj Close"].iloc[0] * (1 + returns.fillna(0)).cumprod()
-    return fixed, [d.date().isoformat() for d in bad]
+    if neutral:
+        returns.loc[sorted(neutral)] = 0.0
+        fixed["Adj Close"] = adj.iloc[0] * (1 + returns.fillna(0)).cumprod()
+    fixed.attrs["suspect_days"] = suspect
+    return fixed, sorted(d.date().isoformat() for d in neutral), suspect
 
 
 def _folder() -> Path:
@@ -117,7 +137,7 @@ def histories(codes: set[str], start: str = "2008-01-01") -> dict[str, pd.DataFr
         frame = pd.read_csv(path, index_col=0, parse_dates=True)
         if len(frame):
             frame.index = pd.DatetimeIndex(frame.index).tz_localize(None).normalize()
-            out[code], _ = clean(frame.sort_index())
+            out[code], _, _ = clean(frame.sort_index())
     return out
 
 

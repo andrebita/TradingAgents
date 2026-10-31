@@ -11,7 +11,7 @@ import pytest
 
 from tradingagents.committee import analysts, director, meeting
 from tradingagents.committee.policy import InvestmentPolicy
-from tradingagents.committee.wealth import FixedIncome, Listed, Wealth
+from tradingagents.committee.wealth import FixedIncome, Listed, TaxState, Wealth
 from tradingagents.dividend_portfolio.orders import plan_orders
 from tradingagents.portfolio import PortfolioContext
 
@@ -127,19 +127,35 @@ def test_a_meeting_without_models_follows_the_rule_and_keeps_its_record(tmp_path
     book = PortfolioContext(cash=0.0, positions=[])
     eq = SimpleNamespace(target=["AAAA3", "NEWA3"], target_frame=target, plan=plan_orders(book, [], {}),
                          rebalance=True, day=date(2026, 10, 30), alerts={}, cut={}, holdings=[], performance=None,
-                         spent_usd=0.0)
+                         spent_usd=0.0, book=_wealth().stock_book(), prices={"AAAA3": 100.0, "NEWA3": 100.0},
+                         pending=set(), keep=set())
     returns = pd.DataFrame({"stocks_index": 0.01, "stocks_dividend": 0.01, "listed_funds": 0.0, "cdi": 0.008},
                            index=pd.period_range("2020-01", periods=40, freq="M"))
     with mock.patch.object(meeting.b3_market, "companies", return_value={}), \
             mock.patch.object(meeting.b3_market, "histories", side_effect=lambda codes: dict.fromkeys(codes, frame)), \
-            mock.patch.object(meeting.routine, "review", return_value=eq), \
+            mock.patch.object(meeting.routine, "review", return_value=eq) as review, \
             mock.patch.object(analysts, "class_returns", return_value=returns), \
             mock.patch.object(analysts, "route_to_vendor", return_value="Selic 15%"):
-        m = meeting.hold(_policy(), _wealth(), as_of=date(2026, 10, 30), use_llm=False,
+        wealth = _wealth()
+        wealth.tax = TaxState(month="2026-10", stock_sales_this_month=5000, stock_gain_this_month=800,
+                              stock_loss_carryforward=1200)
+        m = meeting.hold(_policy(excluded_sectors=["Telecom"]), wealth, as_of=date(2026, 10, 30), use_llm=False,
                          config={**meeting.DEFAULT_CONFIG, "results_dir": str(tmp_path)})
+    # The investor's exclusions and tax records reach the equity routine (review 3, A3 and C5).
+    kw = review.call_args.kwargs
+    assert kw["rules"].excluded_sectors == ("Telecom",)
+    assert (kw["sold_earlier_this_month"], kw["gain_earlier_this_month"], kw["loss_carryforward"]) == (5000, 800, 1200)
     assert "Reunião sem LLM" in m.letter and "## Relatórios dos analistas" in m.letter
     assert m.checked.contribution_to_stocks == 2000
     # AAAA3 already holds R$ 10,000, above its equal share: the new money goes to NEWA3.
     orders = {o.split("|")[2].strip() for o in m.letter.splitlines() if o.startswith("| compra")}
     assert orders == {"NEWA3"}
     assert (tmp_path / "comite" / "decisoes.jsonl").exists() and (tmp_path / "comite" / "sombra_diretor.json").exists()
+
+
+@pytest.mark.unit
+def test_the_tax_records_of_another_month_count_only_the_carried_loss():
+    state = TaxState(month="2026-09", stock_sales_this_month=15_000, stock_gain_this_month=900,
+                     stock_loss_carryforward=300)
+    assert state.for_month(date(2026, 9, 30)) == (15_000, 900, 300)
+    assert state.for_month(date(2026, 10, 30)) == (0.0, 0.0, 300)

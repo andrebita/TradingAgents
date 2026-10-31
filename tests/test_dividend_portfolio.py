@@ -65,14 +65,41 @@ def test_the_snapshot_reads_nothing_after_its_date(universe):
 
 
 @pytest.mark.unit
-def test_a_misadjusted_jump_is_neutralized_and_a_real_crash_kept():
+def test_a_reversed_spike_is_neutralized_and_a_jump_that_stays_is_flagged_not_changed():
     frame = _frame(10)
-    frame.iloc[100:, frame.columns.get_loc("Adj Close")] *= 3.0     # +200% in a day: a misadjusted spin-off
-    frame.iloc[300:, frame.columns.get_loc("Adj Close")] *= 0.23    # -77%: a real crash
-    cleaned, days = market.clean(frame)
-    assert days == [DAYS[100].date().isoformat()]
+    adj = frame.columns.get_loc("Adj Close")
+    frame.iloc[100, adj] *= 3.0                       # +200% for one day, then back: a data error
+    frame.iloc[200:, adj] *= 3.0                      # +200% that stays: a spin-off misadjusted, or real
+    frame.iloc[300:, adj] *= 0.23                     # -77%: within the limits, a real crash
+    cleaned, neutral, suspect = market.clean(frame)
+    assert neutral == [DAYS[100].date().isoformat(), DAYS[101].date().isoformat()]
+    assert suspect == [DAYS[200].date().isoformat()] == cleaned.attrs["suspect_days"]
     r = cleaned["Adj Close"].pct_change()
-    assert r.iloc[100] == 0 and r.iloc[300] == pytest.approx(-0.77)
+    assert r.iloc[100] == 0 and r.iloc[101] == 0
+    assert r.iloc[200] == pytest.approx(2.0) and r.iloc[300] == pytest.approx(-0.77)
+
+
+@pytest.mark.unit
+def test_a_fall_that_does_not_come_back_is_not_turned_into_a_rise():
+    # Review 3, B2: [100, 5, 9.5] used to become [100, 100, 190].
+    frame = pd.DataFrame({"Close": [100.0, 5.0, 9.5], "Adj Close": [100.0, 5.0, 9.5], "Volume": 1.0,
+                          "Dividends": 0.0}, index=pd.bdate_range("2026-01-05", periods=3))
+    cleaned, neutral, suspect = market.clean(frame)
+    assert list(cleaned["Adj Close"]) == [100.0, 5.0, 9.5] and not neutral and suspect == ["2026-01-06"]
+
+
+@pytest.mark.unit
+def test_a_code_with_a_recent_unexplained_jump_and_an_excluded_sector_stay_out(universe):
+    companies, px = universe
+    px["AAAA3"] = px["AAAA3"].copy()
+    px["AAAA3"].attrs["suspect_days"] = ["2026-03-02"]
+    companies["cnpj3"].sector = "Telecomunicações"                  # DDDD11
+    rules = selection.Rules(universe=4, holdings=2, excluded_sectors=("telecom",))
+    snap = selection.snapshot(companies, px, pd.Timestamp("2026-06-30"), rules)
+    assert "AAAA3" not in set(snap["code"])                         # so EEEE3 joins the 4 most traded
+    assert list(selection.target(snap, rules)["code"]) == ["EEEE3", "BBBB4"]   # DDDD11 is telecom
+    # A year later the jump no longer keeps it out.
+    assert not selection.is_suspect(px["AAAA3"], pd.Timestamp("2027-03-03"), rules)
 
 
 def _book(*positions, cash=0.0):
@@ -249,3 +276,82 @@ def test_a_held_class_of_a_selected_company_stands_in_for_the_selected_code():
     target = pd.DataFrame([{"cnpj": "bradesco", "code": "BBDC4"}, {"cnpj": "itau", "code": "ITUB4"}])
     out = same_company_codes(target, companies, {"BBDC3", "PETR4"}, {"BBDC3", "BBDC4", "ITUB4"})
     assert list(out["code"]) == ["BBDC3", "ITUB4"] and list(target["code"]) == ["BBDC4", "ITUB4"]
+
+
+@pytest.mark.unit
+def test_lots_across_brokers_are_one_position_at_the_weighted_average_cost():
+    # Review 3, C3: the first lot's price (8) would show a R$ 400 gain that is not there.
+    plan = plan_orders(_book(("OLDA3", 100, 8.0), ("OLDA3", 100, 12.0)), ["NEWA3"], {"OLDA3": 10.0, "NEWA3": 10.0})
+    sale = [o for o in plan.orders if o.side == "venda"]
+    assert [(o.code, o.quantity) for o in sale] == [("OLDA3", 200)] and sale[0].gain == pytest.approx(0.0)
+    unknown = plan_orders(_book(("OLDA3", 100, 8.0), ("OLDA3", 100, None)), ["NEWA3"], {"OLDA3": 10.0, "NEWA3": 10.0})
+    assert [o.gain for o in unknown.orders if o.side == "venda"] == [None]
+
+
+@pytest.mark.unit
+def test_the_tax_on_the_sales_is_kept_aside_not_spent():
+    # Review 3, C4: R$ 30,000 of sales with a R$ 10,000 gain owe R$ 1,500, which stays in cash.
+    plan = plan_orders(_book(("OLDA3", 3000, 20 / 3)), ["NEWA3"], {"OLDA3": 10.0, "NEWA3": 1.0}, stay_exempt=False)
+    assert plan.estimated_tax == pytest.approx(1500)
+    bought = sum(o.value for o in plan.orders if o.side == "compra")
+    assert bought == pytest.approx(28_500) and plan.cash_left == pytest.approx(0, abs=1)
+
+
+@pytest.mark.unit
+def test_pending_sales_are_retried_between_rebalances_and_a_kept_code_is_left_alone():
+    # Review 3, C6: deferred sales used to wait for the next rebalance, six months on.
+    book = _book(("OLDA3", 3000, 10.0), ("HELD3", 100, 10.0), ("ODDA3", 100, 10.0))
+    prices = {"OLDA3": 10.0, "HELD3": 10.0, "ODDA3": 10.0, "NEWA3": 10.0}
+    plan = plan_orders(book, ["HELD3", "NEWA3"], prices, sell=False, pending={"OLDA3"}, keep={"HELD3"})
+    assert [(o.code, o.quantity, o.reason) for o in plan.orders if o.side == "venda"] == \
+        [("OLDA3", 2000, "venda pendente")]                          # ODDA3 is not pending: not sold
+    assert [(o.code, o.quantity) for o in plan.deferred] == [("OLDA3", 1000)]
+    assert {o.code for o in plan.orders if o.side == "compra"} == {"NEWA3"}   # HELD3 is under review
+
+
+def _days_to(end):
+    return pd.bdate_range("2022-01-03", end)
+
+
+def _frame_to(end, dividends=None, volume=5e6):
+    days = _days_to(end)
+    frame = pd.DataFrame({"Close": 10.0, "Adj Close": 10.0, "Volume": volume, "Dividends": 0.0}, index=days)
+    for day, amount in (dividends or {}).items():
+        frame.loc[frame.index[frame.index >= pd.Timestamp(day)][0], "Dividends"] = amount
+    return frame
+
+
+@pytest.mark.unit
+def test_the_routine_freezes_its_target_retries_pending_sales_and_leaves_funds_alone(tmp_path):
+    from tradingagents.default_config import DEFAULT_CONFIG
+    from tradingagents.dividend_portfolio import routine
+
+    end = "2026-08-31"
+    companies = {f"c{i}": market.Company(f"c{i}", f"Empresa {i}", {code}, "Bancos")
+                 for i, code in enumerate(["AAAA3", "BBBB3", "CCCC3", "OLDD3"])}
+    px = {"AAAA3": _frame_to(end, _yearly(1.0)), "BBBB3": _frame_to(end, _yearly(0.8)),
+          # A large July dividend makes CCCC3 the rule's pick in August, but not in June.
+          "CCCC3": _frame_to(end, {**_yearly(0.6), "2026-07-15": 5.0}), "OLDD3": _frame_to(end)}
+    index = _frame_to(end)["Close"]
+    config = {**DEFAULT_CONFIG, "results_dir": str(tmp_path)}
+    rules = selection.Rules(universe=4, holdings=2)
+
+    def run(book, day):
+        with mock.patch.object(routine.market, "companies", return_value=companies), \
+                mock.patch.object(routine.market, "histories", side_effect=lambda codes: {c: px[c] for c in codes if c in px}), \
+                mock.patch.object(routine.market, "index_series", return_value=index):
+            return routine.review(book, as_of=day, use_llm=False, config=config, rules=rules)
+
+    fund = ("FUND11", 100, 100.0)
+    june = run(_book(("OLDD3", 3000, 10.0), fund), date(2026, 6, 30))
+    assert june.rebalance and june.target == ["AAAA3", "BBBB3"] and june.outside == ["FUND11"]
+    assert {(o.code, o.quantity) for o in june.plan.orders if o.side == "venda"} == {("OLDD3", 2000)}
+    assert june.pending == {"OLDD3"}
+
+    # August: the investor sold 2,000 OLDD3; the rule alone would now pick CCCC3.
+    august = run(_book(("OLDD3", 1000, 10.0), ("AAAA3", 1000, 10.0), ("BBBB3", 1000, 10.0), fund), date(2026, 8, 31))
+    assert not august.rebalance and august.target == ["AAAA3", "BBBB3"]
+    assert [(o.code, o.quantity, o.reason) for o in august.plan.orders if o.side == "venda"] == \
+        [("OLDD3", 1000, "venda pendente")]
+    assert {o.code for o in august.plan.orders if o.side == "compra"} <= {"AAAA3", "BBBB3"}
+    assert "FUND11" not in {o.code for o in august.plan.orders}

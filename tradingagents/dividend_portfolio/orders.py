@@ -61,42 +61,64 @@ def code_of(ticker: str) -> str:
     return ticker.strip().upper().removesuffix(".SA")
 
 
+def consolidate(book: PortfolioContext) -> dict[str, tuple[float, float | None]]:
+    """``{code: (quantity, average price)}``, lots of one code added up across brokers.
+
+    The average is weighted by quantity; when any lot lacks its price, the whole
+    position's cost is unknown (a partial average would misstate the gain).
+    """
+    totals: dict[str, list] = {}
+    for p in book.positions:
+        entry = totals.setdefault(code_of(p.ticker), [0.0, 0.0, True])
+        entry[0] += p.quantity
+        if p.average_price is None:
+            entry[2] = False
+        else:
+            entry[1] += p.quantity * p.average_price
+    return {c: (q, cost / q if known and q else None) for c, (q, cost, known) in totals.items()}
+
+
 def plan_orders(book: PortfolioContext, target: list[str], prices: dict[str, float], *,
                 contribution: float = 0.0, sold_earlier_this_month: float = 0.0,
                 gain_earlier_this_month: float = 0.0, loss_carryforward: float = 0.0,
-                band: float = 0.2, stay_exempt: bool = True, sell: bool = True) -> Plan:
+                band: float = 0.2, stay_exempt: bool = True, sell: bool = True,
+                pending: set[str] | None = None, keep: set[str] | None = None) -> Plan:
     """The orders toward ``target`` (codes, equal weights) from ``book`` at ``prices``.
 
     ``band``: a target stock is topped up only when it sits more than this fraction
     below its equal share. ``stay_exempt``: sell only as much as keeps the month's
     sales within the exemption, deferring the rest. ``sell=False`` (between
-    rebalances) only places new money, in the current target; nothing is sold.
+    rebalances) sells only the ``pending`` codes (left the target earlier, still
+    held), and places new money in the current target. ``keep``: codes neither sold
+    nor bought, outside the equal weights (a price under review). Only common
+    stocks and units: other assets are taxed differently and do not belong in
+    ``book``.
     """
     plan = Plan()
-    held: dict[str, tuple[float, float | None]] = {}
-    for p in book.positions:
-        code = code_of(p.ticker)
-        qty, avg = held.get(code, (0.0, None))
-        held[code] = (qty + p.quantity, p.average_price if avg is None else avg)
+    held = consolidate(book)
     missing = [c for c in set(held) | set(target) if c not in prices]
     if missing:
         plan.notes.append(f"Sem preço para {', '.join(sorted(missing))}: fora do plano.")
 
-    # Sales: what left the target, smallest first, within the exempt room if asked.
+    # Sales: what left the target (at a rebalance) and what was deferred before, smallest
+    # first, within the exempt room if asked.
+    keep = keep or set()
+    pending = pending or set()
+    to_sell = {c: int(held[c][0]) for c in held
+               if (sell or c in pending) and c not in target and c not in keep and c in prices and held[c][0] > 0}
     room = EXEMPT_MONTHLY_SALES - sold_earlier_this_month
-    exits = sorted((c for c in held if sell and c not in target and c in prices and held[c][0] > 0),
-                   key=lambda c: held[c][0] * prices[c])
     sold = sold_earlier_this_month
-    for code in exits:
-        qty, avg = held[code]
+    for code in sorted(to_sell, key=lambda c: to_sell[c] * prices[c]):
+        qty, avg = to_sell[code], held[code][1]
         price = prices[code]
-        now = int(qty)
+        now = qty
         if stay_exempt and sold + now * price > EXEMPT_MONTHLY_SALES:
             now = max(0, int(math.floor(max(room, 0) / price)))
-        for quantity, bucket in ((now, plan.orders), (int(qty) - now, plan.deferred)):
+        reason = "saiu da seleção" if code not in pending else "venda pendente"
+        for quantity, bucket in ((now, plan.orders), (qty - now, plan.deferred)):
             if quantity > 0:
                 gain = (price - avg) * quantity if avg is not None else None
-                bucket.append(Order(code, "venda", quantity, price, "saiu da seleção", gain))
+                bucket.append(Order(code, "venda", quantity, price, reason, gain))
         sold += now * price
         room -= now * price
     plan.sales_this_month = sold
@@ -114,15 +136,17 @@ def plan_orders(book: PortfolioContext, target: list[str], prices: dict[str, flo
         plan.loss_carryforward_after = loss_carryforward + max(0.0, -net)
     if plan.deferred:
         plan.notes.append("Vendas adiadas para os próximos meses, para manter as vendas do mês em até "
-                          "R$ 20 mil (isenção de IR).")
+                          "R$ 20 mil (isenção de IR); a rotina as retoma a cada mês.")
 
-    # Buys: equal shares of everything that will be held, funded by cash, contribution and sales.
+    # Buys: equal shares of everything that will be held, funded by cash, contribution and
+    # sales, less the tax the sales will owe (kept aside, not spent).
     cash = (book.cash or 0.0) + contribution + sum(o.value for o in plan.orders if o.side == "venda")
+    cash -= plan.estimated_tax
     remaining = {c: held[c][0] for c in held}
     for o in plan.orders:
         remaining[o.code] -= o.quantity
-    invested = sum(q * prices[c] for c, q in remaining.items() if c in prices and q > 0)
-    priced = [c for c in target if c in prices]
+    invested = sum(q * prices[c] for c, q in remaining.items() if c in prices and q > 0 and c not in keep)
+    priced = [c for c in target if c in prices and c not in keep]
     plan.target_value = (invested + cash) / len(priced) if priced else 0.0
     bought: dict[str, int] = {}
 

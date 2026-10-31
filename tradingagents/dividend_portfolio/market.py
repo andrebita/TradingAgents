@@ -4,6 +4,7 @@ from tradingagents.dataflows.vendors.b3_market import (  # noqa: F401
     CODE,
     MAX_FALL,
     MAX_RISE,
+    REVERSAL_SESSIONS,
     Company,
     clean,
     companies,

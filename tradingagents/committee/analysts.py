@@ -254,7 +254,9 @@ REGRESSIVE = [(180, 0.225), (360, 0.20), (720, 0.175), (None, 0.15)]
 
 def tax_facts(policy, wealth, equity_plan) -> dict:
     taxable = [x for x in wealth.fixed_income if not x.tax_exempt]
-    return {"stock_sales_this_month": round(getattr(equity_plan, "sales_this_month", 0.0), 2),
+    return {"tax_records_month": wealth.tax.month,
+            "stock_loss_carryforward_before": wealth.tax.stock_loss_carryforward,
+            "stock_sales_this_month": round(getattr(equity_plan, "sales_this_month", 0.0), 2),
             "stock_sales_exemption": 20_000.0,
             "estimated_tax_on_stock_sales": round(getattr(equity_plan, "estimated_tax", 0.0), 2),
             "loss_carryforward_after": round(getattr(equity_plan, "loss_carryforward_after", 0.0), 2),
@@ -291,5 +293,5 @@ def macro(policy, today: date, models: Models | None) -> Report:
             facts[alias] = f"indisponível: {exc}"
     brief = ("Summarize rates, inflation and the market's expectations as context for the director: the real rate "
              "on fixed income, what it means for the investor's choice between post-fixed, inflation-linked and "
-             "fixed-rate bonds at his horizon. Context only: no market timing.")
+             "fixed-rate bonds at the investor's horizon. Context only: no market timing.")
     return _with_view(Report(ROLES["macro"], facts), models, policy.models.macro, brief, policy)

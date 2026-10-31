@@ -17,6 +17,8 @@ class Rules:
     yield_months: int = 24                   # dividends averaged over this window for the yield
     rebalance_months: tuple[int, ...] = (6, 12)
     liquidity_sessions: int = 63             # sessions for the median traded value
+    excluded_sectors: tuple[str, ...] = ()   # the investor's exclusions, matched within the CVM sector
+    suspect_days: int = 365                  # a price jump not yet explained keeps a code out this long
 
 
 DEFAULT_RULES = Rules()
@@ -35,7 +37,7 @@ def snapshot(companies: dict[str, Company], px: dict[str, pd.DataFrame], as_of: 
         best = None
         for code in company.codes:
             frame = px.get(code)
-            if frame is None:
+            if frame is None or is_suspect(frame, as_of, rules):
                 continue
             window = frame.loc[:as_of].tail(rules.liquidity_sessions)
             if len(window) < rules.liquidity_sessions * 2 // 3 or window.index[-1] < as_of - pd.Timedelta(days=10):
@@ -62,11 +64,24 @@ def snapshot(companies: dict[str, Company], px: dict[str, pd.DataFrame], as_of: 
     return frame.nlargest(rules.universe, "traded").reset_index(drop=True) if len(frame) else frame
 
 
+def is_suspect(frame: pd.DataFrame, as_of: pd.Timestamp, rules: Rules = DEFAULT_RULES) -> bool:
+    """A one-sided extreme price move (see ``b3_market.clean``) within ``rules.suspect_days`` of ``as_of``."""
+    return any(as_of - pd.Timedelta(days=rules.suspect_days) < pd.Timestamp(d) <= as_of
+               for d in frame.attrs.get("suspect_days", ()))
+
+
+def is_excluded(sector, rules: Rules = DEFAULT_RULES) -> bool:
+    """The investor excluded ``sector`` (a case-insensitive part of the CVM sector name)."""
+    sector = sector.lower() if isinstance(sector, str) else ""
+    return any(x.lower() in sector for x in rules.excluded_sectors if x.strip())
+
+
 def target(snap: pd.DataFrame, rules: Rules = DEFAULT_RULES) -> pd.DataFrame:
-    """The stocks to hold: the highest 24-month yields among the steady payers."""
+    """The stocks to hold: the highest 24-month yields among the steady payers outside the excluded sectors."""
     if snap.empty:
         return snap
-    return snap[snap["constant"]].nlargest(rules.holdings, "dy24").reset_index(drop=True)
+    allowed = ~snap["sector"].map(lambda s: is_excluded(s, rules))
+    return snap[snap["constant"] & allowed].nlargest(rules.holdings, "dy24").reset_index(drop=True)
 
 
 def is_rebalance_month(day: pd.Timestamp, rules: Rules = DEFAULT_RULES) -> bool:

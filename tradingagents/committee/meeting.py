@@ -17,7 +17,7 @@ from tradingagents.committee.wealth import Wealth
 from tradingagents.dataflows.config import run_config
 from tradingagents.dataflows.vendors import b3_market
 from tradingagents.default_config import DEFAULT_CONFIG
-from tradingagents.dividend_portfolio import routine
+from tradingagents.dividend_portfolio import routine, selection
 from tradingagents.dividend_portfolio.monitor import CutRisk, NewsAlert
 from tradingagents.dividend_portfolio.orders import plan_orders
 from tradingagents.dividend_portfolio.report import brl, pct
@@ -70,6 +70,8 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
     contribution = policy.monthly_contribution if contribution is None else contribution
     today = as_of or date.today()
     book = wealth.stock_book()
+    sold, gain, carried = wealth.tax.for_month(today)
+    rules = selection.Rules(excluded_sectors=tuple(policy.excluded_sectors))
     with run_config(config):
         companies = b3_market.companies()
         sectors = {code: c.sector for c in companies.values() for code in c.codes}
@@ -89,7 +91,8 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                     pool.submit(analysts.macro, policy, today, models)]
             eq = routine.review(book, contribution=alloc["rule_contribution_to_stocks"] + alloc["rule_monthly_transfer"],
                                 as_of=today, use_llm=use_llm, budget_usd=policy.budget_usd / 3,
-                                config={**config, "results_dir": str(out)})
+                                sold_earlier_this_month=sold, gain_earlier_this_month=gain, loss_carryforward=carried,
+                                config={**config, "results_dir": str(out)}, rules=rules)
             tax = analysts.tax(policy, wealth, eq.plan, models)
             fixed, risk, macro = (j.result() for j in jobs)
         equities = analysts.Report(analysts.ROLES["equities"], equity_facts(eq))
@@ -107,11 +110,10 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
         # The stock orders with the director's money and deferrals.
         skip = {d.code for d in checked.deferred}
         targets = [c for c in eq.target if c not in skip]
-        prices_px = b3_market.histories(set(eq.target) | held)
-        prices = {c: float(f["Close"].loc[:pd.Timestamp(today)].iloc[-1]) for c, f in prices_px.items()
-                  if len(f.loc[:pd.Timestamp(today)])}
-        final = plan_orders(book, targets, prices, contribution=checked.contribution_to_stocks + checked.transfer,
-                            sell=eq.rebalance)
+        final = plan_orders(eq.book, targets, eq.prices,
+                            contribution=checked.contribution_to_stocks + checked.transfer, sell=eq.rebalance,
+                            pending=eq.pending, keep=eq.keep, sold_earlier_this_month=sold,
+                            gain_earlier_this_month=gain, loss_carryforward=carried)
         if eq.rebalance or not Shadow(out / "sombra_diretor.json").events:
             Shadow(out / "sombra_diretor.json").record(eq.day.isoformat(), targets)
 
