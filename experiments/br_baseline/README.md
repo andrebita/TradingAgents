@@ -612,6 +612,55 @@ Também reportados: maior queda, pior ano, diferença ano a ano, giro e DY médi
 - O IR sobre dividendos a partir de 2026 não é modelado.
 - É um único caminho histórico de ~14 anos.
 
+## Dividendos entre as grandes: resultado (`dividend_tilt.py`, sem LLM, US$ 0)
+
+**Correção de dados depois da primeira rodada.** A primeira rodada, guardada em `results/dividends/raw/`,
+deu 12,5% ao ano com t = 1,64. Dois erros de ajuste de eventos corporativos no Yahoo apareceram:
+- **PCAR3:** salta +112% no dia da cisão do Assaí (01/03/2021). Ele estava na carteira em 6 variantes.
+- **AZUL3:** os grupamentos de 2026 levam a referência de pesos iguais a −100%.
+
+A regra adotada vale para todas as séries: alta diária acima de 100% ou queda além de 90% é tratada como erro
+e zerada. Quedas reais como a da Americanas (−77%) ficam. Foram neutralizados 3 dias do PCAR3 e 3 da AZUL3,
+entre outros. Os números abaixo são os corrigidos.
+
+**Primária (abr/2012 a out/2026):**
+
+| | Retorno anual | Maior queda | Diferença mensal contra a carteira | t | Janelas de 36 meses positivas | Anos positivos |
+|---|---|---|---|---|---|---|
+| **Carteira primária (10 maiores DY entre as 50)** | **11,2%** | −59% | — | — | — | — |
+| Ibovespa | 7,5% | −47% | +0,35% | 1,41 | 83% | 10/15 |
+| DIVO11 | 9,8% | −56% | +0,20% | 0,98 | 78% | 8/15 |
+| 50 maiores, pesos iguais | 8,8% | −49% | +0,25% | 0,91 | 53% | 9/15 |
+
+O DY médio da carteira foi de 9,3% e o giro trimestral (soma das mudanças de peso) de 0,56.
+
+**Veredito pelo critério pré-registrado: reprovado.** O retorno ficou acima do Ibovespa e do DIVO11, e 83% das
+janelas de 36 meses foram positivas, mas o t de 1,41 está abaixo de 1,65.
+
+| Variante | Retorno anual | t contra o Ibovespa | Janelas de 36 meses positivas |
+|---|---|---|---|
+| (a) 15 maiores | 11,0% | 1,62 | 81% |
+| (b) só BEST | 11,0% | 1,28 | 73% |
+| (c) DY de 12 meses | 10,5% | 1,26 | 81% |
+| (d) sem constância | 11,1% | 1,34 | 81% |
+| (e) semestral | 13,5% | 1,74 | 86% |
+| (f) universo das 100 | 14,0% | 1,68 | 82% |
+
+As 7 versões ganham do Ibovespa e do DIVO11 em retorno anual. Duas secundárias passam de 1,65, mas sendo 2 de
+6, isso não confirma nada.
+
+**Robustez (exploratória).**
+- **Sem a PETR4,** a ação cuja retirada mais pesa: +2,7 pontos ao ano sobre o Ibovespa (t = 1,09).
+- **Sem 2016:** +1,4 ponto ao ano (t = 0,61). Em 2016, a carteira fez +46 pontos sobre o índice.
+- **Primeira metade (2012–2019):** +3,2 pontos ao ano (t = 0,86).
+- **Segunda metade (2019–2026):** +5,0 pontos ao ano (t = 1,99).
+
+Leitura: é a primeira ideia com **sinal positivo consistente** em todas as variantes, nas duas metades e sem a
+principal ação. Mas a vantagem não é estatisticamente firme, depende bastante de 2016 e cai mais nas crises.
+Quase toda a vantagem sobre o Ibovespa vem de inclinar a carteira para dividendos, o que o DIVO11 já entrega.
+A regra própria acrescenta ~1,4 ponto ao ano sobre o DIVO11, com t ≈ 1, e um giro que, para pessoa física com
+vendas acima de R$ 20 mil por mês, gera IR não modelado aqui.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
