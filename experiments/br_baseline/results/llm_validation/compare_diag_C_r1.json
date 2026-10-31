@@ -1,4 +1,6 @@
 {
+  "evaluator": "4509969",
+  "log": "experiments/br_baseline/results/llm_validation/diag_C_r1_trading_memory.md",
   "cells": 4,
   "run_cells_not_in_grid": 0,
   "ratings": {
@@ -54,16 +56,15 @@
   },
   "probability_measurement": {
     "cells": 4,
-    "valid": 3,
-    "missing": 1
+    "valid_text": 4
   },
   "probability": {
-    "cells": 3,
-    "mean_probability": 0.49333333333333335,
-    "brier": 0.24346666666666664,
+    "cells": 4,
+    "mean_probability": 0.4775,
+    "brier": 0.22882499999999997,
     "brier_always_50": 0.25,
-    "share_beating_benchmark": 0.6666666666666666,
-    "leaning_cells": 1,
+    "share_beating_benchmark": 0.5,
+    "leaning_cells": 2,
     "hit_rate_of_lean": 1.0,
     "rank_ic_mean_by_date": null,
     "dates_ranked": 0

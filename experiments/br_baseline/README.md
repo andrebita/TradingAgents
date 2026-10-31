@@ -152,6 +152,25 @@ Ressalvas que permanecem:
 - O contexto do instrumento traz o nome atual da empresa.
 - As datas 14/09 e 21/09 já foram usadas para decidir mudanças, então agora são desenvolvimento, não teste intocado.
 
+## Segunda revisão independente (commit `04d6e00`) e correções
+
+Correções no commit `4509969`.
+
+| # | Achado | Situação |
+|---|---|---|
+| N1 | Uma parada fatal num worker não parava os outros; o teto não reservava as chamadas em andamento | **Corrigido.** Sinal de parada comum, checado antes de cada célula, e cancelamento das ações não iniciadas. Cada chamada reserva uma estimativa antes de sair; o gasto fica gravado chamada a chamada, e nenhuma chamada nova começa depois da parada. O excesso fica limitado às reservas em andamento; uma requisição já enviada ainda termina. |
+| N2 | Com workers, as lições de memória dependiam da ordem de término | **Corrigido.** `use_decision_memory`: com a memória desligada (padrão no executor de experimentos), não há lições nem reflexões e nenhuma chamada ao modelo para elas. |
+| N3 | A probabilidade podia ser a de outra parte citada no texto; a unidade era ambígua | **Corrigido.** A probabilidade fica gravada como número (`final_probability`) no estado e no log de estado. No texto livre, só conta uma ocorrência inequívoca. Unidade única: pontos percentuais. |
+| N4 | O manifesto não garantia a mesma configuração e os mesmos dados | **Parcial.** Código não commitado é recusado; o manifesto inclui memória, workers, retries, limites de tokens e versões das dependências; cada invocação grava uma impressão dos arquivos de dados e avisa se mudou. Os dados não são congelados nem impostos, e o `run_backtest` nativo não tem manifesto. |
+| N5 | O calendário do Focus não cobre interrupções extraordinárias; o FCA autorizava linhas por CNPJ | **FCA corrigido** (vale por documento: emissor, referência e versão). **Focus parcial:** feriados regulares corretos, mas paralisações como a greve do BCB de 2022 (edição de 08/04/2022 publicada só em 26/04) exigiriam uma tabela de publicação. Não usar datas de 2022 sem essa tabela. |
+| N6 | O snapshot tratava uma lacuna do índice como dia parado; volume ausente quebrava o cálculo | **Corrigido.** Uma cotação do benchmark com mais de 5 dias de defasagem é tratada como lacuna; o volume médio só aparece com dados. O F8 continua aberto. |
+| N7 | Uma decisão argumentou que o Ibovespa é índice de preço | **Corrigido.** O horizonte informado aos agentes descreve o contrato de avaliação: entrada, saída, retorno total por fechamentos ajustados e o Ibovespa como índice de retorno total. |
+| N8 | As comparações gravadas usavam o leitor antigo | **Corrigido.** `compare_diag_*.json` e `diag_summary_table.json` foram regenerados com o avaliador `4509969`. Os Brier batem com o recálculo independente. |
+
+Ressalvas que permanecem:
+- O teste da saída estruturada nativa só confirma a escolha do método; a aceitação real pela API será verificada na próxima validação (chamadas ao gestor por célula e contador de fallbacks).
+- O workflow do GitHub limita o gasto por execução do workflow, não acumulado entre execuções.
+
 ## Auditoria de `tradingagents/backtest.py` e da liquidação
 
 - **Entrada e saída:** entra no 1º fechamento *após* a data de análise e sai
@@ -216,18 +235,43 @@ Essas execuções provam que o pipeline funciona e que os dados chegam aos agent
 **não** medem qualidade, por três motivos: o esforço do Haiku não era aplicado (F4), as
 decisões ainda não traziam probabilidade, e o horizonte não era informado aos agentes.
 
+**Diagnóstico controlado** (`diag_A..D`, código `4112f83`, ITUB4 e PSSA3 × 14 e 21/09,
+2 repetições, US$ 2,49). Brier recalculado com o avaliador `4509969`:
+
+| Config. | Analistas | Horizonte | Esforço | Notas | Brier r1 / r2 |
+|---|---|---|---|---|---|
+| A | market, news | 5 | low | 3 Hold + 1 Underweight (nas duas) | 0,224 / 0,231 |
+| B | market, news | 20 | low | 3 Hold + 1 Underweight (nas duas) | 0,234 / 0,229 |
+| C | market, news | 20 | medium | 3H+1U / 2H+2U | 0,229 / 0,213 |
+| D | + fundamentals | 20 | medium | 2 Hold + 2 Underweight (nas duas) | 0,213 / 0,213 |
+
+O que dá para concluir: a execução funciona e é estável entre repetições (11 de 16 probabilidades
+iguais, diferença média de 0,75 p.p.). O que não dá: calibração, vantagem ou eficiência de mercado.
+São só 4 pares ação–data, sobrepostos em h20. Nenhuma probabilidade passou de 50%, e as decisões
+apontaram a falta de dados do Ibovespa como lacuna. Essa lacuna foi corrigida depois, no snapshot
+(`04d6e00`).
+
 Próximos passos, seguindo a revisão:
 
-1. **Diagnóstico controlado** (4 células: 2 ações × 2 datas de desenvolvimento, duas
-   repetições, 32 execuções, ~US$ 3–8). Cada configuração muda uma variável por vez:
-   (A) market+news, h5, low; (B) h20; (C) h20 com esforço medium; (D) C com fundamentos.
-   Critérios: probabilidade válida em todas as decisões, esforço e horizonte efetivos no
-   manifesto, fallbacks identificados, custo por chamada medido. Hold continua permitido.
+1. **Validação funcional do código atual** (configuração D, 4 células, `--workers 2`). Critérios:
+   uma chamada do gestor por célula e nenhum fallback de saída estruturada; probabilidade
+   gravada como número nas 4 decisões; força relativa citada com janela e números corretos;
+   custo e latência por chamada no `*_calls.jsonl`.
 2. **Valor incremental da arquitetura** (15 ações × 4 janelas de 20 pregões sem
    sobreposição, depois do corte de treino, datas escolhidas sem olhar os retornos). Compara
    o sistema completo, um decisor único com o mesmo pacote de dados e os baselines.
    Métrica principal: diferença pareada de Brier. Teto de ~US$ 35. Isso não certifica
    uma vantagem de 3 a 5 p.p.; serve para descartar configurações ruins ou corrigir a medição.
+   Desenho do decisor único, conforme a segunda revisão:
+   - os dois braços recebem os mesmos relatórios dos analistas, congelados e identificados por hash;
+   - o mesmo decisor final (Sonnet 5.5, esforço medium);
+   - o mesmo prompt, schema e contrato de avaliação;
+   - memória desligada nos dois braços;
+   - a probabilidade é a saída principal.
+
+   Isso mede o valor de todo o processamento depois dos analistas (debate, gestor de pesquisa,
+   trader e risco), não só do debate. Com 4 janelas, a resposta é um piloto: o menor p-valor
+   possível de um teste exato de sinais é 0,125.
 
 Use sempre um `--run-id` novo por configuração (o manifesto recusa misturas) e baselines
 gerados com o mesmo `--holding`. O workflow `.github/workflows/br-backtest.yml` (disparo

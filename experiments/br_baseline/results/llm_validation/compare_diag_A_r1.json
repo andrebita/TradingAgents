@@ -1,4 +1,6 @@
 {
+  "evaluator": "4509969",
+  "log": "experiments/br_baseline/results/llm_validation/diag_A_r1_trading_memory.md",
   "cells": 4,
   "run_cells_not_in_grid": 0,
   "ratings": {
@@ -54,7 +56,7 @@
   },
   "probability_measurement": {
     "cells": 4,
-    "valid": 4
+    "valid_text": 4
   },
   "probability": {
     "cells": 4,

@@ -49,7 +49,8 @@
    "Hold": 3,
    "Underweight": 1
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  },
  "diag_A_r2": {
   "eff": {
@@ -101,7 +102,8 @@
    "Hold": 3,
    "Underweight": 1
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  },
  "diag_B_r1": {
   "eff": {
@@ -153,7 +155,8 @@
    "Hold": 3,
    "Underweight": 1
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  },
  "diag_B_r2": {
   "eff": {
@@ -205,7 +208,8 @@
    "Hold": 3,
    "Underweight": 1
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  },
  "diag_C_r1": {
   "eff": {
@@ -242,12 +246,12 @@
   "fail": 0,
   "setf": 0,
   "pm": [
-   3,
+   4,
    4
   ],
-  "brier": 0.24346666666666664,
+  "brier": 0.22882499999999997,
   "b50": 0.25,
-  "meanp": 0.49333333333333335,
+  "meanp": 0.4775,
   "run": {
    "directional": 1,
    "hit_rate": 1.0,
@@ -257,7 +261,8 @@
    "Hold": 3,
    "Underweight": 1
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  },
  "diag_C_r2": {
   "eff": {
@@ -309,7 +314,8 @@
    "Hold": 2,
    "Underweight": 2
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  },
  "diag_D_r1": {
   "eff": {
@@ -346,7 +352,7 @@
   "fail": 0,
   "setf": 0,
   "pm": [
-   2,
+   4,
    4
   ],
   "brier": 0.2132,
@@ -361,7 +367,8 @@
    "Hold": 2,
    "Underweight": 2
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  },
  "diag_D_r2": {
   "eff": {
@@ -413,6 +420,7 @@
    "Hold": 2,
    "Underweight": 2
   },
-  "gap": 0
+  "gap": 0,
+  "evaluator": "4509969"
  }
 }
