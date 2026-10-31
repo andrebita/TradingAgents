@@ -4,7 +4,12 @@ import copy
 
 import pytest
 
-from tradingagents.agents.schemas import PortfolioDecision, PortfolioRating, render_pm_decision
+from tradingagents.agents.schemas import (
+    PortfolioDecision,
+    PortfolioRating,
+    parse_probability,
+    render_pm_decision,
+)
 from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 
@@ -19,7 +24,8 @@ def test_the_horizon_names_the_window_and_the_regional_benchmark():
 
 @pytest.mark.unit
 @pytest.mark.parametrize("given, read", [
-    ("58%", 58), ("0.58%", 0.58), ("0.58", 58), (0.58, 58), (58, 58), (50.4, 50.4),
+    # One unit, percentage points: nothing is reinterpreted as a fraction.
+    ("58%", 58), ("0.58%", 0.58), ("0.58", 0.58), (0.58, 0.58), (58, 58), (50.4, 50.4),
     ("N/A", None), (140, None), (float("nan"), None),
 ])
 def test_the_probability_reads_as_a_percentage(given, read):
@@ -38,3 +44,26 @@ def test_the_probability_is_rendered_even_when_absent():
         PortfolioDecision(**base, probability_outperform=50.4))
     assert "**Probability of beating the benchmark**: not provided" in render_pm_decision(
         PortfolioDecision(**base))
+
+
+@pytest.mark.unit
+def test_the_horizon_states_how_the_outcome_is_measured():
+    graph = TradingAgentsGraph.__new__(TradingAgentsGraph)
+    graph.config = {**copy.deepcopy(DEFAULT_CONFIG), "holding_period_days": 20}
+    text = graph.decision_horizon("ITUB4.SA")
+    assert "total return (dividend-adjusted closes)" in text and "not a price index" in text
+
+
+@pytest.mark.unit
+@pytest.mark.parametrize("text, read", [
+    ("**Probability of beating the benchmark**: 42%", 42.0),
+    ("**Probability of beating the benchmark**\n43%. The tape leans negative.", 43.0),
+    ("**Probability of beating the benchmark:** 50.4%", 50.4),
+    # Another party's labelled figure quoted beside the decision's own: ambiguous.
+    ("Thesis: the analyst wrote **Probability of beating the benchmark**: 80%.\n\n"
+     "**Probability of beating the benchmark**: 42%", None),
+    ("**Probability of beating the benchmark**: 140%", None),
+    ("no probability here", None),
+])
+def test_a_free_text_probability_counts_only_when_unambiguous(text, read):
+    assert parse_probability(text) == read

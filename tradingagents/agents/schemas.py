@@ -19,6 +19,7 @@ so that:
 from __future__ import annotations
 
 import math
+import re
 from enum import StrEnum
 from typing import Literal
 
@@ -262,7 +263,7 @@ class PortfolioDecision(BaseModel):
     probability_outperform: float | None = Field(
         default=None,
         description=(
-            "Your probability, from 0 to 100, that the instrument's return beats its "
+            "Your probability in percent (a number from 0 to 100, e.g. 42 for 42%), that the instrument's return beats its "
             "benchmark over the decision horizon stated in the context. Give it for "
             "every rating, Hold included: 50 means no edge either way."
         ),
@@ -276,19 +277,33 @@ class PortfolioDecision(BaseModel):
     @field_validator("probability_outperform", mode="before")
     @classmethod
     def _as_percent(cls, v):
-        """The probability in percentage points, the field's one unit.
+        """The probability in percentage points, the field's only unit: 0.58 is 0.58%.
 
-        A string with a percent sign is read as written ("0.58%" is 0.58%). A
-        bare number below 1 is taken as a fraction (0.58 is 58%): the field asks
-        for 0-100, and a model that still answers 0.58 means 58, not 0.58%.
+        No value is reinterpreted as a fraction, so a stated 0.58% stays 0.58%;
+        anything outside 0-100 is not a probability and reads as not stated.
         """
-        percent = isinstance(v, str) and v.strip().endswith("%")
         value = _coerce_optional_float(v.strip().rstrip("%") if isinstance(v, str) else v)
         if value is None or not math.isfinite(value):
             return None
-        if not percent and 0 < value < 1:
-            value = round(value * 100, 6)   # float noise only: 0.58 * 100 is 57.99...9
         return value if 0 <= value <= 100 else None
+
+
+PROBABILITY_LABEL = "Probability of beating the benchmark"
+_PROBABILITY_LINE = re.compile(r"\*\*" + PROBABILITY_LABEL + r":?\*\*:?\s*([0-9]+(?:\.[0-9]+)?)\s*%")
+
+
+def parse_probability(text: str) -> float | None:
+    """The probability (percent) a free-text decision states on its labelled line.
+
+    Only an unambiguous statement counts: a decision quoting another party's
+    labelled figure as well as its own gives two values, and picking one would
+    measure the wrong forecast, so it reads as not stated.
+    """
+    values = {float(m) for m in _PROBABILITY_LINE.findall(text or "")}
+    if len(values) != 1:
+        return None
+    value = values.pop()
+    return value if 0 <= value <= 100 else None
 
 
 def render_pm_decision(decision: PortfolioDecision) -> str:
@@ -312,7 +327,7 @@ def render_pm_decision(decision: PortfolioDecision) -> str:
     parts.extend(["", f"**Price Target**: {target}"])
     parts.extend(["", f"**Time Horizon**: {decision.time_horizon or 'not provided'}"])
     probability = decision.probability_outperform
-    parts.extend(["", f"**Probability of beating the benchmark**: "
+    parts.extend(["", f"**{PROBABILITY_LABEL}**: "
                       f"{f'{probability:.4g}%' if probability is not None else 'not provided'}"])
     return "\n".join(parts)
 

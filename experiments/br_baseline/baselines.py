@@ -125,8 +125,13 @@ def block_bootstrap(sums: np.ndarray, counts: np.ndarray, block: int, rng: np.ra
     starts = rng.integers(0, n, size=(boots, -(-n // block)))
     idx = ((starts[..., None] + np.arange(block)) % n).reshape(boots, -1)[:, :n]
     total, cells = sums[idx].sum(axis=1), counts[idx].sum(axis=1)
-    means = total[cells > 0] / cells[cells > 0]
-    return [float(np.percentile(means, 2.5)), float(np.percentile(means, 97.5))]
+    # A resample drawing only dates with no call carries no information; how many
+    # did is reported, since a stable-looking interval may rest on very few calls.
+    filled = cells > 0
+    means = total[filled] / cells[filled]
+    if not len(means):
+        return None
+    return [float(np.percentile(means, 2.5)), float(np.percentile(means, 97.5)), int((~filled).sum())]
 
 
 def score(dirs: np.ndarray, alphas: np.ndarray, dates: np.ndarray, rng: np.random.Generator,
@@ -207,9 +212,14 @@ def main():
                "end": args.end, "every_days": args.every, "holding_sessions": args.holding,
                "benchmark": BENCH, "cost_round_trip": COST_ROUND_TRIP,
                "generated_at": datetime.now().isoformat(timespec="seconds"), "strategies": {}}
-    # Blocks of at least six weeks, and at least twice the holding window in weeks.
-    block = max(6, 2 * -(-args.holding // 5))
-    grid_dates = sorted(cells["date"].unique())
+    # Blocks span at least six weeks and twice the holding window, in grid dates:
+    # a holding window of h sessions covers about h*7/5 calendar days.
+    block = max(-(-42 // args.every), -(-(2 * args.holding * 7 // 5) // args.every))
+    # The requested grid, not just the dates that produced cells: a missing date
+    # stays a gap in calendar time instead of joining its neighbours.
+    # Dates past the last settled one are not abstentions, only too recent.
+    grid_dates = [d.strftime("%Y-%m-%d") for d in grid(args.start, args.end, args.every)
+                  if d.strftime("%Y-%m-%d") <= cells["date"].max()]
     summary["block_dates"] = block
     for k in strategies:
         sub = cells.dropna(subset=[f"sig_{k}"])
@@ -245,7 +255,8 @@ def main():
         t = f"{r['t_stat']:.2f}" if r["t_stat"] is not None else "n/a"
         print(f"{k:<16}{r['directional']:>6}{r['hit_rate']:>8.1%}{r['mean_signed_alpha']:>+10.2%}"
               f"{r['mean_signed_alpha_net']:>+9.2%}{t:>7}   [{ci[0]:+.2%}, {ci[1]:+.2%}]"
-              + (f" | [{cd[0]:+.2%}, {cd[1]:+.2%}]" if cd else " | too few dates"))
+              + (f" | [{cd[0]:+.2%}, {cd[1]:+.2%}]" + (f" ({cd[2]} empty resamples)" if cd[2] else "")
+                 if cd else " | too few dates"))
     rc = summary["random_control"]
     print(f"{'random (p50)':<16}{rc['cells']:>6}{rc['hit_rate']['p50']:>8.1%}"
           f"{rc['mean_signed_alpha']['p50']:>+10.2%}   hit 95% band "

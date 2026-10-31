@@ -20,7 +20,7 @@ import itertools
 import logging
 import threading
 from collections.abc import Callable
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import FIRST_EXCEPTION, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -161,9 +161,12 @@ def run_backtest(
     ticker, date)`` is called before each cell that runs.
 
     ``workers`` above 1 analyzes that many tickers at once, each on a graph of
-    its own; a ticker's dates still run in order, so its earlier decisions
-    settle into the lessons its later ones read exactly as in a serial sweep.
-    The memory log is locked per write, so the workers share it safely.
+    its own; a ticker's dates still run in order. The memory log is locked per
+    write, so the workers share it safely, but lessons from *other* tickers then
+    depend on which finished first: an experiment comparing runs should set
+    ``use_decision_memory`` to False. Anything that is not an ``Exception``
+    (a spend cap, an interrupt) stops every worker before its next cell and
+    cancels the tickers not started; a request already sent still completes.
     """
     runs = Path(config["results_dir"]) / "backtest"
     if run_id:
@@ -186,10 +189,12 @@ def run_backtest(
     cells = [(ticker, date) for ticker in tickers for date in dates]
     todo = [cell for cell in cells if cell not in done]
     result.skipped = len(cells) - len(todo)
-    lock, started = threading.Lock(), itertools.count(1)
+    lock, started, stop = threading.Lock(), itertools.count(1), threading.Event()
 
     def run_ticker(ticker: str, cell_graph) -> None:
         for date in (d for t, d in todo if t == ticker):
+            if stop.is_set():
+                return
             if progress:
                 with lock:
                     progress(next(started), len(todo), ticker, date)
@@ -201,6 +206,9 @@ def run_backtest(
                 logger.warning("Backtest cell %s %s failed: %s", ticker, date, exc)
                 with lock:
                     result.failures.append((ticker, date, str(exc)))
+            except BaseException:
+                stop.set()
+                raise
 
     pending = [t for t in tickers if any(cell[0] == t for cell in todo)]
     if workers <= 1 or len(pending) <= 1:
@@ -212,8 +220,15 @@ def run_backtest(
             futures = [pool.submit(lambda t: run_ticker(t, TradingAgentsGraph(selected_analysts,
                                                                                 config=run_config)), t)
                        for t in pending]
+            done, _ = wait(futures, return_when=FIRST_EXCEPTION)
+            if any(f.exception() for f in done):
+                stop.set()
+                for future in futures:
+                    future.cancel()   # tickers not started yet
+                wait(futures)
             for future in futures:
-                future.result()   # re-raises what stopped a worker (e.g. a spend cap)
+                if not future.cancelled():
+                    future.result()   # re-raises what stopped a worker (e.g. a spend cap)
 
     # Settlement runs at the start of the next run for a ticker, so each ticker's
     # last cell would stay pending without this pass.

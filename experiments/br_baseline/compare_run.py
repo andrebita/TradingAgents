@@ -11,8 +11,16 @@ reports, on the cells both have:
 * the largest gap between the framework's settled alpha and the baseline's
   recomputation, as a check that both measure the same outcome.
 
+The probability is the number the Portfolio Manager's decision stored in the
+run's state logs (``final_probability``). Runs from before that field existed
+fall back to the decision text, counted only when it states one value: a text
+quoting another party's figure beside its own is ``ambiguous``, not a forecast.
+
 Usage:
-    python experiments/br_baseline/compare_run.py LOG.md CELLS.csv [--out report.json]
+    python experiments/br_baseline/compare_run.py LOG.md CELLS.csv [--states DIR] [--out report.json]
+
+``--states`` is the run's results directory (``.../results/backtest/<run_id>``);
+by default it is found next to the log.
 """
 
 from __future__ import annotations
@@ -20,6 +28,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -41,15 +51,52 @@ def pct(text: str | None) -> float | None:
 PROBABILITY = re.compile(r"\*\*Probability of beating the benchmark:?\*\*:?\s*([0-9]+(?:\.[0-9]+)?)\s*%")
 
 
-def probability(decision: str) -> tuple[float | None, str]:
-    """The Portfolio Manager's stated probability of beating the benchmark (0-1), and
-    whether it is ``valid``, ``missing`` or ``invalid`` (outside 0-100%: a failed
-    measurement, not a forecast)."""
-    match = PROBABILITY.search(decision or "")
-    if not match:
+def probability(decision: str, stored: float | None = None, has_field: bool = False) -> tuple[float | None, str]:
+    """The Portfolio Manager's probability of beating the benchmark (0-1) and how it was measured.
+
+    ``valid``: the number stored by the decision; ``valid_text``: a legacy decision
+    stating exactly one value; ``ambiguous``: several different values in the text;
+    ``invalid``: outside 0-100%; ``missing``: none stated.
+    """
+    if has_field:
+        if stored is None:
+            return None, "missing"
+        return (stored / 100, "valid") if 0 <= stored <= 100 else (None, "invalid")
+    values = {float(v) for v in PROBABILITY.findall(decision or "")}
+    if not values:
         return None, "missing"
-    value = float(match.group(1))
-    return (value / 100, "valid") if 0 <= value <= 100 else (None, "invalid")
+    if len(values) > 1:
+        return None, "ambiguous"
+    value = values.pop()
+    return (value / 100, "valid_text") if 0 <= value <= 100 else (None, "invalid")
+
+
+def stored_probabilities(states: Path | None) -> dict[tuple[str, str], float | None]:
+    """``{(ticker, date): final_probability}`` from a run's state logs that carry the field."""
+    found = {}
+    if states is None or not states.is_dir():
+        return found
+    for path in states.glob("*/TradingAgentsStrategy_logs/full_states_log_*.json"):
+        state = json.loads(path.read_text(encoding="utf-8"))
+        if "final_probability" in state:
+            found[(state["company_of_interest"], state["trade_date"])] = state["final_probability"]
+    return found
+
+
+def states_dir(log: Path) -> Path | None:
+    """The run's results directory: beside its own log, or under results/backtest for a copied log."""
+    if any(log.parent.glob("*/TradingAgentsStrategy_logs")):
+        return log.parent
+    run_id = log.name.removesuffix("_trading_memory.md")
+    candidate = log.parent / "results" / "backtest" / run_id
+    return candidate if candidate.is_dir() else None
+
+
+def evaluator_version() -> str:
+    """The commit that last changed this file: which parser and metrics produced a report."""
+    out = subprocess.run(["git", "log", "-1", "--format=%h", "--", __file__],
+                         capture_output=True, text=True, check=False).stdout.strip()
+    return out or "unknown"
 
 
 def probability_scores(probs: np.ndarray, alphas: np.ndarray, dates: np.ndarray) -> dict:
@@ -91,14 +138,18 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("log")
     p.add_argument("cells")
+    p.add_argument("--states")
     p.add_argument("--out")
     args = p.parse_args()
 
     entries = TradingMemoryLog({"memory_log_path": args.log}).load_entries()
+    states = Path(args.states) if args.states else states_dir(Path(args.log))
+    stored = stored_probabilities(states)
     run = pd.DataFrame([{"ticker": e["ticker"], "date": e["date"], "rating": e["rating"],
                          "native_alpha": pct(e.get("alpha")), "holding_run": e.get("holding"),
                          **dict(zip(("probability", "probability_status"),
-                                    probability(e.get("decision", "")), strict=True))}
+                                    probability(e.get("decision", ""), stored.get((e["ticker"], e["date"])),
+                                                (e["ticker"], e["date"]) in stored), strict=True))}
                         for e in entries if not e["pending"] and e["rating"] in DIRECTION])
     cells = pd.read_csv(args.cells)
     both = run.merge(cells, on=["ticker", "date"], how="inner").dropna(subset=["native_alpha"])
@@ -116,6 +167,7 @@ def main():
     gap = (both["native_alpha"] - both["alpha"]).abs()
     dirs = both["rating"].map(DIRECTION).to_numpy(dtype=int)
     report = {
+        "evaluator": evaluator_version(), "log": str(args.log),
         "cells": int(len(both)), "run_cells_not_in_grid": int(len(run) - len(both)),
         "ratings": both["rating"].value_counts().to_dict(),
         "alpha_check_max_gap_pp": float(gap.max() * 100),
@@ -131,7 +183,7 @@ def main():
     # rather than dropped from the sample unnoticed.
     report["probability_measurement"] = {"cells": int(len(both)),
                                          **both["probability_status"].value_counts().to_dict()}
-    valid = both[both["probability_status"] == "valid"]
+    valid = both[both["probability_status"].isin(["valid", "valid_text"])]
     report["probability"] = (probability_scores(valid["probability"].to_numpy(dtype=float),
                                                 valid["alpha"].to_numpy(dtype=float),
                                                 valid["date"].to_numpy())

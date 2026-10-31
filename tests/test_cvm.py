@@ -34,17 +34,19 @@ def _zip(path, member, lines):
     path.write_bytes(buffer.getvalue())
 
 
-def _fca(path, year, delivered, code="ITUB4"):
+def _fca(path, year, delivered, code="ITUB4", extra_index=(), extra_rows=()):
     buffer = io.BytesIO()
     with zipfile.ZipFile(buffer, "w") as archive:
         archive.writestr(f"fca_cia_aberta_{year}.csv", "\n".join([
             "CNPJ_CIA;DT_REFER;VERSAO;DENOM_CIA;CD_CVM;CATEG_DOC;ID_DOC;DT_RECEB;LINK_DOC",
             f"{CNPJ};{year}-01-01;1;ITAU;19348;FCA;1;{delivered};x",
+            *extra_index,
         ]).encode("latin-1"))
         archive.writestr(f"fca_cia_aberta_valor_mobiliario_{year}.csv", "\n".join([
-            "CNPJ_Companhia;Nome_Empresarial;Codigo_Negociacao",
-            f"{CNPJ};ITAU UNIBANCO HOLDING S.A.;{code}",
-            f"{CNPJ};ITAU UNIBANCO HOLDING S.A.;ITUB3",
+            "CNPJ_Companhia;Data_Referencia;Versao;Nome_Empresarial;Codigo_Negociacao",
+            f"{CNPJ};{year}-01-01;1;ITAU UNIBANCO HOLDING S.A.;{code}",
+            f"{CNPJ};{year}-01-01;1;ITAU UNIBANCO HOLDING S.A.;ITUB3",
+            *extra_rows,
         ]).encode("latin-1"))
     path.write_bytes(buffer.getvalue())
 
@@ -239,3 +241,16 @@ def test_a_flow_column_takes_the_quarter_when_it_is_complete():
     rows = [(*row, ini, "2026-06-30", code, "x", "1") for ini in ("2026-01-01", "2026-04-01")
             for code in ("3.01", "3.11")]
     assert cvm._span(rows) == ("2026-04-01", "2026-06-30")
+
+
+@pytest.mark.unit
+def test_a_public_fca_form_does_not_vouch_for_a_later_form_of_the_same_issuer(cache):
+    # The issuer's 2026-01-01 form was public on 9 April; a second form (a later
+    # reference date, delivered in June) lists a new code. It must not count in May.
+    _fca(cache / "cvm" / "fca_cia_aberta_2026.zip", 2026, delivered="2026-04-09",
+         extra_index=[f"{CNPJ};2026-06-01;1;ITAU;19348;FCA;2;2026-06-20;x"],
+         extra_rows=[f"{CNPJ};2026-06-01;1;ITAU UNIBANCO HOLDING S.A.;ITUB9"])
+    with mock.patch.object(cvm, "_cached_zip", side_effect=_cached_only(cache)):
+        assert cvm.issuer_for("ITUB9", "2026-05-15") is None
+        assert cvm.issuer_for("ITUB9", "2026-06-20")[0] == CNPJ
+        assert cvm.issuer_for("ITUB4", "2026-05-15")[0] == CNPJ

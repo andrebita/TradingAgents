@@ -1,27 +1,31 @@
 """A small, budget-capped ``tradingagents backtest`` run with a real LLM.
 
-Same ``run_backtest`` as the CLI, plus what a controlled first run needs:
+Same ``run_backtest`` as the CLI, plus what a controlled run needs:
 
-* token usage per model, read from each response's ``usage_metadata``;
-* a spend estimate from a price table, checked before every model call and
-  carried across re-runs of the same ``--run-id``: the run stops once it passes
-  ``--budget-usd`` (one call can still finish past it), and a response without
-  usage metadata stops it too, since its cost is unknown;
+* a spend cap that reserves an estimate for every model call before it is sent
+  (completed calls at their measured cost, calls in flight at their reservation),
+  carried across re-runs of the same ``--run-id``; once it would be passed, no
+  further call starts in any worker. A response without usage metadata also
+  stops the run, since its cost is unknown. Requests already sent still finish,
+  so the overshoot is bounded by the reservations in flight;
+* a per-call log written as each call ends (graph node, model, tokens, cost,
+  latency), which survives an interrupted run and is what the cap reads back;
 * a manifest per ``--run-id`` (models, effective effort, analysts, horizon,
-  vendors, code commit): a re-run that differs is refused, so one run's cells
-  are never mixed with another configuration's;
-* an invocation log with the cells, failures, score and cost per cell.
+  memory policy, workers, vendors, dependency versions, code commit): a re-run
+  that differs is refused, and uncommitted code is refused unless
+  ``--allow-dirty``, so one run's cells are never mixed with another
+  configuration's;
+* a fingerprint of the downloaded data per invocation, so a re-run that read
+  different files is visible;
+* an invocation log with the cells, failures, score, structured-output
+  fallbacks and cost per cell.
 
 Usage (Anthropic; needs ANTHROPIC_API_KEY, or TRADINGAGENTS_CLAUDE_KEY in cloud sessions):
-    # Phase A: one cell
-    python experiments/br_baseline/llm_validation.py --out experiments/br_baseline/results/llm_validation \
-        --run-id claude_validation --tickers ITUB4.SA --start 2026-09-14 --end 2026-09-14
-    # Phase B: 5 tickers x 2 dates (the Phase A cell is skipped)
-    python experiments/br_baseline/llm_validation.py --out experiments/br_baseline/results/llm_validation \
-        --run-id claude_validation --tickers ITUB4.SA,PSSA3.SA,SBSP3.SA,BBDC4.SA,B3SA3.SA \
-        --start 2026-09-14 --end 2026-09-21 --every 7
-    # Longer horizon: --holding 20 judges each call over 20 trading days (~1 month);
-    # the agents are told the horizon, and baselines.py takes the same --holding.
+    python experiments/br_baseline/llm_validation.py --out experiments/br_baseline/results/llm_validation \\
+        --run-id diag_E_r1 --tickers ITUB4.SA,PSSA3.SA --start 2026-09-14 --end 2026-09-21 --every 7 \\
+        --analysts market,news,fundamentals --holding 20 --effort medium --workers 2 --budget-usd 1.5
+    # --holding N judges each call over N trading days, and the agents are told so;
+    # baselines.py takes the same --holding. Decision memory is off unless --memory on.
 """
 
 from __future__ import annotations
@@ -29,7 +33,10 @@ from __future__ import annotations
 import argparse
 import copy
 import functools
+import hashlib
+import importlib.metadata
 import json
+import logging
 import os
 import shutil
 import subprocess
@@ -45,7 +52,8 @@ from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.llm_clients.anthropic_client import _supports_effort
 
-# US$ per million tokens (input, output), standard tier, checked 2026-10-30.
+# US$ per million tokens (input, output), standard tier, checked 2026-10-30, and the
+# prompt size above which a model bills its long-context rate.
 PRICES = {
     "claude-haiku-5-5": (0.10, 0.50),
     "claude-sonnet-5-5": (2.00, 10.00),
@@ -56,6 +64,13 @@ PRICES = {
     "gemini-3.1-flash-lite": (0.25, 1.50),
     "gemini-3.1-pro-preview": (2.00, 12.00),
 }
+LONG_CONTEXT = {"claude-haiku-5-5": (100_000, (0.50, 2.50))}
+
+# What one call is assumed to cost before it is sent: generous token counts, so a
+# reservation is rarely below the bill. Replaced by the measured cost when it ends.
+RESERVE_TOKENS = (60_000, 12_000)
+
+DEPENDENCIES = ("anthropic", "langchain-core", "langchain-anthropic", "langgraph", "yfinance", "pandas")
 
 
 class OverBudget(BaseException):
@@ -63,62 +78,125 @@ class OverBudget(BaseException):
     fallback handlers (``except Exception``) cannot turn it into more calls."""
 
 
-class UsageByModel(BaseCallbackHandler):
-    """Tokens and calls per model, from each response's usage metadata, and the
-    budget check made before every call."""
+def price_of(model: str) -> tuple[float, float]:
+    for name, price in PRICES.items():
+        if model.startswith(name):
+            return price
+    raise OverBudget(f"no price for {model}; add it to PRICES before spending")
+
+
+def call_cost(model: str, tokens_in: int, tokens_out: int) -> float:
+    price = price_of(model)
+    for name, (threshold, long_price) in LONG_CONTEXT.items():
+        if model.startswith(name) and tokens_in > threshold:
+            price = long_price
+    return (tokens_in * price[0] + tokens_out * price[1]) / 1e6
+
+
+class SpendGuard(BaseCallbackHandler):
+    """Reserves, records and caps the cost of every model call, across workers."""
 
     raise_error = True
 
-    def __init__(self, fallback_model: str, budget_usd: float, spent_before: float):
+    def __init__(self, budget_usd: float, calls_log: Path, fallback_model: str):
         self._lock = threading.Lock()
-        self.fallback_model = fallback_model
         self.budget_usd = budget_usd
-        self.spent_before = spent_before
+        self.calls_log = calls_log
+        self.fallback_model = fallback_model
+        self.spent_before = sum(json.loads(line)["cost_usd"]
+                                for line in calls_log.read_text(encoding="utf-8").splitlines()
+                                if line.strip()) if calls_log.exists() else 0.0
+        self.spent = 0.0
+        self.in_flight: dict = {}          # run_id -> (reservation, model, node, start)
+        self.stopped: str | None = None
         self.usage: dict[str, dict[str, int]] = {}
+        self.by_node: dict[str, int] = {}
 
-    def _check(self):
-        spent = self.spent_before + self.cost()
-        if spent >= self.budget_usd:
-            raise OverBudget(f"budget US$ {self.budget_usd} reached (~US$ {spent:.3f} across this run_id)")
+    def _stop(self, reason: str) -> None:
+        self.stopped = self.stopped or reason
+        raise OverBudget(self.stopped)
 
-    def on_chat_model_start(self, serialized, messages, **kwargs):
-        self._check()
+    def on_chat_model_start(self, serialized, messages, *, run_id, metadata=None, **kwargs):
+        metadata = metadata or {}
+        model = metadata.get("ls_model_name") or self.fallback_model
+        node = metadata.get("langgraph_node") or "settlement/other"
+        with self._lock:
+            if self.stopped:
+                raise OverBudget(self.stopped)
+            reservation = call_cost(model, *RESERVE_TOKENS)
+            committed = self.spent_before + self.spent + sum(r[0] for r in self.in_flight.values())
+            if committed + reservation > self.budget_usd:
+                self._stop(f"budget US$ {self.budget_usd} would be passed: ~US$ {committed:.3f} spent or "
+                           f"in flight across this run_id, next call reserves US$ {reservation:.3f}")
+            self.in_flight[run_id] = (reservation, model, node, time.monotonic())
 
-    def on_llm_start(self, serialized, prompts, **kwargs):
-        self._check()
+    def on_llm_error(self, error, *, run_id, **kwargs):
+        with self._lock:
+            self.in_flight.pop(run_id, None)
 
-    def on_llm_end(self, response, **kwargs):
+    def on_llm_end(self, response, *, run_id, **kwargs):
+        with self._lock:
+            _, model, node, start = self.in_flight.pop(run_id, (0.0, self.fallback_model, "?", time.monotonic()))
         for generations in response.generations:
             for gen in generations:
                 message = getattr(gen, "message", None)
                 meta = getattr(message, "usage_metadata", None)
                 if not meta:
-                    raise OverBudget("a response carried no usage metadata: its cost is unknown, so the "
-                                     "budget cannot be enforced")
-                model = ((getattr(message, "response_metadata", None) or {}).get("model_name")
-                         or (response.llm_output or {}).get("model_name") or self.fallback_model)
+                    with self._lock:
+                        self._stop("a response carried no usage metadata: its cost is unknown, so the "
+                                   "budget cannot be enforced")
+                served = (getattr(message, "response_metadata", None) or {}).get("model_name") or model
+                cost = call_cost(served, meta.get("input_tokens", 0), meta.get("output_tokens", 0))
+                record = {"node": node, "model": served, "input": meta.get("input_tokens", 0),
+                          "output": meta.get("output_tokens", 0), "cost_usd": round(cost, 6),
+                          "seconds": round(time.monotonic() - start, 2), "at": time.time()}
                 with self._lock:
-                    row = self.usage.setdefault(model, {"calls": 0, "input": 0, "output": 0})
+                    self.spent += cost
+                    row = self.usage.setdefault(served, {"calls": 0, "input": 0, "output": 0})
                     row["calls"] += 1
-                    row["input"] += meta.get("input_tokens", 0)
-                    row["output"] += meta.get("output_tokens", 0)
+                    row["input"] += record["input"]
+                    row["output"] += record["output"]
+                    self.by_node[node] = self.by_node.get(node, 0) + 1
+                    with self.calls_log.open("a", encoding="utf-8") as fh:
+                        fh.write(json.dumps(record) + "\n")
 
-    def cost(self) -> float:
-        total = 0.0
-        for model, row in self.usage.items():
-            price = next((p for name, p in PRICES.items() if model.startswith(name)), None)
-            if price is None:
-                raise OverBudget(f"no price for {model}; add it to PRICES before spending")
-            total += (row["input"] * price[0] + row["output"] * price[1]) / 1e6
-        return total
+    def total(self) -> float:
+        with self._lock:
+            return self.spent_before + self.spent
+
+
+class FallbackCounter(logging.Handler):
+    """Counts structured-output calls that fell back to free text, per agent."""
+
+    def __init__(self):
+        super().__init__(logging.WARNING)
+        self.counts: dict[str, int] = {}
+        self._guard = threading.Lock()
+
+    def emit(self, record):
+        message = record.getMessage()
+        if "structured-output invocation failed" in message:
+            agent = message.split(":", 1)[0]
+            with self._guard:
+                self.counts[agent] = self.counts.get(agent, 0) + 1
 
 
 def code_commit() -> str:
-    """The commit the run's code is at, marked when the tree has local changes."""
+    """The commit the run's code is at, marked when tracked files have local changes."""
     def git(*a):
         return subprocess.run(["git", *a], capture_output=True, text=True, check=False).stdout.strip()
     head = git("rev-parse", "HEAD") or "unknown"
     return head + ("+dirty" if git("status", "--porcelain", "--untracked-files=no") else "")
+
+
+def versions() -> dict:
+    out = {}
+    for name in DEPENDENCIES:
+        try:
+            out[name] = importlib.metadata.version(name)
+        except importlib.metadata.PackageNotFoundError:
+            out[name] = None
+    return out
 
 
 def build_manifest(args, config) -> dict:
@@ -135,9 +213,12 @@ def build_manifest(args, config) -> dict:
             "effort_effective": {"quick": effective(args.quick), "deep": effective(args.deep)},
             "analysts": sorted(args.analysts.split(",")), "holding_days": args.holding,
             "benchmark": config["benchmark_ticker"] or config["benchmark_map"].get(".SA"),
+            "decision_memory": config["use_decision_memory"], "workers": args.workers,
             "data_vendors": config["data_vendors"], "tool_vendors": config["tool_vendors"],
             "debate_rounds": config["max_debate_rounds"], "risk_rounds": config["max_risk_discuss_rounds"],
-            "memory": "own log per run_id; lessons filtered by resolution date", "code": code_commit()}
+            "max_tool_rounds": config["max_tool_rounds"], "llm_max_retries": config.get("llm_max_retries"),
+            "max_tokens": config.get("max_tokens"), "temperature": config.get("temperature"),
+            "dependencies": versions(), "code": code_commit()}
 
 
 def check_manifest(path: Path, manifest: dict) -> None:
@@ -152,11 +233,13 @@ def check_manifest(path: Path, manifest: dict) -> None:
     path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
-def spent_so_far(history: Path) -> float:
-    if not history.exists():
-        return 0.0
-    return sum(json.loads(line).get("cost_usd_this_invocation", 0.0)
-               for line in history.read_text(encoding="utf-8").splitlines() if line.strip())
+def data_fingerprint(cache: Path) -> str:
+    """A hash of every downloaded file the run read (CVM zips, price CSVs)."""
+    digest = hashlib.sha256()
+    for path in sorted(p for p in cache.rglob("*") if p.is_file() and not p.name.endswith((".lock", ".tmp"))):
+        digest.update(str(path.relative_to(cache)).encode())
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()[:16]
 
 
 def main():
@@ -176,6 +259,9 @@ def main():
     p.add_argument("--holding", type=int, default=5, help="trading days a decision is judged over")
     p.add_argument("--workers", type=int, default=1,
                    help="tickers analyzed at once; mind the provider's rate limits")
+    p.add_argument("--memory", choices=("off", "on"), default="off",
+                   help="decision memory: off keeps each cell independent of the others")
+    p.add_argument("--allow-dirty", action="store_true", help="run with uncommitted code (development only)")
     args = p.parse_args()
 
     key = {"anthropic": "ANTHROPIC_API_KEY", "openai": "OPENAI_API_KEY", "google": "GOOGLE_API_KEY"}.get(args.provider)
@@ -193,30 +279,32 @@ def main():
     config = copy.deepcopy(DEFAULT_CONFIG)
     config.update(results_dir=str(out / "results"), data_cache_dir=str(out / "cache"),
                   llm_provider=args.provider, quick_think_llm=args.quick, deep_think_llm=args.deep,
-                  checkpoint_enabled=False, holding_period_days=args.holding)
+                  checkpoint_enabled=False, holding_period_days=args.holding,
+                  use_decision_memory=args.memory == "on")
     effort_key = {"anthropic": "anthropic_effort", "openai": "openai_reasoning_effort",
                   "chatgpt": "openai_reasoning_effort", "google": "google_thinking_level"}[args.provider]
     config[effort_key] = args.effort
 
     manifest = build_manifest(args, config)
+    if manifest["code"].endswith("+dirty") and not args.allow_dirty:
+        raise SystemExit("uncommitted changes to tracked files: commit them, or pass --allow-dirty for a "
+                         "development run")
     check_manifest(out / "results" / "backtest" / args.run_id / "manifest.json", manifest)
-    history = out / f"{args.run_id}_invocations.jsonl"
-    usage = UsageByModel(fallback_model=args.quick, budget_usd=args.budget_usd,
-                         spent_before=spent_so_far(history))
-
+    guard = SpendGuard(args.budget_usd, out / f"{args.run_id}_calls.jsonl", fallback_model=args.quick)
+    fallbacks = FallbackCounter()
+    logging.getLogger("tradingagents").addHandler(fallbacks)
     began = time.monotonic()
 
     def progress(done, total, ticker, date):
-        spent = usage.spent_before + usage.cost()
         print(f"[{done}/{total}] {ticker} {date} · {time.monotonic() - began:.0f}s elapsed"
-              f" · spent so far ~US$ {spent:.3f}", flush=True)
+              f" · spent so far ~US$ {guard.total():.3f}", flush=True)
 
     tickers = [t.strip() for t in args.tickers.split(",") if t.strip()]
     dates = iter_grid(args.start, args.end, args.every)
     stopped = None
-    # run_backtest builds its own graph; hand it the usage callback for this run only.
+    # run_backtest builds its own graphs; hand them the guard for this run only.
     original = backtest.TradingAgentsGraph
-    backtest.TradingAgentsGraph = functools.partial(TradingAgentsGraph, callbacks=[usage])
+    backtest.TradingAgentsGraph = functools.partial(TradingAgentsGraph, callbacks=[guard])
     try:
         result = run_backtest(tickers, dates, config, selected_analysts=args.analysts.split(","),
                               run_id=args.run_id, progress=progress, workers=args.workers)
@@ -226,27 +314,39 @@ def main():
         result = None
     finally:
         backtest.TradingAgentsGraph = original
+        logging.getLogger("tradingagents").removeHandler(fallbacks)
 
     log = out / "results" / "backtest" / args.run_id / "trading_memory.md"
+    spent = guard.spent
     report = {"run_id": args.run_id, "manifest": manifest, "tickers": tickers, "dates": dates,
               "workers": args.workers, "wall_seconds": round(time.monotonic() - began),
-              "budget_usd": args.budget_usd, "stopped": stopped, "usage": usage.usage,
-              "cost_usd_this_invocation": round(usage.cost(), 4)}
+              "budget_usd": args.budget_usd, "stopped": stopped, "usage": guard.usage,
+              "calls_by_node": guard.by_node, "structured_fallbacks": fallbacks.counts,
+              "data_fingerprint": data_fingerprint(out / "cache") if (out / "cache").exists() else None,
+              "cost_usd_this_invocation": round(spent, 4),
+              "cost_usd_run_id_total": round(guard.total(), 4)}
     if result is not None:
         report.update(cells_run=result.cells_run, skipped=result.skipped, failures=result.failures,
                       settlement_failures=result.settlement_failures)
         if result.cells_run:
-            report["cost_usd_per_cell"] = round(usage.cost() / result.cells_run, 4)
+            report["cost_usd_per_cell"] = round(spent / result.cells_run, 4)
     if log.is_file():
         summary = summarize(log)
         report["score"] = {"resolved": summary.resolved, "pending": summary.pending,
                            "by_rating": {k: vars(v) for k, v in summary.by_rating.items()}}
         print(summary.render())
         shutil.copy(log, out / f"{args.run_id}_trading_memory.md")
+    history = out / f"{args.run_id}_invocations.jsonl"
+    earlier = [json.loads(line) for line in history.read_text(encoding="utf-8").splitlines()
+               if line.strip()] if history.exists() else []
+    if earlier and earlier[-1].get("data_fingerprint") not in (None, report["data_fingerprint"]):
+        print("note: this invocation read different data files than the previous one of this run_id")
     with history.open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(report, ensure_ascii=False) + "\n")
-    print(json.dumps({k: report.get(k) for k in ("usage", "cost_usd_this_invocation", "cost_usd_per_cell",
-                                                  "cells_run", "skipped", "failures", "stopped")}, indent=2))
+    print(json.dumps({k: report.get(k) for k in ("usage", "calls_by_node", "structured_fallbacks",
+                                                  "cost_usd_this_invocation", "cost_usd_per_cell",
+                                                  "wall_seconds", "cells_run", "skipped", "failures",
+                                                  "stopped")}, indent=2))
 
 
 if __name__ == "__main__":

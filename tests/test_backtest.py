@@ -392,3 +392,27 @@ def test_a_worker_stopped_by_a_base_exception_stops_the_sweep(tmp_path, monkeypa
     monkeypatch.setattr(_FakeGraph, "propagate", stop)
     with pytest.raises(Stop):
         run_backtest(["NVDA", "AAPL"], ["2026-01-05"], _config(tmp_path), workers=2)
+
+
+@pytest.mark.unit
+def test_a_stopped_worker_stops_the_others_before_their_next_cell(tmp_path, monkeypatch):
+    """A spend cap hit in one worker must not let the others keep calling the model."""
+    import time
+
+    class Stop(BaseException):
+        pass
+
+    def propagate(self, ticker, trade_date, asset_type="stock", portfolio=None):
+        self.calls.append((ticker, trade_date))
+        if ticker == "NVDA":
+            raise Stop
+        time.sleep(0.2)   # the other worker is mid-cell when the stop comes
+
+    monkeypatch.setattr(_FakeGraph, "propagate", propagate)
+    dates = ["2026-01-05", "2026-01-12", "2026-01-20"]
+    with pytest.raises(Stop):
+        run_backtest(["NVDA", "AAPL", "MSFT"], dates, _config(tmp_path), workers=2)
+
+    calls = [c for g in _FakeGraph.instances for c in g.calls]
+    assert [c for c in calls if c[0] == "AAPL"] == [("AAPL", "2026-01-05")]   # finished its cell, then stopped
+    assert not [c for c in calls if c[0] == "MSFT"]                             # never started

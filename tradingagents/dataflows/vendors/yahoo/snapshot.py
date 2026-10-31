@@ -54,6 +54,9 @@ def _verified_rows(symbol: str, as_of_date: str) -> pd.DataFrame:
 # Windows, in trading sessions, over which the instrument is set against its benchmark.
 RELATIVE_WINDOWS: tuple[int, ...] = (5, 20, 60, 120)
 BETA_SESSIONS = 120
+# A benchmark close older than this, against an instrument's session, is a gap
+# in the benchmark's data, not a day it stood still.
+BENCHMARK_STALE = pd.Timedelta(days=5)
 
 
 def _relative_lines(symbol: str, as_of_date: str, df: pd.DataFrame) -> list[str]:
@@ -76,7 +79,12 @@ def _relative_lines(symbol: str, as_of_date: str, df: pd.DataFrame) -> list[str]
         return head + [f"Benchmark prices unavailable ({type(exc).__name__}); relative strength cannot be computed."]
 
     own = df.set_index("Date")["Close"].astype(float)
-    ref = bench.set_index("Date")["Close"].astype(float).reindex(own.index, method="ffill")
+    aligned = pd.merge_asof(df[["Date"]], bench[["Date", "Close"]].rename(columns={"Close": "ref"}),
+                            on="Date", direction="backward", tolerance=BENCHMARK_STALE)
+    ref = pd.Series(aligned["ref"].astype(float).to_numpy(), index=own.index)
+    if pd.isna(ref.iloc[-1]):
+        return head + [f"The benchmark's latest close ({_fmt(bench['Date'].iloc[-1])}) is too old to compare "
+                       f"with the instrument's ({_fmt(df['Date'].iloc[-1])}); relative strength not computed."]
     lines = head + ["| Window (sessions) | Instrument | Benchmark | Difference |", "|---|---:|---:|---:|"]
     for n in RELATIVE_WINDOWS:
         if len(own) <= n or pd.isna(ref.iloc[-n - 1]):
@@ -148,8 +156,10 @@ def build_verified_market_snapshot(
     ]
     for field in ("Open", "High", "Low", "Close", "Volume"):
         lines.append(f"| {field} | {_fmt(latest.get(field))} |")
-    if "Volume" in df and len(df) >= 20:
-        lines.append(f"| Average volume, last 20 sessions | {_fmt(int(round(df['Volume'].tail(20).mean())))} |")
+    volumes = df["Volume"].tail(20).dropna() if "Volume" in df else pd.Series(dtype=float)
+    if len(volumes) >= 10:
+        lines.append(f"| Average volume, last {len(volumes)} sessions with volume | "
+                     f"{_fmt(int(round(volumes.mean())))} |")
 
     lines += ["", "### Verified technical indicators (latest row)", "",
               "| Indicator | Value |", "|---|---:|"]

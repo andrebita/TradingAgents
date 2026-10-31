@@ -135,7 +135,7 @@ class TestRelativeToBenchmark:
         # Over 5 sessions the instrument rose from 125 to 130; the benchmark, read only
         # up to the run date, did not move.
         assert "| 5 | +4.00% | +0.00% | +4.00% |" in snap
-        assert "Average volume, last 20 sessions" in snap
+        assert "Average volume, last 20 sessions with volume" in snap
 
     def test_the_benchmark_itself_gets_no_comparison(self, monkeypatch):
         monkeypatch.setattr(validator, "load_ohlcv", lambda s, d, fill_gaps=True: _sample_ohlcv())
@@ -147,3 +147,21 @@ class TestRelativeToBenchmark:
         monkeypatch.setattr(validator, "load_ohlcv", load)
         snap = validator.build_verified_market_snapshot("ITUB4.SA", "2026-05-13")
         assert "Benchmark prices unavailable" in snap and "| Close |" in snap
+
+
+@pytest.mark.unit
+def test_a_gap_in_the_benchmark_is_not_read_as_a_flat_benchmark(monkeypatch):
+    own = _sample_ohlcv()
+    bench = own[own["Date"] <= "2026-04-20"].assign(Close=200.0)   # benchmark data stops 3 weeks early
+    monkeypatch.setattr(validator, "load_ohlcv",
+                        lambda s, d, fill_gaps=True: bench.copy() if s == "^BVSP" else own.copy())
+    snap = validator.build_verified_market_snapshot("ITUB4.SA", "2026-05-13")
+    assert "too old to compare" in snap and "| 5 |" not in snap
+
+
+@pytest.mark.unit
+def test_missing_volume_does_not_break_the_snapshot(monkeypatch):
+    data = _sample_ohlcv().assign(Volume=float("nan"))
+    monkeypatch.setattr(validator, "load_ohlcv", lambda s, d, fill_gaps=True: data)
+    snap = validator.build_verified_market_snapshot("SPY", "2026-05-13")
+    assert "Average volume" not in snap and "| Close |" in snap

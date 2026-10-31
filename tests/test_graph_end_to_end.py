@@ -8,6 +8,7 @@ the wiring: a restructure that drops a node, a tool or an edge fails here.
 from __future__ import annotations
 
 import copy
+import sys
 import time
 
 import pandas as pd
@@ -387,3 +388,25 @@ def test_the_memory_step_reads_lessons_as_of_the_trade_date_and_settles_once(tmp
 
     assert asked == ["2026-01-20", "2026-01-20"]
     assert (tmp_path / "log.md").read_text() == log_after_first
+
+
+@pytest.mark.unit
+def test_memory_off_reads_no_lessons_and_the_probability_is_persisted(tmp_path, monkeypatch, offline):
+    """Experiments comparing runs turn decision memory off; the PM's probability is
+    kept as a number in the state log, so evaluation never parses it from text."""
+    import json
+
+    structured = dict(STRUCTURED)
+    structured[schemas.PortfolioDecision] = schemas.PortfolioDecision(
+        rating=schemas.PortfolioRating.HOLD, executive_summary="s", investment_thesis="t",
+        probability_outperform=47.5)
+    monkeypatch.setattr(sys.modules[__name__], "STRUCTURED", structured)
+    graph = _graph(tmp_path, monkeypatch, ScriptedModel(structured=True), use_decision_memory=False)
+    graph.memory_log.store_decision("NVDA", "2026-01-02", "earlier decision")
+
+    state, _ = graph.propagate("NVDA", TRADE_DATE)
+
+    assert state["past_context"] == "" and "off" in state["memory_note"]
+    assert state["final_probability"] == 47.5
+    logged = json.loads(next(tmp_path.glob("results/NVDA/TradingAgentsStrategy_logs/*.json")).read_text())
+    assert logged["final_probability"] == 47.5

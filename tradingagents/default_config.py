@@ -181,6 +181,10 @@ def build_default_config() -> dict:
         # Trading days from the first close after the analysis date over which a
         # decision's outcome is measured, for reflection and for the backtest figures.
         "holding_period_days": 5,
+        # Lessons from settled decisions fed back into later runs. Experiments that
+        # compare runs (and parallel backtests) turn it off, so what a cell sees
+        # does not depend on which other cells finished first.
+        "use_decision_memory": True,
         "benchmark_ticker": None,
         "benchmark_map": {
             ".NS":  "^NSEI",       # NSE India (Nifty 50)

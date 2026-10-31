@@ -170,10 +170,17 @@ def issuer_for(code: str, as_of_date: str) -> tuple[str, str] | None:
         path = _cached_zip(_FCA_URL.format(year=y), f"fca_cia_aberta_{y}.zip", y)
         if path is None:
             continue
-        public = {key.split("|")[0] for key, filed in _delivered(path, "fca", y).items()
-                  if _kept_version_public(filed, as_of)}
+        # A row belongs to one form (issuer, reference date, version); it counts only
+        # when that very form was public, not merely some form of the same issuer.
+        public = set()
+        for key, filed in _delivered(path, "fca", y).items():
+            kept = _kept_version_public(filed, as_of)
+            if kept:
+                cnpj, refer = key.split("|")
+                public.add((cnpj, refer, str(kept[0])))
         for row in _rows(path, f"valor_mobiliario_{y}.csv"):
-            if (row.get("Codigo_Negociacao") or "").strip().upper() == code and row["CNPJ_Companhia"] in public:
+            form = (row.get("CNPJ_Companhia"), row.get("Data_Referencia"), (row.get("Versao") or "").strip())
+            if (row.get("Codigo_Negociacao") or "").strip().upper() == code and form in public:
                 return row["CNPJ_Companhia"], row.get("Nome_Empresarial", "")
     return None
 
@@ -343,7 +350,7 @@ def _documents(cnpj: str, as_of: date, freq: str) -> list[dict]:
 
 
 def _span(rows: list[tuple]) -> tuple[str, str]:
-    """The ``(dt_ini, dt_fim)`` span a statement's column is served over."""
+    """The ``(dt_ini, dt_fim)`` span a statement's column is served over (see ``_SPAN_COVERAGE``)."""
     by_span: dict[tuple[str, str], set[str]] = {}
     for r in rows:
         # Earnings per share does not count towards completeness: a span holding
@@ -360,7 +367,7 @@ def _values(doc: dict, cnpj: str, members: tuple[str, ...]) -> tuple[dict, str]:
     """``{code: (label, value in R$, is_eps)}`` for one document, and its period label."""
     kind, year, path = doc["kind"], doc["year"], doc["path"]
     for basis in ("con", "ind"):
-        values, label = {}, ""
+        values, label, omitted = {}, "", set()
         for member in members:
             rows = [r for r in _statement_rows(str(path), path.stat().st_mtime,
                                                f"{kind}_cia_aberta_{member}_{basis}_{year}.csv", cnpj)
@@ -368,6 +375,10 @@ def _values(doc: dict, cnpj: str, members: tuple[str, ...]) -> tuple[dict, str]:
             if not rows:
                 continue
             ini, end = _span(rows)
+            # Accounts the chosen span lacks but a longer one reports are left out of
+            # the column (a column mixing spans would be wrong); the label says so.
+            omitted |= ({r[6] for r in rows if not r[6].startswith("3.99")}
+                        - {r[6] for r in rows if (r[4], r[5]) == (ini, end)})
             for _refer, _, currency, scale, r_ini, r_end, code, name, raw in rows:
                 if (r_ini, r_end) != (ini, end):
                     continue
@@ -385,7 +396,8 @@ def _values(doc: dict, cnpj: str, members: tuple[str, ...]) -> tuple[dict, str]:
             if members[0].startswith("DFC") and values:
                 break  # one cash-flow method is the statement
         if values:
-            return values, label + ("" if basis == "con" else " (individual)")
+            note = f" ({len(omitted)} account(s) reported only over a longer span left out)" if omitted else ""
+            return values, label + ("" if basis == "con" else " (individual)") + note
     return {}, ""
 
 

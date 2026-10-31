@@ -48,6 +48,21 @@ _NOT_IN_SIGNATURE = frozenset({
 })
 
 
+
+# What a benchmark's published level measures, so agents do not argue from a
+# wrong mechanic (a diagnostic decision called the Ibovespa a price index).
+_BENCHMARK_KIND = {
+    "^BVSP": "the Ibovespa is a total-return index: dividends are reinvested in it, it is not a price index",
+}
+
+
+class _NoReflection:
+    """Stands in for the Reflector when decision memory is off: settling still
+    records each outcome, but no lesson is written, and no model is called."""
+
+    def reflect_on_final_decision(self, **_kwargs) -> str:
+        return "(no reflection: decision memory was off for this run)"
+
 class TradingAgentsGraph:
     """Main class that orchestrates the trading agents framework."""
 
@@ -103,7 +118,8 @@ class TradingAgentsGraph:
         self.propagator = Propagator(
             max_recur_limit=max_recur_limit,
         )
-        self.reflector = Reflector(self.quick_thinking_llm)
+        self.reflector = (Reflector(self.quick_thinking_llm) if self.config.get("use_decision_memory", True)
+                          else _NoReflection())
 
         # Graph-shape-affecting run choices, kept for the checkpoint signature.
         self.selected_analysts = tuple(selected_analysts)
@@ -137,9 +153,12 @@ class TradingAgentsGraph:
         """
         days = self.config.get("holding_period_days", 5)
         benchmark = settlement.resolve_benchmark(ticker, self.config)
+        kind = _BENCHMARK_KIND.get(benchmark, "as published")
         return (f"Decision horizon: the call is judged on `{ticker}`'s return relative to {benchmark} "
                 f"over the {days} trading days after the first close following the analysis date "
-                f"(about {max(1, round(days / 5))} week(s)). Frame the analysis and the call for that horizon.")
+                f"(about {max(1, round(days / 5))} week(s)): entry at that first close, exit {days} "
+                f"sessions later, outcome = the instrument's total return (dividend-adjusted closes) "
+                f"minus {benchmark}'s return ({kind}). Frame the analysis and the call for that horizon.")
 
     def _memory_as_of(self, trade_date) -> str | None:
         """Point-in-time cutoff for past-context lessons (#1251).
@@ -330,6 +349,10 @@ class TradingAgentsGraph:
         does not end the run: the analysts' work is kept, the lessons already in
         the log are used, and the report says what could not be settled.
         """
+        if not self.config.get("use_decision_memory", True):
+            # An experiment comparing runs turns memory off: which lessons a cell
+            # saw would otherwise depend on which other cells finished first.
+            return {"past_context": "", "memory_note": "Decision memory is off for this run."}
         note = ""
         try:
             # Another run settling the same log does the work; this one goes on.
@@ -476,6 +499,7 @@ class TradingAgentsGraph:
             "investment_plan": final_state["investment_plan"],
             "final_trade_decision": final_state["final_trade_decision"],
             "final_rating": run_rating(final_state),
+            "final_probability": final_state.get("final_probability"),
             "run_settings": self.run_settings(),
         }
 
