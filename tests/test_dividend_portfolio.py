@@ -238,3 +238,14 @@ def test_a_stock_surplus_is_fixed_with_new_money_not_sales():
     assert within.status == "ok" and within.monthly_transfer == 0
     with pytest.raises(ValueError):
         plan_allocation(1.0, 1.0, 0.0, 1.5)
+
+
+@pytest.mark.unit
+def test_a_held_class_of_a_selected_company_stands_in_for_the_selected_code():
+    from tradingagents.dividend_portfolio.routine import same_company_codes
+
+    companies = {"bradesco": market.Company("bradesco", "Bradesco", {"BBDC3", "BBDC4"}),
+                 "itau": market.Company("itau", "Itaú", {"ITUB3", "ITUB4"})}
+    target = pd.DataFrame([{"cnpj": "bradesco", "code": "BBDC4"}, {"cnpj": "itau", "code": "ITUB4"}])
+    out = same_company_codes(target, companies, {"BBDC3", "PETR4"}, {"BBDC3", "BBDC4", "ITUB4"})
+    assert list(out["code"]) == ["BBDC3", "ITUB4"] and list(target["code"]) == ["BBDC4", "ITUB4"]

@@ -8,7 +8,7 @@ new money is placed, in the current target, and nothing is sold.
 from __future__ import annotations
 
 import copy
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 
@@ -31,6 +31,29 @@ class Result:
     rebalance: bool
     target: list[str]
     spent_usd: float
+    day: date | None = None
+    target_frame: pd.DataFrame | None = None
+    plan: object = None
+    alerts: dict = field(default_factory=dict)
+    cut: dict = field(default_factory=dict)
+    holdings: list = field(default_factory=list)
+    allocation: object = None
+    performance: dict | None = None
+
+
+def same_company_codes(target: pd.DataFrame, companies: dict, held: set[str], priced: set[str]) -> pd.DataFrame:
+    """``target`` with a held share class of a selected company in place of the selected code.
+
+    Holding BBDC3 when the rule picks BBDC4 is holding Bradesco: swapping classes would
+    only cost fees and, above the exemption, tax.
+    """
+    company_of = {code: cnpj for cnpj, c in companies.items() for code in c.codes}
+    target = target.copy()
+    for i, row in target.iterrows():
+        mine = sorted(c for c in held if company_of.get(c) == row["cnpj"] and c in priced)
+        if mine and row["code"] not in mine:
+            target.at[i, "code"] = mine[0]
+    return target
 
 
 def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, as_of: date | None = None,
@@ -56,7 +79,7 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
         rebalance = selection.is_rebalance_month(day, rules) if rebalance is None else rebalance
 
         snap = selection.snapshot(companies, px, day, rules)
-        target = selection.target(snap, rules)
+        target = same_company_codes(selection.target(snap, rules), companies, held_codes, set(px))
         codes = list(target["code"])
         prices = {c: float(f["Close"].loc[:day].iloc[-1]) for c, f in px.items()
                   if c in set(codes) | held_codes and len(f.loc[:day])}
@@ -99,4 +122,5 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
                   allocation)
     path = out_dir / f"relatorio_{day.date().isoformat()}.md"
     path.write_text(text, encoding="utf-8")
-    return Result(text, path, rebalance, codes, spent)
+    return Result(text, path, rebalance, codes, spent, day.date(), target, plan, alerts, cut, holdings, allocation,
+                  performance)
