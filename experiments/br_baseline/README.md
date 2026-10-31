@@ -219,6 +219,50 @@ de normalização de ticker. Não há motivo para incorporá-lo.
   demonstrativos ponto-no-tempo, incluindo reapresentações.
 - **BCB SGS:** a API responde (por exemplo, série 433, IPCA mensal).
 
+## Notícias brasileiras: texto dos documentos da CVM e imprensa (31/10/2026)
+
+O vendor padrão de notícias para ações da B3 passou a ser `b3`, que junta duas fontes.
+Todas as medições abaixo foram feitas ao vivo.
+
+**Documentos entregues à CVM (`cvm`).** Depois da lista, entra o texto completo de Fatos
+Relevantes, Avisos aos Acionistas e Comunicados ao Mercado, extraído do PDF de cada documento
+no servidor da CVM (RAD).
+- **Versão:** é a mesma da lista, ou seja, a que estava pública na data da entrega.
+- **Download:** o servidor derruba cerca de 1/3 das conexões na primeira tentativa. Com até 4
+  tentativas, foram 33 de 33 PDFs. Cada texto fica em cache para sempre.
+- **Tamanho e limites:** em 36 documentos de 2026, a mediana é de cerca de 3 mil caracteres
+  por fato relevante (10 de 12 têm menos de 6 mil) e de 2 a 20 mil por comunicado. Em
+  português, ~2,4 caracteres = 1 token. Por isso há um teto de 15 mil caracteres por documento
+  e 40 mil por chamada (`cvm_filing_text_chars`). O teto impede que um relatório de produção
+  (38 mil caracteres) ou um release de resultado (41 mil) tire os outros documentos.
+- **Excluídos:** os Dados Econômico-Financeiros (demonstrações e releases têm de 140 a 340 mil
+  caracteres, até ~150 mil tokens), cujos números já vêm das ferramentas de demonstrativos.
+- **Limitação:** tabelas coladas como imagem se perdem. Na projeção 2026 do Itaú, os números
+  estavam numa imagem.
+
+**Imprensa (`br_press`).** A API pública WordPress de InfoMoney, Money Times, Seu Dinheiro,
+BP Money e NeoFeed, sem chave. Ela busca no arquivo por período e devolve texto completo,
+`date_gmt` (publicação) e `modified_gmt` (última edição).
+- **Alcance:** chega a 2025. Petrobras de 26 a 28/02/2025 trouxe 33, 56, 13 e 11 matérias.
+- **Regra de data:** a matéria entra só se foi publicada na janela e **editada pela última
+  vez até o fim dela**. Entre 0 e 36% das matérias por portal são editadas mais de um dia
+  depois, e o texto atual poderia trazer fatos posteriores.
+- **Ranking:** primeiro as matérias com manchete só sobre a empresa, depois as que a citam com
+  outras, depois as que só a mencionam. Resumos com várias empresas ficam só com os parágrafos
+  sobre ela.
+- **Volume:** 30 mil caracteres de texto por chamada (`br_press_text_chars`). As respostas
+  ficam em cache, então repetir uma janela passada não faz nova consulta.
+
+**Volume por chamada.** PETR4, ITUB4 e VALE3, em semanas de resultado, dão ~31 mil tokens por
+chamada: 4 a 5 documentos da CVM e 6 a 12 matérias. No Haiku 5.5, isso custa ~US$ 0,01 a
+0,02 a mais por célula, contra ~US$ 0,17 da célula do grafo completo.
+
+**Limites conhecidos**
+- A imprensa é uma amostra de 5 sites gratuitos. Valor, Estadão e Folha ficam de fora por
+  paywall ou falta de API.
+- Matérias apagadas não aparecem.
+- A busca é por código de negociação (PETR4), não pelo nome da empresa.
+
 ## Execuções com LLM até agora e próximos experimentos
 
 Validações já feitas, todas com Claude Haiku 5.5 no nível rápido e Sonnet 5.5 no forte, 5

@@ -177,7 +177,9 @@ def get_news(
 ) -> str:
     """
     Retrieve news data for the instrument under analysis.
-    Uses the configured news_data vendor.
+    Uses the configured news_data vendor. For a Brazilian (.SA) stock this is the
+    company's filings with CVM, with the text of its material facts and notices,
+    and articles from the Brazilian financial press, both in Portuguese.
     Args:
         start_date (str): Start date in yyyy-mm-dd format
         end_date (str): End date in yyyy-mm-dd format

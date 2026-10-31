@@ -139,6 +139,11 @@ def build_default_config() -> dict:
         # Increase for longer lookback strategies or to broaden macro coverage;
         # decrease to reduce token usage in agent prompts.
         "news_article_limit": 20,             # max articles per ticker (ticker-news)
+        # Characters of document text a Brazilian news call may carry: CVM filings
+        # (material facts, notices) and press articles, each source its own budget.
+        # About 2.4 characters make a token in Portuguese; 0 lists titles only.
+        "cvm_filing_text_chars": 40_000,
+        "br_press_text_chars": 30_000,
         "global_news_article_limit": 10,      # max articles for global/macro news
         "global_news_lookback_days": 7,       # macro news lookback window
         # Search queries used by get_global_news for macro headlines. Extend or
@@ -161,8 +166,9 @@ def build_default_config() -> dict:
             # Statements come as filed from CVM (B3 issuers) or SEC EDGAR (US filers),
         # then Yahoo; the overview and insider tools, which neither serves, from Yahoo.
         "fundamental_data": "cvm,sec_edgar,yfinance",  # Options: cvm, sec_edgar, alpha_vantage, yfinance
-            # CVM serves B3 (.SA) companies' filings and passes other tickers on to Yahoo.
-            "news_data": "cvm,yfinance",         # Options: cvm, alpha_vantage, yfinance
+            # B3 (.SA) companies get their CVM filings and the Brazilian press together
+            # ("cvm" or "br_press" alone serve one each); other tickers pass on to Yahoo.
+            "news_data": "b3,yfinance",          # Options: b3, cvm, br_press, alpha_vantage, yfinance
             # Banco Central serves Brazilian aliases (selic, ipca, focus_ipca, ...)
             # and passes any other indicator on to FRED.
             "macro_data": "bcb,fred",            # Options: bcb (keyless), fred (needs FRED_API_KEY)

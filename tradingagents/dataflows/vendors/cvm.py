@@ -10,7 +10,9 @@ was on file by ``D``: re-deliveries count from their own delivery date.
 
 Open files, no key: the IPE dataset (one zip per delivery year) for the
 filings, DFP/ITR for statements, and the FCA dataset (securities by trading
-code) to find the issuer of a ticker. Only B3 tickers (``.SA``) are served;
+code) to find the issuer of a ticker. The text of the telling filings in a
+window (material facts, shareholder and market notices) comes from the PDF
+each IPE row links to on CVM's document server, the very version listed. Only B3 tickers (``.SA``) are served;
 anything else falls through to the next configured vendor.
 
 Point-in-time limits. CVM's FCA and statement files keep only the latest
@@ -29,8 +31,10 @@ from __future__ import annotations
 
 import csv
 import functools
+import hashlib
 import io
 import logging
+import re
 import time
 import zipfile
 from datetime import date, datetime, timedelta
@@ -293,13 +297,13 @@ def get_news(ticker: str, start_date: str, end_date: str) -> str:
     rows = _filings(cnpj, start, end, gaps)
     header = (f"## Filings by {name} ({code}, CNPJ {cnpj}) delivered to CVM, {start_date} to {end_date}\n"
               "Source: CVM open data (IPE). Official company disclosures, each dated by its delivery "
-              "to CVM, when it became public. Only the type and subject of each filing are given, "
-              "not its content. Subjects are in Portuguese.\n")
+              "to CVM, when it became public. The list gives each filing's type and subject; the text "
+              "of material facts, shareholder notices and market notices follows it. In Portuguese.\n")
     if gaps:
         header += f"Coverage incomplete: {'; '.join(gaps)}.\n"
     header += "\n"
     if rows:
-        return header + _listing(rows, limit)
+        return header + _listing(rows, limit) + _texts(rows, get_config().get("cvm_filing_text_chars", 40_000))
 
     earlier = _filings(cnpj, start - timedelta(days=_EARLIER_DAYS), start - timedelta(days=1), gaps)
     body = ("No filing by this company in the window is in CVM's register."
@@ -309,6 +313,104 @@ def get_news(ticker: str, start_date: str, end_date: str) -> str:
         body += (f"\nMost recent earlier filings (up to {_EARLIER_DAYS} days before the window):\n"
                  + _listing(earlier, _EARLIER_MAX))
     return header + body
+
+
+# --- Text of the filings --------------------------------------------------------------
+
+# Filings whose text follows the list, in this order: material facts,
+# shareholder notices (dividends, JCP), market notices (including results
+# presentations). Statements and earnings releases (Dados Econômico-Financeiros)
+# run to 100-300 thousand characters and their figures come from the statement
+# tools; minutes and meeting papers are procedural.
+_TEXT_CATEGORIES = ("Fato Relevante", "Aviso aos Acionistas", "Comunicado ao Mercado")
+# Most material facts and notices run 1-6 thousand characters. A long one (a
+# production report, a results release) is cut here, so it cannot crowd the
+# window's other filings out of the budget.
+_DOC_CHARS = 15_000
+# With fewer characters of the budget left, a document is not cut to fit.
+_MIN_EXCERPT = 2_000
+_MAX_PDF_BYTES = 25 * 1024 * 1024
+# CVM's document server drops about a third of connections on the first try.
+_PDF_ATTEMPTS = 4
+
+
+def _fetch_pdf(url: str) -> bytes | None:
+    """The PDF at ``url``, or None when CVM's document server does not return one."""
+    for attempt in range(_PDF_ATTEMPTS):
+        try:
+            with requests.get(url, timeout=REQUEST_TIMEOUT, stream=True) as response:
+                response.raise_for_status()
+                data = bytearray()
+                for chunk in response.iter_content(1 << 16):
+                    data += chunk
+                    if len(data) > _MAX_PDF_BYTES:
+                        return None
+            return bytes(data) if data.startswith(b"%PDF") else None
+        except requests.RequestException as exc:
+            logger.info("CVM document %s failed (%s), attempt %d", url, exc, attempt + 1)
+            if attempt + 1 < _PDF_ATTEMPTS:
+                time.sleep(2 ** (attempt + 1))
+    return None
+
+
+def _pdf_text(data: bytes) -> str:
+    """A PDF's text with blank runs collapsed; empty for a scanned or unreadable document."""
+    from pypdf import PdfReader
+
+    try:
+        pages = [page.extract_text() or "" for page in PdfReader(io.BytesIO(data)).pages]
+    except Exception as exc:  # pypdf raises many types on damaged files
+        logger.info("CVM document unreadable: %s", exc)
+        return ""
+    lines = [" ".join(line.split()) for line in "\n".join(pages).splitlines()]
+    return re.sub(r"\n{3,}", "\n\n", "\n".join(lines)).strip()
+
+
+def _filing_text(row: dict) -> str | None:
+    """The text of the filing version ``row`` lists, cached for good; None when it cannot be fetched.
+
+    A re-delivery is a new version under its own link, so a cached text never changes.
+    """
+    link = row.get("Link_Download") or ""
+    key = re.sub(r"[^\w.-]", "_", row.get("Protocolo_Entrega") or "") or hashlib.sha1(link.encode()).hexdigest()[:20]
+    path = Path(get_config()["data_cache_dir"]) / "cvm" / "docs" / f"{key}_v{_version(row)}.txt"
+    if path.exists():
+        return path.read_text(encoding="utf-8")
+    data = _fetch_pdf(link) if link else None
+    if data is None:
+        return None
+    text = _pdf_text(data)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    replace_file(path, lambda temp: Path(temp).write_text(text, encoding="utf-8"))
+    return text
+
+
+def _texts(rows: list[dict], budget: int) -> str:
+    """The text of the window's telling filings, by kind then newest, up to ``budget`` characters."""
+    chosen = sorted((r for r in rows if r.get("Categoria") in _TEXT_CATEGORIES),
+                    key=lambda r: (_TEXT_CATEGORIES.index(r["Categoria"]), -r["_delivered"].toordinal()))
+    if not chosen or budget <= 0:
+        return ""
+    parts, left, skipped = [], budget, 0
+    for row in chosen:
+        if left < _MIN_EXCERPT:
+            skipped += 1
+            continue
+        title = (f"#### {row['_delivered'].isoformat()} · {row['Categoria']}: "
+                 f"{(row.get('Assunto') or '').strip() or '(no subject)'}")
+        text = _filing_text(row)
+        if text is None:
+            parts.append(f"{title}\n_(text unavailable: CVM's document server did not return the PDF)_")
+        elif not text:
+            parts.append(f"{title}\n_(no extractable text: a scanned or image-only document)_")
+        else:
+            shown = min(len(text), left, _DOC_CHARS)
+            cut = f"\n_[... cut here: {len(text) - shown} more characters]_" if shown < len(text) else ""
+            parts.append(f"{title}\n{text[:shown]}{cut}")
+            left -= shown
+    tail = f"\n_(text of {skipped} more filing(s) left out: length limit reached)_\n" if skipped else ""
+    return ("\n### Text of the filings\nExtracted from the PDF delivered to CVM. Tables or figures embedded "
+            "as images are missing from it.\n\n" + "\n\n".join(parts) + "\n" + tail)
 
 
 # --- Financial statements (DFP annual, ITR quarterly) ---------------------------------

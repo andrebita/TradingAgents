@@ -17,7 +17,9 @@ from tradingagents.dataflows.vendors.alpha_vantage import (
     get_news as get_alpha_vantage_news,
     get_stock as get_alpha_vantage_stock,
 )
+from tradingagents.dataflows.vendors.b3_news import get_news as get_b3_news
 from tradingagents.dataflows.vendors.bcb import get_macro_data as get_bcb_macro_data
+from tradingagents.dataflows.vendors.br_press import get_news as get_br_press_news
 from tradingagents.dataflows.vendors.cvm import (
     get_balance_sheet as get_cvm_balance_sheet,
     get_cashflow as get_cvm_cashflow,
@@ -137,7 +139,9 @@ VENDOR_METHODS = {
     },
     # news_data
     "get_news": {
+        "b3": get_b3_news,
         "cvm": get_cvm_news,
+        "br_press": get_br_press_news,
         "alpha_vantage": get_alpha_vantage_news,
         "yfinance": get_news_yfinance,
     },

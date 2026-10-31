@@ -62,7 +62,8 @@ def _cached_only(cache):
 @pytest.fixture
 def cache(tmp_path):
     config_module._config = copy.deepcopy(default_config.DEFAULT_CONFIG)
-    set_config({"data_cache_dir": str(tmp_path)})
+    # Lists only; the filings' text has its own tests below.
+    set_config({"data_cache_dir": str(tmp_path), "cvm_filing_text_chars": 0})
     folder = tmp_path / "cvm"
     folder.mkdir()
     _fca(folder / "fca_cia_aberta_2026.zip", 2026, delivered="2026-04-09")
@@ -182,6 +183,105 @@ def test_a_window_that_ended_long_before_the_fetch_is_complete(cache):
         busy = cvm.get_news("ITUB4.SA", "2026-08-01", "2026-08-10")
     assert "complete for the window, so this is an absence of disclosures" in quiet
     assert "Coverage incomplete" not in quiet and "Coverage incomplete" not in busy
+
+
+def _with_texts(texts, budget=40_000):
+    """Serve each filing's text from ``texts`` (by subject); record which were asked for."""
+    set_config({"cvm_filing_text_chars": budget})
+    asked = []
+
+    def fetch(url):
+        asked.append(url)
+        return texts.get(url)
+
+    return asked, mock.patch.object(cvm, "_fetch_pdf", side_effect=fetch), \
+        mock.patch.object(cvm, "_pdf_text", side_effect=lambda data: data.decode())
+
+
+@pytest.mark.unit
+def test_material_facts_and_notices_carry_their_text_in_order(cache):
+    asked, fetch, extract = _with_texts({"http://example/10/1": b"Projecao revisada de margem.",
+                                         "http://example/16/1": b"JCP de R$ 0,50 por acao.",
+                                         "http://example/11/1": b"Resultado do trimestre."})
+    with fetch, extract:
+        out = cvm.get_news("ITUB4.SA", "2026-06-01", "2026-08-10")
+    text = out.split("### Text of the filings")[1]
+    # Material fact first, then the shareholder notice, then the market notice.
+    assert text.index("Projecao revisada") < text.index("JCP de R$ 0,50") < text.index("Resultado do trimestre")
+    assert "#### 2026-08-04 · Fato Relevante: Projeções 2026" in text
+    # Insider holdings reports are listed, never fetched.
+    assert sorted(asked) == ["http://example/10/1", "http://example/11/1", "http://example/16/1"]
+
+
+@pytest.mark.unit
+def test_the_text_served_is_the_version_listed_and_is_cached(cache):
+    asked, fetch, extract = _with_texts({"http://example/11/2": b"Resultado corrigido."})
+    with fetch, extract:
+        first = cvm.get_news("ITUB4.SA", "2026-08-15", "2026-08-25")
+        again = cvm.get_news("ITUB4.SA", "2026-08-15", "2026-08-25")
+    assert "Resultado corrigido." in first and first == again
+    assert asked == ["http://example/11/2"]   # the second call read the cache
+    assert (cache / "cvm" / "docs" / "11_v2.txt").read_text(encoding="utf-8") == "Resultado corrigido."
+
+
+@pytest.mark.unit
+def test_the_budget_cuts_one_document_and_leaves_the_rest_out(cache):
+    long_fact = ("x" * 2_500).encode()
+    asked, fetch, extract = _with_texts({"http://example/10/1": long_fact,
+                                         "http://example/16/1": b"JCP.", "http://example/11/1": b"Resultado."},
+                                        budget=2_100)
+    with fetch, extract:
+        out = cvm.get_news("ITUB4.SA", "2026-06-01", "2026-08-10")
+    assert "x" * 2_100 + "\n_[... cut here: 400 more characters]_" in out
+    assert "text of 2 more filing(s) left out: length limit reached" in out
+    assert asked == ["http://example/10/1"]   # nothing fetched that would not be shown
+
+
+@pytest.mark.unit
+def test_a_missing_or_scanned_document_is_said_so(cache):
+    asked, fetch, extract = _with_texts({"http://example/10/1": b""})
+    with fetch, extract:
+        out = cvm.get_news("ITUB4.SA", "2026-08-01", "2026-08-10")
+    assert "Projeções 2026\n_(no extractable text: a scanned or image-only document)_" in out
+    assert "Resultado 2T26\n_(text unavailable: CVM's document server did not return the PDF)_" in out
+    assert not (cache / "cvm" / "docs" / "11_v1.txt").exists()   # a failed fetch is retried next time
+
+
+@pytest.mark.unit
+def test_earlier_filings_shown_for_an_empty_window_carry_no_text(cache):
+    asked, fetch, extract = _with_texts({})
+    with fetch, extract:
+        out = cvm.get_news("ITUB4.SA", "2026-07-01", "2026-07-20")
+    assert "Pagamento de JCP" in out and "### Text of the filings" not in out and not asked
+
+
+@pytest.mark.unit
+def test_a_dropped_connection_is_retried(cache):
+    class Response:
+        def __init__(self, body):
+            self.body = body
+        def __enter__(self):
+            return self
+        def __exit__(self, *exc):
+            return False
+        def raise_for_status(self):
+            pass
+        def iter_content(self, size):
+            yield self.body
+
+    replies = [cvm.requests.ConnectionError("reset"), Response(b"%PDF-1.7 body")]
+
+    def get(url, **kwargs):
+        reply = replies.pop(0)
+        if isinstance(reply, Exception):
+            raise reply
+        return reply
+
+    with mock.patch.object(cvm.requests, "get", side_effect=get), mock.patch.object(cvm.time, "sleep"):
+        assert cvm._fetch_pdf("http://example/doc") == b"%PDF-1.7 body"
+    replies = [Response(b"<html>error</html>")]
+    with mock.patch.object(cvm.requests, "get", side_effect=get):
+        assert cvm._fetch_pdf("http://example/doc") is None   # not a PDF
 
 
 @pytest.mark.unit
