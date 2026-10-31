@@ -79,8 +79,10 @@ def _relative_lines(symbol: str, as_of_date: str, df: pd.DataFrame) -> list[str]
         return head + [f"Benchmark prices unavailable ({type(exc).__name__}); relative strength cannot be computed."]
 
     own = df.set_index("Date")["Close"].astype(float)
-    aligned = pd.merge_asof(df[["Date"]], bench[["Date", "Close"]].rename(columns={"Close": "ref"}),
-                            on="Date", direction="backward", tolerance=BENCHMARK_STALE)
+    # Two downloads can carry different datetime resolutions, which merge_asof refuses.
+    left = df[["Date"]].astype({"Date": "datetime64[ns]"})
+    right = bench[["Date", "Close"]].astype({"Date": "datetime64[ns]"}).rename(columns={"Close": "ref"})
+    aligned = pd.merge_asof(left, right, on="Date", direction="backward", tolerance=BENCHMARK_STALE)
     ref = pd.Series(aligned["ref"].astype(float).to_numpy(), index=own.index)
     if pd.isna(ref.iloc[-1]):
         return head + [f"The benchmark's latest close ({_fmt(bench['Date'].iloc[-1])}) is too old to compare "
@@ -171,7 +173,10 @@ def build_verified_market_snapshot(
     for _, row in recent.iterrows():
         lines.append(f"| {_fmt(row['Date'])} | {_fmt(row.get('Close'))} |")
 
-    lines += _relative_lines(symbol, as_of_date, df)
+    try:
+        lines += _relative_lines(symbol, as_of_date, df)
+    except Exception as exc:  # noqa: BLE001 — the comparison is extra; the snapshot must stand without it
+        lines += ["", f"Relative strength against the benchmark unavailable ({type(exc).__name__})."]
 
     lines += [
         "",

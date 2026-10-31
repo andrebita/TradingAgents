@@ -165,3 +165,14 @@ def test_missing_volume_does_not_break_the_snapshot(monkeypatch):
     monkeypatch.setattr(validator, "load_ohlcv", lambda s, d, fill_gaps=True: data)
     snap = validator.build_verified_market_snapshot("SPY", "2026-05-13")
     assert "Average volume" not in snap and "| Close |" in snap
+
+
+@pytest.mark.unit
+def test_series_of_different_datetime_resolutions_still_compare(monkeypatch):
+    """Two downloads can come back as datetime64[s] and datetime64[us]; merge_asof refuses mixed units."""
+    own = _sample_ohlcv().astype({"Date": "datetime64[s]"})
+    bench = _sample_ohlcv().astype({"Date": "datetime64[us]"})
+    monkeypatch.setattr(validator, "load_ohlcv",
+                        lambda s, d, fill_gaps=True: bench.copy() if s == "^BVSP" else own.copy())
+    snap = validator.build_verified_market_snapshot("ITUB4.SA", "2026-05-13")
+    assert "| 5 | +4.00% | +4.00% | +0.00% |" in snap

@@ -277,6 +277,42 @@ Use sempre um `--run-id` novo por configuração (o manifesto recusa misturas) e
 gerados com o mesmo `--holding`. O workflow `.github/workflows/br-backtest.yml` (disparo
 manual) roda o executor com teto, os baselines na mesma grade e a comparação.
 
+## Experimento 2: pré-registro (31/10/2026, antes de qualquer resultado)
+
+Pergunta: o processamento depois dos analistas (debate otimista/pessimista, gestor de pesquisa,
+trader e equipe de risco) melhora a previsão em relação a um decisor único com as mesmas evidências?
+
+- **Código:** `experiment2.py` executa e `experiment2_eval.py` avalia.
+  - O grafo completo roda uma vez por célula, com a memória desligada.
+  - Os relatórios dos analistas, o snapshot determinístico e o contrato de avaliação viram um
+    pacote congelado, gravado em arquivo com SHA-256.
+  - O mesmo decisor final (Sonnet 5.5, esforço medium, mesmo prompt e mesmo schema JSON, sem
+    fallback em texto livre) é chamado duas vezes: `full`, com pacote + deliberação, e `single`,
+    só com o pacote.
+  - A decisão original do gestor fica como referência (`original`).
+  - Falhas contam como falha de medição.
+- **Universo (15):** as 15 primeiras ações da lista `broad29` (definida em 30/10, antes de qualquer
+  execução com LLM), sem ITUB4 e PSSA3, usadas no desenvolvimento: PETR4, VALE3, BBDC4, BBAS3, B3SA3,
+  ABEV3, WEGE3, RENT3, SUZB3, PRIO3, EQTL3, RADL3, GGBR4, LREN3, SBSP3. A lista é de empresas
+  relevantes hoje, então há viés de sobrevivência.
+- **Datas (4 janelas de 20 pregões, sem sobreposição, todas liquidadas):**
+
+  | Análise | Entrada | Saída |
+  |---|---|---|
+  | 06/07 | 07/07 | 04/08 |
+  | 03/08 | 04/08 | 01/09 |
+  | 31/08 | 01/09 | 30/09 |
+  | 29/09 | 30/09 | 29/10 |
+
+  Todas são posteriores ao corte de treino declarado dos modelos (jun/2026). A primeira fica a um mês dele.
+- **Métrica primária:** diferença pareada de Brier, `(p_full − y)² − (p_single − y)²`, com média por
+  janela e depois entre janelas; intervalo t com 3 graus de liberdade e teste exato de troca de
+  sinais (p mínimo de 0,125).
+- **Métricas secundárias:** Brier de cada braço contra 50%, cobertura, correlação de ranking por data,
+  acerto do lado, custo por braço e variabilidade nas repetições (`--repeat 6`).
+- **Como ler o resultado:** com 4 janelas é um piloto. Ele permite abandonar uma configuração, corrigir
+  a medição ou decidir ampliar; não permite afirmar superioridade.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
