@@ -141,6 +141,9 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
                                          transition_months=transition_months)
             # The month's transfer joins the orders on the run that brings the month's contribution;
             # weekly runs without one only report where the allocation stands.
+            if held_codes - set(prices):
+                # A missing price is not zero: the stocks' share is unknown, so no transfer this time.
+                allocation.monthly_transfer = min(allocation.monthly_transfer, 0.0)
             contribution = allocation.to_stocks_this_month if contribution > 0 else 0.0
         plan = plan_orders(book, codes, prices, contribution=contribution, sell=rebalance, pending=pending,
                            keep=keep, sold_earlier_this_month=sold_earlier_this_month,
@@ -150,6 +153,9 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
         pending = {o.code for o in plan.orders + plan.deferred if o.side == "venda"}
         pending_path.write_text(json.dumps({"date": day.date().isoformat(), "codes": sorted(pending)}, indent=1),
                                 encoding="utf-8")
+        if allocation is not None and held_codes - set(prices):
+            plan.notes.append(f"Sem preço para {', '.join(sorted(held_codes - set(prices)))}: a parte em ações é "
+                              "desconhecida, então não há transferência da renda fixa nesta revisão.")
         if keep:
             plan.notes.append(f"Salto de preço sem explicação em {', '.join(sorted(keep))}: sem compra nem venda até "
                               "conferir o evento (desdobramento, cisão ou queda real).")

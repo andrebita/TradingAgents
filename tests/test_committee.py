@@ -283,3 +283,24 @@ def test_the_tax_records_of_another_month_count_only_the_carried_loss():
                      stock_loss_carryforward=300)
     assert state.for_month(date(2026, 9, 30)) == (15_000, 900, 300)
     assert state.for_month(date(2026, 10, 30)) == (0.0, 0.0, 300)
+
+
+@pytest.mark.unit
+def test_every_listed_class_counts_and_a_missing_value_stops_the_transfer():
+    # Review 3, C7: an ETF used to be left out of the wealth, and a stock without a price counted as zero.
+    wealth = _wealth()
+    wealth.listed += [Listed(code="IVVB11", quantity=10, kind="etf", asset_class="internacional", value=3000),
+                      Listed(code="IMAB11", quantity=10, kind="etf", asset_class="renda_fixa", value=1000),
+                      Listed(code="BOVA11", quantity=10, kind="etf", asset_class="acoes")]
+    alloc = analysts.allocation(_policy(), wealth, {"AAAA3": 10_000, "BOVA11": 1500}, 2000)
+    assert alloc["stocks"] == 11_500 and alloc["international"] == 3000
+    assert alloc["fixed_income"] == 141_000 and alloc["unvalued"] == []
+    assert alloc["listed_valuation"]["IVVB11"] == "valor informado"
+
+    wealth.listed.append(Listed(code="NOPX3", quantity=100))               # no price, no value
+    wealth.listed.append(Listed(code="SPXI11", quantity=5, kind="etf"))     # an ETF of unknown class
+    alloc = analysts.allocation(_policy(), wealth, {"AAAA3": 10_000, "BOVA11": 1500}, 2000)
+    assert [u.split()[0] for u in alloc["unvalued"]] == ["NOPX3", "SPXI11"] and alloc["rule_monthly_transfer"] == 0
+    c = director.check(_decision(monthly_transfer_to_stocks=5000), alloc, wealth, _policy(), set(), date(2026, 10, 30))
+    assert c.transfer == 0 and any("NOPX3" in e for e in c.escalations)
+    assert any("atualize o patrimônio" in e for e in c.escalations)       # the balances have no date

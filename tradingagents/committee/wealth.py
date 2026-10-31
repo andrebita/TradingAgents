@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import Literal
@@ -14,6 +15,9 @@ from tradingagents.portfolio import PortfolioContext, Position
 FixedIncomeKind = Literal["tesouro_selic", "tesouro_ipca", "tesouro_pre", "cdb", "lci", "lca", "lig", "debenture",
                           "cri", "cra", "fund", "other"]
 ListedKind = Literal["acao", "fii", "fiagro", "fi_infra", "etf", "bdr"]
+AssetClass = Literal["acoes", "internacional", "fundos_listados", "renda_fixa"]
+CLASS_OF_KIND = {"acao": "acoes", "fii": "fundos_listados", "fiagro": "fundos_listados", "fi_infra": "fundos_listados",
+                 "bdr": "internacional"}      # an ETF says which: stocks, international or fixed income
 
 
 class FixedIncome(BaseModel):
@@ -49,6 +53,27 @@ class Listed(BaseModel):
     average_price: float | None = None
     value: float | None = Field(None, description="Market value, when not priced from the market")
     lent: bool = Field(False, description="Lent out (aluguel): still owned, held by the borrower")
+    asset_class: AssetClass | None = Field(None, description="The class it counts in; required for an ETF "
+                                                             "(acoes, internacional or renda_fixa)")
+
+    @property
+    def counts_as(self) -> str | None:
+        return self.asset_class or CLASS_OF_KIND.get(self.kind)
+
+
+@dataclass
+class Valuation:
+    """What the listed positions are worth, per code and per class, and which could not be valued."""
+
+    by_code: dict[str, float] = field(default_factory=dict)
+    by_class: dict[str, float] = field(default_factory=lambda: dict.fromkeys(
+        ("acoes", "internacional", "fundos_listados", "renda_fixa"), 0.0))
+    sources: dict[str, str] = field(default_factory=dict)
+    missing: list[str] = field(default_factory=list)
+    classes: dict[str, str] = field(default_factory=dict)
+
+    def of_class(self, cls: str) -> dict[str, float]:
+        return {c: v for c, v in self.by_code.items() if self.classes.get(c) == cls}
 
 
 class TaxState(BaseModel):
@@ -90,6 +115,31 @@ class Wealth(BaseModel):
             out.append((x.name, min(x.value, left)))
             left -= out[-1][1]
         return [(name, round(v, 2)) for name, v in out if v > 0]
+
+    def valuation(self, market: dict[str, float]) -> Valuation:
+        """The listed positions at ``market`` (code: R$ for the whole holding, from a recent price), else at the
+        value the investor gave; one with neither, or an ETF without its class, is missing, never zero."""
+        out = Valuation()
+        lots: dict[str, list[Listed]] = {}
+        for x in self.listed:
+            lots.setdefault(x.code.strip().upper(), []).append(x)
+        for code, xs in lots.items():
+            cls = xs[0].counts_as
+            if cls is None:
+                out.missing.append(f"{code} (informe a classe do ETF: acoes, internacional ou renda_fixa)")
+                continue
+            if code in market:
+                value, source = market[code], "cotação"
+            elif all(x.value is not None for x in xs):
+                value, source = sum(x.value for x in xs), "valor informado"
+            else:
+                out.missing.append(f"{code} (sem cotação recente nem valor informado)")
+                continue
+            out.by_code[code] = value
+            out.by_class[cls] += value
+            out.sources[code] = source
+            out.classes[code] = cls
+        return out
 
     def stocks(self) -> list[Listed]:
         return [x for x in self.listed if x.kind == "acao"]

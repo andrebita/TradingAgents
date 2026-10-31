@@ -93,7 +93,7 @@ def _with_view(report: Report, models: Models | None, model: str, brief: str, po
 
 # --- Allocation: the numbers every analyst shares ---------------------------------------
 
-def allocation(policy: InvestmentPolicy, wealth: Wealth, stock_values: dict[str, float],
+def allocation(policy: InvestmentPolicy, wealth: Wealth, market_values: dict[str, float],
                contribution: float) -> dict:
     """Where the wealth stands against the policy, and the rule's move for this month.
 
@@ -105,11 +105,17 @@ def allocation(policy: InvestmentPolicy, wealth: Wealth, stock_values: dict[str,
     reserve in equal monthly transfers over the transition. Listed funds above their
     ceiling get no new money (nothing is sold). ``stock_ceiling`` (target plus band)
     is the most the stocks may reach with the month's money.
+
+    ``market_values``: code to R$ of the listed holdings with a recent price; the
+    others count at the value the investor gave. A position with neither is listed
+    in ``unvalued`` and stops the transfer: a missing price is never zero.
     """
-    stocks = sum(stock_values.values())
-    funds = sum(x.value or 0.0 for x in wealth.listed_funds())
-    fixed = sum(x.value for x in wealth.fixed_income) + wealth.cash
-    total = stocks + funds + fixed
+    valuation = wealth.valuation(market_values)
+    stocks = valuation.by_class["acoes"]
+    funds = valuation.by_class["fundos_listados"]
+    international = valuation.by_class["internacional"]
+    fixed = sum(x.value for x in wealth.fixed_income) + wealth.cash + valuation.by_class["renda_fixa"]
+    total = stocks + funds + international + fixed
     investable = max(total - policy.reserve, 0.0)
     eligible = wealth.reserve_eligible()
     deficit = max(policy.reserve - eligible, 0.0)
@@ -119,7 +125,7 @@ def allocation(policy: InvestmentPolicy, wealth: Wealth, stock_values: dict[str,
     to_stocks = min(max(target_stocks - stocks, 0.0), contribution - to_reserve)
     gap = target_stocks - stocks - to_stocks
     transfer = 0.0
-    if gap > policy.band * investable and not deficit:
+    if gap > policy.band * investable and not deficit and not valuation.missing:
         transfer = min(gap / policy.transition_months, eligible - policy.reserve)
 
     def share(v: float) -> float:
@@ -131,7 +137,8 @@ def allocation(policy: InvestmentPolicy, wealth: Wealth, stock_values: dict[str,
             "rule_contribution_to_reserve": round(to_reserve, 2),
             "stock_ceiling": round((policy.stock_target + policy.band) * base, 2),
             "transfer_sources": [{"name": n, "amount": v} for n, v in wealth.transfer_sources(transfer)],
-            "stocks": round(stocks, 2), "listed_funds": round(funds, 2), "fixed_income": round(fixed, 2),
+            "stocks": round(stocks, 2), "listed_funds": round(funds, 2), "international": round(international, 2),
+            "fixed_income": round(fixed, 2), "listed_valuation": valuation.sources, "unvalued": valuation.missing,
             "stock_share_of_investable": round(share(stocks), 4), "stock_target": policy.stock_target,
             "listed_funds_share_of_investable": round(share(funds), 4), "listed_funds_max": policy.listed_funds_max,
             "listed_funds_above_ceiling": share(funds) > policy.listed_funds_max,

@@ -27,6 +27,8 @@ from tradingagents.dividend_portfolio.shadow import Shadow
 
 logger = logging.getLogger(__name__)
 
+PRICE_MAX_AGE_DAYS = 7      # an older close does not value a position; the investor's value or nothing does
+
 
 @dataclass
 class Meeting:
@@ -86,12 +88,17 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
         companies = b3_market.companies()
         sectors = {code: c.sector for c in companies.values() for code in c.codes}
         held = {p.ticker.upper() for p in book.positions}
-        px = b3_market.histories(held)
-        values: dict[str, float] = {}
-        for p in book.positions:
-            close = px[p.ticker]["Close"].loc[:pd.Timestamp(today)] if p.ticker in px else pd.Series(dtype=float)
-            values[p.ticker] = values.get(p.ticker, 0.0) + (p.quantity * float(close.iloc[-1]) if len(close) else 0.0)
-        alloc = analysts.allocation(policy, wealth, values, contribution)
+        quantities: dict[str, float] = {}
+        for x in wealth.listed:
+            quantities[x.code.strip().upper()] = quantities.get(x.code.strip().upper(), 0.0) + x.quantity
+        px = b3_market.histories(set(quantities))
+        market = {}
+        for code, quantity in quantities.items():
+            close = px[code]["Close"].loc[:pd.Timestamp(today)] if code in px else pd.Series(dtype=float)
+            if len(close) and (pd.Timestamp(today) - close.index[-1]).days <= PRICE_MAX_AGE_DAYS:
+                market[code] = quantity * float(close.iloc[-1])
+        alloc = analysts.allocation(policy, wealth, market, contribution)
+        values = wealth.valuation(market).of_class("acoes")
         models = analysts.Models(config, Budget(policy.budget_usd)) if use_llm else None
         # The routine's alerts get at most a third of the meeting's budget, so the director's call is left room.
         equity_budget = Budget(policy.budget_usd / 3, parent=models.budget) if models else None

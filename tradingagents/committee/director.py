@@ -152,11 +152,19 @@ def check(decision: DirectorDecision, alloc: dict, wealth: Wealth, policy: Inves
         why = " depois de completar a reserva de emergência" if to_reserve else ""
         notes.append(f"Aporte para ações reduzido de {_brl(to_stocks)} para {_brl(free)}: o aporte do mês{why}.")
         to_stocks = free
-    ceiling = 0.0 if alloc["reserve_deficit"] else min(2 * alloc["rule_monthly_transfer"],
-                                                       max(alloc["liquid_beyond_reserve"], 0.0))
+    unvalued = alloc.get("unvalued") or []
+    if unvalued:
+        escalations.append("Sem valor para " + "; ".join(unvalued) + ". Nenhuma transferência para ações até "
+                           "completar o patrimônio.")
+    if wealth.as_of is None or (today and (today - wealth.as_of).days > 35):
+        escalations.append(f"Os saldos são de {wealth.as_of or 'data não informada'}: atualize o patrimônio antes "
+                           "de executar as ordens.")
+    blocked = alloc["reserve_deficit"] or unvalued
+    ceiling = 0.0 if blocked else min(2 * alloc["rule_monthly_transfer"], max(alloc["liquid_beyond_reserve"], 0.0))
     transfer = decision.monthly_transfer_to_stocks
     if transfer > ceiling:
         why = ("a reserva de emergência está incompleta" if alloc["reserve_deficit"] else
+               "falta o valor de parte do patrimônio" if unvalued else
                "o máximo é o dobro do ritmo da regra, sem tocar a reserva de emergência")
         notes.append(f"Transferência reduzida de {_brl(transfer)} para {_brl(ceiling)}: {why}.")
         transfer = ceiling

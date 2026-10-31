@@ -121,6 +121,8 @@ def render(as_of: str, rebalance: bool, target: pd.DataFrame, holdings: list[dic
         for name, label in (("bova11", "BOVA11 (Ibovespa)"), ("divo11", "DIVO11 (dividendos)")):
             if name in shadow:
                 out.append(f"| {label} | {pct(shadow[name])} |")
+        if shadow.get("unpriced_as_cash"):
+            out.append(f"\nSem preço na entrada, contadas como caixa: {', '.join(shadow['unpriced_as_cash'])}.")
     else:
         out.append("Ainda sem histórico: a primeira seleção registrada começa a contar no pregão seguinte.")
 

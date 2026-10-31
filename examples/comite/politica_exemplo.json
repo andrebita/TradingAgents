@@ -8,6 +8,7 @@
  "stock_step_per_year": 0.1,
  "listed_funds_max": 0.15,
  "band": 0.05,
+ "max_drawdown_tolerance": 0.2,
  "transition_months": 12,
  "private_issuer_max": 250000,
  "excluded_sectors": [],

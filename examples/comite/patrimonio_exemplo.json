@@ -1,6 +1,6 @@
 {
  "as_of": "2026-09-30",
- "cash": 0.0,
+ "cash": 1500.0,
  "fixed_income": [
   {
    "name": "Tesouro Selic 2029",
@@ -57,9 +57,21 @@
    "quantity": 20,
    "kind": "fii",
    "value": 3200.0
+  },
+  {
+   "code": "IVVB11",
+   "quantity": 5,
+   "kind": "etf",
+   "asset_class": "internacional"
   }
  ],
  "notes": [
   "Exemplo fictício."
- ]
+ ],
+ "tax": {
+  "month": "2026-09",
+  "stock_sales_this_month": 0.0,
+  "stock_gain_this_month": 0.0,
+  "stock_loss_carryforward": 0.0
+ }
 }

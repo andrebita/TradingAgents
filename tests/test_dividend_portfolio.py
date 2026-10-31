@@ -181,6 +181,19 @@ def test_the_shadow_replays_its_targets_and_ignores_repeats(tmp_path):
 
 
 @pytest.mark.unit
+def test_a_shadow_holding_without_a_price_counts_as_cash(tmp_path):
+    shadow = Shadow(tmp_path / "sombra.json")
+    shadow.record("2026-01-02", ["AAAA3", "GONE3"])
+    px = {"AAAA3": _frame(10, drift=0.001)}
+    perf = shadow.performance(px, {"bova11": pd.Series(1.0, index=DAYS)})
+    a = px["AAAA3"]["Adj Close"]
+    first = DAYS[DAYS.searchsorted(pd.Timestamp("2026-01-02"), side="right")]
+    # Half in AAAA3, half in cash: not all of it in AAAA3.
+    assert perf["portfolio"] == pytest.approx((a.iloc[-1] / a.loc[first] - 1) / 2)
+    assert perf["unpriced_as_cash"] == ["GONE3"]
+
+
+@pytest.mark.unit
 def test_the_package_is_anonymous_and_common_size():
     docs = [{"kind": "dfp", "refer": "2025-12-31", "months": 12, "dividends_paid": 60.0,
              "values": {"3.01": ("Receita", 1000.0), "3.11": ("Lucro", 100.0), "1": ("Ativo Total", 4000.0),
