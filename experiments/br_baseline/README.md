@@ -171,6 +171,36 @@ Ressalvas que permanecem:
 - O teste da saída estruturada nativa só confirma a escolha do método; a aceitação real pela API será verificada na próxima validação (chamadas ao gestor por célula e contador de fallbacks).
 - O workflow do GitHub limita o gasto por execução do workflow, não acumulado entre execuções.
 
+## Terceira revisão independente: arquitetura do comitê (commit `32ea4a6`) e correções
+
+O veredito da revisão foi bloquear recomendações de movimentação até corrigir C1, C2, A3 e C10. As correções
+estão nos commits `4818fff`, `cf2e889`, `d44058e` e `217ffda`.
+
+| # | Achado | Situação |
+|---|---|---|
+| A1 | Falta uma política por metas e prazos | **Aberto.** Depende das respostas do investidor (perguntas abaixo). |
+| A2 | A estratégia executada não é a testada: a seleção era recalculada todo mês | **Corrigido.** A seleção fica congelada entre rebalanceamentos, e o replay da rotina real mede o que ela entrega com atritos (seção "Replay da rotina real"). |
+| A3 | Setores excluídos não eram aplicados; o dinheiro do mês não tinha teto | **Corrigido.** As exclusões saem da seleção, e o comitê as repassa. Aporte mais transferência nunca levam as ações acima do alvo mais a faixa. |
+| A4 | A sombra ignora a alocação e a renda fixa | **Aberto.** A sombra mede só a parte em ações. |
+| B1 | A variante semestral (13,5%) foi adotada depois de vista; a primária era 11,2% | **Registrado.** O `CARTEIRA.md` mostra as duas, e o replay roda as duas. A semestral carrega risco de seleção. |
+| B2 | A limpeza de preços inventava altas: [100, 5, 9,5] virava [100, 100, 190] | **Corrigido.** Só saltos que se desfazem em até 10 pregões são zerados. Um salto que fica é mantido e marcado, e a ação fica fora de compras novas por um ano. Se já estiver em carteira, não é vendida nem comprada. |
+| B3 | Estresse por índices; tolerância de 20% fixa no código | **Parcial.** A tolerância virou campo da política e é comparada com a pior queda do mix-alvo. O estresse por posição fica para depois. |
+| C1 | As ações de renda fixa do diretor não eram checadas | **Corrigido.** A checagem trata o plano como um balanço de dinheiro, com testes de resgate em dobro, título inexistente, título sem liquidez, aplicação infinita, emissor fora do FGC e reserva. |
+| C2 | Reserva descoberta ainda mandava dinheiro para ações; o IPCA+ longo contava como reserva; o caixa não contava | **Corrigido.** A reserva conta caixa e pós-fixados de liquidez diária. O aporte a completa primeiro, e nada é transferido enquanto ela estiver incompleta. |
+| C3 | O preço médio vinha do primeiro lote | **Corrigido.** Média ponderada entre corretoras; com um lote sem preço, o ganho fica desconhecido. |
+| C4 | O IR estimado não era reservado | **Corrigido.** O IR fica no caixa e não é gasto em compras. |
+| C5 | O histórico de IR não chegava ao comitê | **Corrigido.** O bloco `tax` do patrimônio leva vendas e ganho do mês e prejuízo acumulado à rotina e às ordens finais. |
+| C6 | Vendas adiadas nunca eram retomadas | **Corrigido.** `vendas_pendentes.json`, retomado todo mês dentro da isenção. |
+| C7 | ETF com valor era ignorado; preço ausente valia zero | **Corrigido.** Todas as classes são valoradas. Uma posição sem valor bloqueia a transferência e aparece na carta. |
+| C8 | As threads perdiam o `run_config` | **Corrigido.** Cada analista roda numa cópia do contexto da reunião. |
+| C9 | O orçamento só contava depois da chamada | **Corrigido.** `Budget` reserva o pior caso antes de cada chamada, é seguro entre threads e tem sub-orçamento para os alertas da rotina. |
+| C10 | A carta mostrava números sem a checagem ("R$ 60 mil reservados" com patrimônio vazio) | **Corrigido.** A carta abre com o plano conferido: dados, saldos depois do plano, movimentações de/para, IR, pendências e aprovação. |
+| C11 | Injeção de prompt chegava ao diretor | **Mitigado.** Textos externos vão delimitados como dados, e o poder do diretor é limitado pela checagem. O risco não some por completo. |
+| C12 | Falha de saída estruturada do diretor abortava a reunião | **Corrigido.** Vale a decisão da regra, com aviso na carta. |
+| C13 | O planejador genérico vendia FII com IR zero | **Corrigido.** A rotina cuida só de ações de empresas listadas; o resto aparece como fora dela. |
+| D1 | O prompt do diretor leva o patrimônio inteiro à API | **Aberto.** Depende de o investidor dizer o que pode ir para a API. |
+| F1 | Fable no diretor em vez de Opus não está justificado | **Aberto.** Pede uma comparação cega, paga. |
+
 ## Auditoria de `tradingagents/backtest.py` e da liquidação
 
 - **Entrada e saída:** entra no 1º fechamento *após* a data de análise e sai

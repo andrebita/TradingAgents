@@ -11,8 +11,40 @@ ações. Toda a evidência por trás dela está em `experiments/br_baseline/READ
 Para o patrimônio inteiro, e não só as ações, use o comitê:
 - **Cinco analistas:** renda fixa, ações, risco, tributário e macro.
 - **Um diretor financeiro**, que decide dentro da sua política e escreve uma carta mensal.
-- **Uma checagem em código:** cada decisão é conferida contra a política e trazida de volta aos limites quando
-  sai deles.
+- **Uma checagem em código:** cada decisão é conferida contra a política e o patrimônio, e trazida de volta aos
+  limites quando sai deles.
+
+**O que a checagem garante:**
+- **Reserva de emergência:** conta só caixa e pós-fixados (Selic, CDI) com liquidez diária. Um Tesouro IPCA+
+  ou prefixado sai em um dia, mas a preço de mercado, então não é reserva. O aporte completa a reserva primeiro,
+  e nada vai da renda fixa para ações enquanto ela estiver incompleta.
+- **Resgates:**
+  - só de posições que existem, pelo nome exato, e até o saldo;
+  - nunca dentro da reserva;
+  - nunca antes do vencimento num título sem liquidez diária;
+  - um resgate antecipado a preço de mercado vai para você confirmar.
+- **Aplicações:**
+  - só com o dinheiro liberado no mês: a parte do aporte que fica na renda fixa e os resgates;
+  - só em títulos públicos, ou em CDB, LCI e LCA com o banco informado, dentro do limite do FGC.
+- **Ações:**
+  - a transferência sai de fontes escolhidas pelo código: caixa primeiro, depois pós-fixados acima da reserva,
+    os tributados antes dos isentos;
+  - o dinheiro do mês nunca leva as ações acima do alvo mais a faixa.
+- **Patrimônio incompleto:** uma posição sem cotação recente e sem valor informado, ou um ETF sem classe, não
+  vale zero. Ela bloqueia a transferência e aparece na carta.
+- **Falhas:** se o diretor falhar (recusa, resposta inválida ou orçamento), vale a decisão da regra, e a carta
+  avisa.
+- **Orçamento:** cada chamada reserva o pior custo possível antes de sair. Os alertas da rotina têm um terço do
+  orçamento, para sobrar espaço para o diretor.
+- **Textos externos:** fatos relevantes e notícias entram como dados, nunca como instruções. O poder do diretor
+  é limitado pela checagem de qualquer forma.
+
+**A carta:**
+1. Abre com o plano já conferido: datas dos dados; o patrimônio hoje e depois do plano; cada movimentação de
+   dinheiro, de onde para onde; as ordens de ações; o IR estimado; o que só você pode confirmar; e caixas para
+   aprovar.
+2. Depois vem a carta do diretor, escrita antes da checagem. Onde divergir, vale o plano.
+3. Por fim, os relatórios dos analistas.
 
 ```bash
 tradingagents comite reunir --politica ~/.tradingagents/minha/politica.json \
@@ -20,6 +52,11 @@ tradingagents comite reunir --politica ~/.tradingagents/minha/politica.json \
 ```
 
 - **Modelos de arquivo:** `examples/comite/politica_exemplo.json` e `examples/comite/patrimonio_exemplo.json`.
+  - **No patrimônio:**
+    - um ETF diz em que classe conta: `"asset_class": "acoes"`, `"internacional"` ou `"renda_fixa"`;
+    - BDRs contam como internacional;
+    - o bloco `tax` traz o que você já vendeu de ações no mês, o ganho dessas vendas e o prejuízo acumulado.
+  - **Na política:** `max_drawdown_tolerance` é a maior queda que você aceita (0.20 = 20%).
 - **Modelo de cada membro:** fica na política. O padrão é Fable 5.1 para o diretor, Sonnet 5.5 para os analistas
   de renda fixa, risco e tributário, e Haiku 5.5 para os alertas e o macro.
 - **Custo medido:** US$ 0,63 por reunião, com teto configurável (`budget_usd`).
@@ -49,6 +86,8 @@ engano.
 | DIVO11 | 9,8% | −56% |
 | Ibovespa | 7,5% | −47% |
 
+- **Atenção:** a semestral foi escolhida depois de ver as duas, então seu número carrega risco de seleção. A
+  trimestral, pré-registrada como principal, é a referência mais honesta.
 - **A favor:** ganhou do Ibovespa em 83% das janelas de 3 anos.
 - **Contra:** perdeu em 5 de 15 anos, caiu mais nas crises e depende bastante de 2016.
 
@@ -81,12 +120,22 @@ Histórico de ago/2012 a jul/2026, com rebalanceamento em junho e dezembro e CDI
 
 ## O que a rotina faz
 
-1. **Seleção-alvo:** recalcula as 10 ações da regra, com preços e proventos do Yahoo e cadastro da CVM.
+1. **Seleção-alvo:**
+   - recalcula as 10 ações da regra em junho e dezembro, com preços e proventos do Yahoo e cadastro da CVM;
+   - nos outros meses, mantém a última seleção registrada, como no teste;
+   - os setores que você excluir ficam fora;
+   - uma ação com salto de preço sem explicação fica fora de compras novas por um ano. Saltos que se desfazem em
+     até 10 pregões são tratados como erro do Yahoo e zerados.
 2. **Ordens sugeridas, com IR estimado:**
    - vende o que saiu da seleção, mantendo as vendas do mês em até **R$ 20 mil** (isenção de IR para pessoa
-     física) e adiando o resto;
-   - usa caixa, aporte e vendas para comprar as ações mais abaixo do peso;
-   - não vende ganhadoras que continuam na seleção.
+     física);
+   - o resto fica em `vendas_pendentes.json` e é retomado todo mês, dentro da isenção;
+   - várias corretoras com a mesma ação contam como uma posição, a preço médio ponderado;
+   - o IR estimado fica reservado no caixa, e o restante do caixa, do aporte e das vendas compra as ações mais
+     abaixo do peso;
+   - não vende ganhadoras que continuam na seleção;
+   - cuida só de ações de empresas listadas. FIIs, ETFs e BDRs aparecem como fora da rotina e nunca são
+     vendidos por ela.
 3. **Alertas por LLM:**
    - toda semana, resume os fatos relevantes, comunicados e notícias de cada posição, com nível normal, atenção ou
      alerta;
@@ -149,8 +198,10 @@ Em todas, a carteira-sombra (`carteira/carteira_sombra.json`) precisa persistir 
 
 ## Limitações
 
-- **Preços e proventos do Yahoo:** erros de ajuste de eventos corporativos são neutralizados por regra, mas o Yahoo
-  não tem várias empresas que saíram da bolsa, então o histórico tem viés de sobrevivência.
+- **Preços e proventos do Yahoo:**
+  - saltos que se desfazem são tratados como erro e zerados;
+  - saltos que ficam são mantidos e marcados para conferência;
+  - o Yahoo não tem várias empresas que saíram da bolsa, então o histórico tem viés de sobrevivência.
 - **IR estimado:** apenas para operações comuns de ações. Day trade, outros ativos e mudanças na lei ficam de fora;
   confirme com um contador.
 - **Tributação de dividendos a partir de 2026:** não modelada.
