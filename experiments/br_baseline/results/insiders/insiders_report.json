@@ -1,0 +1,304 @@
+{
+  "data": {
+    "trades": 92320,
+    "trades_reported_value": 87282,
+    "trades_valued_by_price": 4115,
+    "trades_unvalued": 923,
+    "companies_with_trades": 422,
+    "companies_with_codes": 350,
+    "companies_with_yahoo_prices": 273,
+    "codes": 648,
+    "codes_with_yahoo_prices": 387
+  },
+  "design": {
+    "first": "2019-03-01",
+    "last": "2026-08-31",
+    "min_traded": 2000000,
+    "cost": 0.0015,
+    "min_names": 5
+  },
+  "variants": {
+    "primary": {
+      "months": 90,
+      "fallback_months": 0,
+      "mean_names": 34.388888888888886,
+      "mean_universe": 151.51111111111112,
+      "mean_turnover": 0.6150523240075011,
+      "cagr_portfolio": 0.056355898214949685,
+      "max_drawdown_portfolio": -0.4592916684762349,
+      "cagr_equal_weight": 0.04675353566168283,
+      "max_drawdown_equal_weight": -0.44860920610527344,
+      "cagr_ibovespa": 0.09304514590467106,
+      "max_drawdown_ibovespa": -0.4014910645762526,
+      "vs_equal_weight": {
+        "mean_monthly": 0.0010650936754857626,
+        "t": 0.5553299319349191,
+        "months_positive": 0.5555555555555556,
+        "years_positive": 5,
+        "years": 8,
+        "by_year": {
+          "2019": 0.0695,
+          "2020": 0.0174,
+          "2021": 0.1069,
+          "2022": -0.0874,
+          "2023": 0.1523,
+          "2024": -0.0788,
+          "2025": -0.099,
+          "2026": 0.036
+        }
+      },
+      "vs_ibovespa": {
+        "mean_monthly": -0.0011665485173167672,
+        "t": -0.2896467112286534,
+        "months_positive": 0.4666666666666667,
+        "years_positive": 3,
+        "years": 8,
+        "by_year": {
+          "2019": 0.3668,
+          "2020": -0.055,
+          "2021": 0.0893,
+          "2022": -0.2139,
+          "2023": 0.0939,
+          "2024": -0.1898,
+          "2025": -0.1159,
+          "2026": -0.093
+        }
+      }
+    },
+    "a_controllers": {
+      "months": 90,
+      "fallback_months": 4,
+      "mean_names": 19.066666666666666,
+      "mean_universe": 151.51111111111112,
+      "mean_turnover": 0.629942269209308,
+      "cagr_portfolio": 0.1286450136496513,
+      "max_drawdown_portfolio": -0.43173631834276527,
+      "cagr_equal_weight": 0.04675353566168283,
+      "max_drawdown_equal_weight": -0.44860920610527344,
+      "cagr_ibovespa": 0.09304514590467106,
+      "max_drawdown_ibovespa": -0.4014910645762526,
+      "vs_equal_weight": {
+        "mean_monthly": 0.00720348832284689,
+        "t": 1.9798826094951891,
+        "months_positive": 0.5666666666666667,
+        "years_positive": 5,
+        "years": 8,
+        "by_year": {
+          "2019": 0.337,
+          "2020": 0.0389,
+          "2021": -0.0413,
+          "2022": 0.0621,
+          "2023": 0.082,
+          "2024": 0.3062,
+          "2025": -0.066,
+          "2026": -0.0273
+        }
+      },
+      "vs_ibovespa": {
+        "mean_monthly": 0.004971846130044361,
+        "t": 0.8849623556185183,
+        "months_positive": 0.5333333333333333,
+        "years_positive": 3,
+        "years": 8,
+        "by_year": {
+          "2019": 0.6343,
+          "2020": -0.0336,
+          "2021": -0.0589,
+          "2022": -0.0644,
+          "2023": 0.0236,
+          "2024": 0.1953,
+          "2025": -0.0829,
+          "2026": -0.1563
+        }
+      }
+    },
+    "b_all_insiders": {
+      "months": 90,
+      "fallback_months": 0,
+      "mean_names": 38.8,
+      "mean_universe": 151.51111111111112,
+      "mean_turnover": 0.5764258043150936,
+      "cagr_portfolio": 0.07432885514939547,
+      "max_drawdown_portfolio": -0.45631318786315545,
+      "cagr_equal_weight": 0.04675353566168283,
+      "max_drawdown_equal_weight": -0.44860920610527344,
+      "cagr_ibovespa": 0.09304514590467106,
+      "max_drawdown_ibovespa": -0.4014910645762526,
+      "vs_equal_weight": {
+        "mean_monthly": 0.0025279781270178135,
+        "t": 1.4660980330697697,
+        "months_positive": 0.5777777777777777,
+        "years_positive": 5,
+        "years": 8,
+        "by_year": {
+          "2019": 0.1798,
+          "2020": 0.0187,
+          "2021": 0.0418,
+          "2022": -0.0622,
+          "2023": 0.1458,
+          "2024": -0.0306,
+          "2025": -0.0489,
+          "2026": 0.0341
+        }
+      },
+      "vs_ibovespa": {
+        "mean_monthly": 0.0002963359342152845,
+        "t": 0.07329240947545479,
+        "months_positive": 0.4444444444444444,
+        "years_positive": 3,
+        "years": 8,
+        "by_year": {
+          "2019": 0.477,
+          "2020": -0.0538,
+          "2021": 0.0242,
+          "2022": -0.1887,
+          "2023": 0.0875,
+          "2024": -0.1415,
+          "2025": -0.0658,
+          "2026": -0.0948
+        }
+      }
+    },
+    "c_top_tercile": {
+      "months": 90,
+      "fallback_months": 2,
+      "mean_names": 14.166666666666666,
+      "mean_universe": 151.51111111111112,
+      "mean_turnover": 0.8122524951764719,
+      "cagr_portfolio": 0.03374847343591547,
+      "max_drawdown_portfolio": -0.4945894646533079,
+      "cagr_equal_weight": 0.04675353566168283,
+      "max_drawdown_equal_weight": -0.44860920610527344,
+      "cagr_ibovespa": 0.09304514590467106,
+      "max_drawdown_ibovespa": -0.4014910645762526,
+      "vs_equal_weight": {
+        "mean_monthly": -0.00018399853964550972,
+        "t": -0.05531721073611525,
+        "months_positive": 0.4,
+        "years_positive": 4,
+        "years": 8,
+        "by_year": {
+          "2019": 0.1538,
+          "2020": -0.0101,
+          "2021": 0.0084,
+          "2022": 0.0269,
+          "2023": -0.0534,
+          "2024": -0.1476,
+          "2025": -0.0592,
+          "2026": 0.0533
+        }
+      },
+      "vs_ibovespa": {
+        "mean_monthly": -0.0024156407324480373,
+        "t": -0.4622678490954465,
+        "months_positive": 0.4,
+        "years_positive": 1,
+        "years": 8,
+        "by_year": {
+          "2019": 0.4511,
+          "2020": -0.0826,
+          "2021": -0.0092,
+          "2022": -0.0996,
+          "2023": -0.1118,
+          "2024": -0.2585,
+          "2025": -0.0761,
+          "2026": -0.0757
+        }
+      }
+    },
+    "d_six_months": {
+      "months": 90,
+      "fallback_months": 0,
+      "mean_names": 43.93333333333333,
+      "mean_universe": 151.51111111111112,
+      "mean_turnover": 0.34012798624051993,
+      "cagr_portfolio": 0.09531874899154724,
+      "max_drawdown_portfolio": -0.4368584422349866,
+      "cagr_equal_weight": 0.04675353566168283,
+      "max_drawdown_equal_weight": -0.44860920610527344,
+      "cagr_ibovespa": 0.09304514590467106,
+      "max_drawdown_ibovespa": -0.4014910645762526,
+      "vs_equal_weight": {
+        "mean_monthly": 0.004090513858821731,
+        "t": 2.33690937696601,
+        "months_positive": 0.5888888888888889,
+        "years_positive": 5,
+        "years": 8,
+        "by_year": {
+          "2019": 0.1796,
+          "2020": 0.108,
+          "2021": 0.0994,
+          "2022": -0.035,
+          "2023": 0.1151,
+          "2024": -0.0451,
+          "2025": -0.031,
+          "2026": 0.0316
+        }
+      },
+      "vs_ibovespa": {
+        "mean_monthly": 0.0018588716660192027,
+        "t": 0.4513346062072869,
+        "months_positive": 0.5222222222222223,
+        "years_positive": 4,
+        "years": 8,
+        "by_year": {
+          "2019": 0.4768,
+          "2020": 0.0355,
+          "2021": 0.0818,
+          "2022": -0.1615,
+          "2023": 0.0567,
+          "2024": -0.1561,
+          "2025": -0.048,
+          "2026": -0.0974
+        }
+      }
+    },
+    "e_net_sellers": {
+      "months": 90,
+      "fallback_months": 0,
+      "mean_names": 44.27777777777778,
+      "mean_universe": 151.51111111111112,
+      "mean_turnover": 0.47397199016403524,
+      "cagr_portfolio": 0.008740043764577932,
+      "max_drawdown_portfolio": -0.47679490432234417,
+      "cagr_equal_weight": 0.04675353566168283,
+      "max_drawdown_equal_weight": -0.44860920610527344,
+      "cagr_ibovespa": 0.09304514590467106,
+      "max_drawdown_ibovespa": -0.4014910645762526,
+      "vs_equal_weight": {
+        "mean_monthly": -0.0034307976725807708,
+        "t": -1.8255121603319486,
+        "months_positive": 0.4666666666666667,
+        "years_positive": 1,
+        "years": 8,
+        "by_year": {
+          "2019": -0.0208,
+          "2020": 0.0771,
+          "2021": -0.0942,
+          "2022": -0.0428,
+          "2023": -0.0706,
+          "2024": -0.023,
+          "2025": -0.0404,
+          "2026": -0.0548
+        }
+      },
+      "vs_ibovespa": {
+        "mean_monthly": -0.0056624398653833,
+        "t": -1.6698617446532389,
+        "months_positive": 0.3888888888888889,
+        "years_positive": 2,
+        "years": 8,
+        "by_year": {
+          "2019": 0.2764,
+          "2020": 0.0047,
+          "2021": -0.1118,
+          "2022": -0.1693,
+          "2023": -0.129,
+          "2024": -0.1339,
+          "2025": -0.0573,
+          "2026": -0.1838
+        }
+      }
+    }
+  }
+}

@@ -522,6 +522,44 @@ reentregue conta da reentrega, o que é conservador.
 - Os "vinculados" (familiares, empresas ligadas) entram junto com o titular.
 - São 8 anos e um único caminho histórico.
 
+## Piloto de insiders: resultado (`insiders.py`, sem LLM, US$ 0)
+
+Arquivos em `results/insiders/`.
+
+**Dados.**
+- 92.320 compras e vendas à vista, de 422 empresas. Em 87.282 o valor veio informado; 4.115 foram avaliadas
+  pelo preço do dia; 923 ficaram sem valor.
+- 350 empresas têm código na B3; dessas, 273 têm preço no Yahoo. **77 empresas ficaram de fora por falta de
+  preço**: é o tamanho do viés de sobrevivência.
+- O universo líquido teve em média 152 ações por mês.
+
+| Variante | Retorno anual | Diferença contra pesos iguais | t | Anos positivos |
+|---|---|---|---|---|
+| **Primária: diretores e conselheiros compradores** | 5,6% | +0,11%/mês | 0,56 | 5/8 |
+| (a) controladores compradores | 12,9% | +0,72%/mês | 1,98 | 5/8 |
+| (b) todos os insiders | 7,4% | +0,25%/mês | 1,47 | 5/8 |
+| (c) terço mais intenso | 3,4% | −0,02%/mês | −0,06 | 4/8 |
+| (d) janela de 6 meses | 9,5% | +0,41%/mês | 2,34 | 5/8 |
+| (e) diretores e conselheiros vendedores | 0,9% | −0,34%/mês | −1,83 | 1/8 |
+| Universo líquido, pesos iguais | 4,7% | — | — | — |
+| Ibovespa | 9,3% | — | — | — |
+
+**Veredito pelo critério pré-registrado: reprovado.** A variante primária tem t = 0,56 e rende abaixo do
+Ibovespa.
+
+**Robustez das secundárias (exploratória, depois de ver os resultados).**
+- **(a) Controladores:** o resultado vem de poucos nomes e de dois anos (2019 com +34% e 2024 com +31%
+  contra o universo). Sem as 5 ações que mais contribuíram (AMBP3, WEGE3, EZTC3, FRAS3, PTBL3), o excesso
+  cai para +0,33%/mês, com t = 0,93. Só AMBP3, em 11 meses, responde por quase um quarto do total.
+- **(e) Vendedores:** sem os 5 nomes mais negativos, a diferença cai para −0,10%/mês, com t = −0,55.
+- Com 6 variantes testadas, t de ~2 numa delas é o que o acaso produz com frequência.
+
+**Achado estrutural.** De 2019 a 2026, o universo líquido com pesos iguais rendeu 4,7% ao ano, contra 9,3%
+do Ibovespa. As grandes empresas ganharam da ação média. Qualquer seleção dentro do universo líquido parte de
+uma desvantagem de ~4,6 pontos ao ano em relação ao índice.
+
+Leitura: o sinal de insiders, na forma testada, não gera vantagem robusta na B3 de 2019 a 2026.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
