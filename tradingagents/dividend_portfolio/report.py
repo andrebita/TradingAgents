@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import pandas as pd
 
+from tradingagents.dividend_portfolio.allocation import AllocationPlan
 from tradingagents.dividend_portfolio.monitor import CutRisk, NewsAlert
 from tradingagents.dividend_portfolio.orders import EXEMPT_MONTHLY_SALES, Plan
 
@@ -18,13 +19,38 @@ def pct(x: float | None, digits: int = 1) -> str:
     return "—" if x is None else f"{100 * x:+.{digits}f}%".replace(".", ",")
 
 
+def allocation_section(a: AllocationPlan) -> list[str]:
+    out = ["## Alocação: renda fixa x ações", "",
+           "| | Hoje | Alvo |", "|---|---|---|",
+           f"| Ações | {brl(a.stocks)} ({pct(a.current_share).lstrip('+')}) | {pct(a.target_share, 0).lstrip('+')} |",
+           f"| Renda fixa | {brl(a.fixed_income)} ({pct(1 - a.current_share).lstrip('+')}) | "
+           f"{pct(1 - a.target_share, 0).lstrip('+')} |", "",
+           f"- Aporte deste mês: {brl(a.contribution_to_stocks)} para ações e {brl(a.contribution_to_fixed_income)} "
+           "para renda fixa (primeiro para a classe abaixo do alvo)."]
+    if a.status == "shortfall":
+        out.append(f"- Faltam {brl(a.gap)} em ações para o alvo. Em {a.transition_months} meses, isso é uma "
+                   f"transferência de **{brl(a.monthly_transfer)} por mês** da renda fixa para as ações, incluída "
+                   "nas ordens da revisão em que entra o aporte do mês (`--aporte`). Resgate primeiro o que já venceu ou tem mais de 2 anos (IR de 15%) e evite "
+                   "resgatar antes de 30 dias (IOF).")
+    elif a.status == "surplus":
+        out.append(f"- As ações passam do alvo em {brl(-a.gap)}: os próximos aportes vão para a renda fixa até voltar "
+                   "à faixa, sem vender ações.")
+    else:
+        out.append("- Dentro da faixa de tolerância: nenhuma transferência.")
+    out.append("- A proporção é escolha sua. Nos testes, decidir *quando* trocar entre ações e renda fixa (por "
+               "tendência ou por valuation) perdeu de manter a proporção fixa.")
+    return out + [""]
+
+
 def render(as_of: str, rebalance: bool, target: pd.DataFrame, holdings: list[dict], plan: Plan | None,
            alerts: dict[str, object], cut: dict[str, object], shadow: dict | None, spent: float,
-           llm: bool) -> str:
+           llm: bool, allocation: AllocationPlan | None = None) -> str:
     kind = "Rebalanceamento semestral" if rebalance else "Revisão semanal"
     out = [f"# Carteira de dividendos: {kind.lower()} de {as_of}", "",
            "> Regra testada nos backtests do projeto, sem garantia de resultado e sem caráter de recomendação. "
            "A inteligência artificial lê e alerta; ela não escolhe ações nem decide ordens.", ""]
+    if allocation is not None:
+        out += allocation_section(allocation)
 
     out += ["## Seleção-alvo", "", "As 10 maiores médias de dividendos de 24 meses entre as 50 ações mais negociadas "
             "que pagaram em cada um dos últimos 3 anos, com pesos iguais.", "",

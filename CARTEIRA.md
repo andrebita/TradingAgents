@@ -26,6 +26,33 @@ ações. Toda a evidência por trás dela está em `experiments/br_baseline/READ
 - **A favor:** ganhou do Ibovespa em 83% das janelas de 3 anos.
 - **Contra:** perdeu em 5 de 15 anos, caiu mais nas crises e depende bastante de 2016.
 
+## Renda fixa x ações
+
+Quanto do patrimônio fica em ações é decisão sua; a rotina mantém a proporção escolhida. Decidir *quando* trocar
+(por tendência ou por valuation) perdeu de manter uma proporção fixa nos testes.
+
+Histórico de ago/2012 a jul/2026, com rebalanceamento em junho e dezembro e CDI líquido de IR (15%, aproximado):
+
+| Ações | Com a carteira de dividendos | Pior queda | Pior ano | Com o Ibovespa no lugar |
+|---|---|---|---|---|
+| 0% | 8,2% ao ano | 0% | +2% | 8,2% ao ano |
+| 20% | 9,7% | −7% | +1% | 8,6% |
+| 30% | 10,4% | −11% | −1% | 8,7% |
+| 40% | 11,0% | −17% | −5% | 8,8% |
+| 50% | 11,5% | −25% | −9% | 8,9% |
+| 60% | 12,0% | −31% | −13% | 8,9% |
+| 80% | 12,8% | −43% | −21% | 8,8% |
+| 100% | 13,3% | −56% | −29% | 8,6% |
+
+**Como ler a tabela:**
+- A coluna "com o Ibovespa" é o cenário em que a regra de dividendos deixa de ter vantagem: aí quase não compensa
+  sair do CDI.
+- **Como funciona na rotina:**
+  - com `--renda-fixa` e `--alvo-acoes`, o aporte vai primeiro para a classe abaixo do alvo;
+  - uma diferença maior que a faixa (5 pontos) vira uma transferência mensal da renda fixa para as ações, ao longo
+    de `--meses-transicao` meses;
+  - ações acima do alvo são corrigidas mandando os aportes para a renda fixa, sem vender.
+
 ## O que a rotina faz
 
 1. **Seleção-alvo:** recalcula as 10 ações da regra, com preços e proventos do Yahoo e cadastro da CVM.
@@ -76,6 +103,9 @@ tradingagents carteira revisar --carteira minha_carteira.json --aporte 1000
 | `--vendas-no-mes`, `--ganho-no-mes` | O que você já vendeu neste mês, para a conta da isenção |
 | `--prejuizo-acumulado` | Prejuízo de meses anteriores a compensar |
 | `--data AAAA-MM-DD` | Revisão numa data passada |
+| `--renda-fixa 100000` | Seu valor atual em renda fixa |
+| `--alvo-acoes 30` | Percentual do patrimônio em ações |
+| `--meses-transicao 12`, `--faixa 5` | Ritmo da transição e tolerância, em pontos percentuais |
 
 **Custo medido:** cerca de US$ 0,08 numa revisão com rebalanceamento (3 alertas e 10 riscos de corte), e menos de
 US$ 0,03 numa revisão semanal. A primeira execução baixa os preços de ~400 ações (cerca de 1 minuto); as seguintes

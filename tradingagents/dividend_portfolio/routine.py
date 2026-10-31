@@ -17,6 +17,7 @@ import pandas as pd
 from tradingagents.dataflows.config import run_config
 from tradingagents.default_config import DEFAULT_CONFIG
 from tradingagents.dividend_portfolio import market, selection
+from tradingagents.dividend_portfolio.allocation import plan_allocation
 from tradingagents.dividend_portfolio.orders import code_of, plan_orders
 from tradingagents.dividend_portfolio.report import render
 from tradingagents.dividend_portfolio.shadow import Shadow
@@ -35,8 +36,11 @@ class Result:
 def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, as_of: date | None = None,
            rebalance: bool | None = None, use_llm: bool = True, budget_usd: float = 1.0,
            sold_earlier_this_month: float = 0.0, gain_earlier_this_month: float = 0.0,
-           loss_carryforward: float = 0.0, config: dict | None = None,
+           loss_carryforward: float = 0.0, fixed_income: float | None = None, target_share: float | None = None,
+           band: float = 0.05, transition_months: int = 12, config: dict | None = None,
            rules: selection.Rules = selection.DEFAULT_RULES) -> Result:
+    """``target_share`` (0-1) with ``fixed_income`` (R$) splits the contribution between the two classes and
+    adds the month's transfer from fixed income to the stocks' cash; without it all of it goes to stocks."""
     config = copy.deepcopy(config or DEFAULT_CONFIG)
     out_dir = Path(config["results_dir"]) / "carteira"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -56,6 +60,14 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
         codes = list(target["code"])
         prices = {c: float(f["Close"].loc[:day].iloc[-1]) for c, f in px.items()
                   if c in set(codes) | held_codes and len(f.loc[:day])}
+        allocation = None
+        if target_share is not None:
+            stocks = (book.cash or 0.0) + sum(p.quantity * prices.get(code_of(p.ticker), 0.0) for p in book.positions)
+            allocation = plan_allocation(stocks, fixed_income or 0.0, contribution, target_share, band=band,
+                                         transition_months=transition_months)
+            # The month's transfer joins the orders on the run that brings the month's contribution;
+            # weekly runs without one only report where the allocation stands.
+            contribution = allocation.to_stocks_this_month if contribution > 0 else 0.0
         plan = plan_orders(book, codes, prices, contribution=contribution, sell=rebalance,
                            sold_earlier_this_month=sold_earlier_this_month,
                            gain_earlier_this_month=gain_earlier_this_month, loss_carryforward=loss_carryforward)
@@ -83,7 +95,8 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
         if code in prices:
             holdings.append({"code": code, "quantity": p.quantity, "price": prices[code],
                              "value": p.quantity * prices[code], "in_target": code in codes})
-    text = render(day.date().isoformat(), rebalance, target, holdings, plan, alerts, cut, performance, spent, use_llm)
+    text = render(day.date().isoformat(), rebalance, target, holdings, plan, alerts, cut, performance, spent, use_llm,
+                  allocation)
     path = out_dir / f"relatorio_{day.date().isoformat()}.md"
     path.write_text(text, encoding="utf-8")
     return Result(text, path, rebalance, codes, spent)

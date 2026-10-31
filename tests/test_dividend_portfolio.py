@@ -214,3 +214,27 @@ def test_a_week_without_orders_says_why():
     target = pd.DataFrame([{"code": "AAAA3", "name": "A", "sector": "Bancos", "dy12": 0.1, "dy24": 0.1}])
     text = render("2026-10-30", False, target, [], plan, {}, {}, None, 0.0, False)
     assert "fora de junho e dezembro nada é vendido" in text and "já segue a regra" not in text
+
+
+@pytest.mark.unit
+def test_a_book_in_fixed_income_moves_to_its_stock_target_in_monthly_steps():
+    from tradingagents.dividend_portfolio.allocation import plan_allocation
+
+    a = plan_allocation(stocks=650.0, fixed_income=99_350.0, contribution=1000.0, target_share=0.3,
+                        transition_months=12)
+    assert a.contribution_to_stocks == 1000.0 and a.contribution_to_fixed_income == 0.0
+    assert a.status == "shortfall" and a.gap == pytest.approx(0.3 * 101_000 - 1650)
+    assert a.monthly_transfer == pytest.approx(a.gap / 12) and a.to_stocks_this_month == pytest.approx(1000 + a.gap / 12)
+
+
+@pytest.mark.unit
+def test_a_stock_surplus_is_fixed_with_new_money_not_sales():
+    from tradingagents.dividend_portfolio.allocation import plan_allocation
+
+    a = plan_allocation(stocks=50_000.0, fixed_income=50_000.0, contribution=2000.0, target_share=0.3)
+    assert a.status == "surplus" and a.contribution_to_stocks == 0 and a.contribution_to_fixed_income == 2000
+    assert a.monthly_transfer == 0 and a.to_stocks_this_month == 0
+    within = plan_allocation(stocks=31_000.0, fixed_income=69_000.0, contribution=0.0, target_share=0.3)
+    assert within.status == "ok" and within.monthly_transfer == 0
+    with pytest.raises(ValueError):
+        plan_allocation(1.0, 1.0, 0.0, 1.5)

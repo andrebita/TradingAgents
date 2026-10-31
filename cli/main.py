@@ -218,6 +218,12 @@ def carteira_revisar(
     prejuizo_acumulado: float = typer.Option(
         0.0, "--prejuizo-acumulado", help="Prejuízo de meses anteriores ainda a compensar, em R$"
     ),
+    renda_fixa: float = typer.Option(None, "--renda-fixa", help="Valor atual em renda fixa, em R$"),
+    alvo_acoes: float = typer.Option(
+        None, "--alvo-acoes", help="Percentual do patrimônio em ações (0 a 100); divide o aporte e a transição"
+    ),
+    meses_transicao: int = typer.Option(12, "--meses-transicao", help="Meses para chegar ao alvo de ações"),
+    faixa: float = typer.Option(5.0, "--faixa", help="Tolerância em pontos percentuais antes de transferir"),
 ):
     """Revisa a carteira: seleção, ordens sugeridas com IR estimado, alertas da semana e carteira-sombra."""
     from datetime import date as _date
@@ -231,7 +237,9 @@ def carteira_revisar(
         day = _date.fromisoformat(data) if data else None
         result = review(book, contribution=aporte, as_of=day, rebalance=rebalancear, use_llm=not sem_llm,
                         budget_usd=orcamento, sold_earlier_this_month=vendas_no_mes,
-                        gain_earlier_this_month=ganho_no_mes, loss_carryforward=prejuizo_acumulado)
+                        gain_earlier_this_month=ganho_no_mes, loss_carryforward=prejuizo_acumulado,
+                        fixed_income=renda_fixa, target_share=None if alvo_acoes is None else alvo_acoes / 100,
+                        band=faixa / 100, transition_months=meses_transicao)
     except Exception as exc:  # a bad file, a missing key or an unreachable source is a setup error
         console.print(f"[red]{escape(str(exc))}[/red]")
         raise typer.Exit(code=1) from None
