@@ -6,6 +6,14 @@ ações. Toda a evidência por trás dela está em `experiments/br_baseline/READ
 > **Não é recomendação de investimento.** O resultado passado não garante o futuro, e a vantagem histórica não
 > passou no teste estatístico rigoroso que fixamos antes de rodar.
 
+> **Veículo padrão recomendado para a parte em ações: o DIVO11.** O replay da rotina real (aportes mensais, ações
+> inteiras, isenção de R$ 20 mil, IR, seleção congelada) rendeu 12,0% ao ano de TIR, contra 11,1% do DIVO11 com
+> os mesmos aportes, de 2012 a 2026. A diferença de 0,9 ponto ficou abaixo do mínimo de 1 ponto fixado antes de
+> rodar, e a queda foi maior (−59% contra −52%). A rotina fica como opção para quem quer a regra própria.
+>
+> Um ponto a favor das ações, fora do critério: venda de ações até R$ 20 mil por mês é isenta, e venda de ETF não
+> é. Detalhes em `experiments/br_baseline/README.md`, "Replay da rotina real".
+
 ## Comitê de investimentos
 
 Para o patrimônio inteiro, e não só as ações, use o comitê:
@@ -85,6 +93,16 @@ engano.
 | Regra, rebalanceamento semestral (o adotado aqui) | 13,5% | −62% |
 | DIVO11 | 9,8% | −56% |
 | Ibovespa | 7,5% | −47% |
+
+**Com os atritos da rotina real** (replay de mar/2012 a out/2026, R$ 100 mil mais R$ 3 mil por mês):
+
+| | TIR | Retorno anual da cota | Maior queda |
+|---|---|---|---|
+| Rotina, semestral | 12,0% | 10,2% | −59% |
+| Rotina, trimestral | 12,1% | 10,4% | −59% |
+| DIVO11, mesmos aportes | 11,1% | 9,9% | −52% |
+| BOVA11, mesmos aportes | 8,9% | 7,6% | −39% |
+| CDI líquido | 8,4% | 8,3% | 0% |
 
 - **Atenção:** a semestral foi escolhida depois de ver as duas, então seu número carrega risco de seleção. A
   trimestral, pré-registrada como principal, é a referência mais honesta.

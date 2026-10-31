@@ -179,10 +179,10 @@ estão nos commits `4818fff`, `cf2e889`, `d44058e` e `217ffda`.
 | # | Achado | Situação |
 |---|---|---|
 | A1 | Falta uma política por metas e prazos | **Aberto.** Depende das respostas do investidor (perguntas abaixo). |
-| A2 | A estratégia executada não é a testada: a seleção era recalculada todo mês | **Corrigido.** A seleção fica congelada entre rebalanceamentos, e o replay da rotina real mede o que ela entrega com atritos (seção "Replay da rotina real"). |
+| A2 | A estratégia executada não é a testada: a seleção era recalculada todo mês | **Corrigido.** A seleção fica congelada entre rebalanceamentos. O replay da rotina real mede o que ela entrega com atritos: 0,9 ponto ao ano acima do DIVO11, abaixo do mínimo pré-registrado de 1 ponto. O DIVO11 passa a ser o veículo padrão recomendado (seção "Replay da rotina real"). |
 | A3 | Setores excluídos não eram aplicados; o dinheiro do mês não tinha teto | **Corrigido.** As exclusões saem da seleção, e o comitê as repassa. Aporte mais transferência nunca levam as ações acima do alvo mais a faixa. |
 | A4 | A sombra ignora a alocação e a renda fixa | **Aberto.** A sombra mede só a parte em ações. |
-| B1 | A variante semestral (13,5%) foi adotada depois de vista; a primária era 11,2% | **Registrado.** O `CARTEIRA.md` mostra as duas, e o replay roda as duas. A semestral carrega risco de seleção. |
+| B1 | A variante semestral (13,5%) foi adotada depois de vista; a primária era 11,2% | **Respondido pelo replay.** Na rotina real as duas ficam praticamente iguais (TIR de 12,0% e 12,1% na escala B). O `CARTEIRA.md` mostra as duas. |
 | B2 | A limpeza de preços inventava altas: [100, 5, 9,5] virava [100, 100, 190] | **Corrigido.** Só saltos que se desfazem em até 10 pregões são zerados. Um salto que fica é mantido e marcado, e a ação fica fora de compras novas por um ano. Se já estiver em carteira, não é vendida nem comprada. |
 | B3 | Estresse por índices; tolerância de 20% fixa no código | **Parcial.** A tolerância virou campo da política e é comparada com a pior queda do mix-alvo. O estresse por posição fica para depois. |
 | C1 | As ações de renda fixa do diretor não eram checadas | **Corrigido.** A checagem trata o plano como um balanço de dinheiro, com testes de resgate em dobro, título inexistente, título sem liquidez, aplicação infinita, emissor fora do FGC e reserva. |
@@ -882,6 +882,58 @@ backtest. A semestral foi adotada depois de ver as duas (B1, risco de seleção)
 
 **Limitações conhecidas.** As mesmas do backtest: viés de sobrevivência do Yahoo, JCP bruto, um único caminho
 histórico. Além disso, o IR sobre proventos de 2026 não é modelado.
+
+## Replay da rotina real: resultado (`routine_replay.py`, sem LLM, US$ 0)
+
+Foram 175 decisões mensais, de mar/2012 a set/2026, com valor final em 30/10/2026. O valor final está antes do
+IR sobre ganhos não realizados.
+
+| Escala B (R$ 100 mil + R$ 3 mil/mês) | TIR | Retorno anual da cota | Maior queda da cota | Valor final | IR pago |
+|---|---|---|---|---|---|
+| **Rotina, semestral (a adotada)** | **12,0%** | 10,2% | −59% | R$ 1,87 mi | R$ 6 mil |
+| Rotina, trimestral | 12,1% | 10,4% | −59% | R$ 1,88 mi | R$ 2 mil |
+| DIVO11, mesmos aportes | 11,1% | 9,9% | −52% | R$ 1,72 mi | — |
+| BOVA11, mesmos aportes | 8,9% | 7,6% | −39% | R$ 1,39 mi | — |
+| CDI líquido | 8,4% | 8,3% | 0% | R$ 1,33 mi | — |
+
+Total aportado: R$ 625 mil.
+
+| Escala A (do zero, R$ 3 mil/mês) | TIR | Retorno anual da cota | Maior queda da cota | Valor final |
+|---|---|---|---|---|
+| Rotina, semestral | 12,4% | 9,9% | −59% | R$ 1,40 mi |
+| Rotina, trimestral | 13,5% | 10,9% | −54% | R$ 1,53 mi |
+| DIVO11 | 12,2% | 9,9% | −52% | R$ 1,37 mi |
+| BOVA11 | 9,9% | 7,6% | −39% | R$ 1,13 mi |
+| CDI líquido | 8,5% | 8,3% | 0% | R$ 1,02 mi |
+
+Total aportado: R$ 525 mil.
+
+**Veredito pelo critério pré-registrado: a rotina não passa.** Na escala B semestral, a TIR da rotina superou a do
+DIVO11 em **0,88 ponto ao ano**, abaixo do mínimo de 1 ponto. Pela regra fixada antes, a documentação passa a
+recomendar o **DIVO11 como veículo padrão** para a parte em ações. A rotina fica como opção de quem quer a regra
+própria, com o aviso de que não mostrou vantagem firme depois dos atritos.
+
+**O que o replay mostra:**
+- **Os atritos comem a maior parte da vantagem do backtest.** A cota da rotina semestral rendeu 10,2% ao ano,
+  contra 13,5% no backtest sem atrito. A trimestral rendeu 10,4%, contra 11,2%. Pesam:
+  - a seleção congelada entre rebalanceamentos, com o dinheiro novo entrando só nas ações da seleção;
+  - as vendas presas à isenção: houve vendas adiadas em 127 dos 175 meses, porque com a carteira grande R$ 20 mil
+    por mês não dão conta da troca;
+  - a compra em ações inteiras.
+- **B1 perde importância.** Na rotina real, semestral e trimestral ficam praticamente iguais na escala B (12,0%
+  e 12,1%). A diferença de 13,5% contra 11,2% do backtest não sobrevive.
+- **A queda é maior que a do DIVO11** (−59% contra −52%), com o mesmo retorno da cota.
+- **IR baixo.** Em 71 meses as vendas executadas passaram um pouco de R$ 20 mil, porque o preço de execução difere
+  do de planejamento. Isso custou R$ 6 mil em 14 anos; um investidor real ajustaria a quantidade.
+
+**Fora do critério, mas relevante para a escolha:**
+- **Vendas de ETF não têm a isenção de R$ 20 mil.** Quem um dia vender o DIVO11 paga 15% sobre todo o ganho. Na
+  escala B, isso dá cerca de R$ 160 mil se tudo for vendido de uma vez. Ações podem ser vendidas aos poucos
+  dentro da isenção.
+- **Proventos:** o DIVO11 reinveste internamente e cobra taxa de administração, já embutida no preço. As ações
+  pagam em conta: a rotina reinveste, mas um investidor pode querer usar a renda.
+- **Mesmas limitações do backtest:** viés de sobrevivência e JCP bruto. Ambos favorecem a rotina, o que reforça
+  o veredito.
 
 ## Custo estimado da execução com LLM
 
