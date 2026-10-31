@@ -560,6 +560,58 @@ uma desvantagem de ~4,6 pontos ao ano em relação ao índice.
 
 Leitura: o sinal de insiders, na forma testada, não gera vantagem robusta na B3 de 2019 a 2026.
 
+## Dividendos entre as grandes: pré-registro (31/10/2026, antes de qualquer retorno calculado)
+
+**Pergunta.** Uma carteira das grandes pagadoras de dividendos, montada por regra, ganha do Ibovespa e do
+DIVO11 (o ETF de dividendos, a alternativa pronta)? Restringir às grandes evita a desvantagem estrutural vista
+no piloto de insiders: a ação média perdeu do índice.
+
+**Dados, sem LLM.**
+- **Yahoo:** preços, volume e proventos (data ex), a partir de 2008.
+- **FCA da CVM:** códigos de cada empresa e setor de atividade.
+
+**Universo (a cada rebalanceamento t).**
+- As **50 empresas de maior liquidez**: mediana do volume financeiro nos 63 pregões até t, pelo código mais
+  negociado de cada uma.
+
+**Regras.**
+- **Constância:** proventos com data ex em cada um dos três períodos de 12 meses antes de t.
+- **Rendimento (DY24):** soma dos proventos dos últimos 24 meses dividida por 2, sobre o preço de fechamento
+  em t.
+- **Carteira primária:** as **10** de maior DY24 entre as constantes, com pesos iguais.
+- **Rebalanceamento trimestral** (fins de mar/jun/set/dez), de mar/2012 a jun/2026. Entrada no pregão
+  seguinte; pesos variam com o preço dentro do trimestre.
+- **Custos e proventos:** 0,15% por lado sobre o giro; proventos reinvestidos (preço ajustado).
+
+**Referências.**
+1. Ibovespa (`^BVSP`, retorno total).
+2. DIVO11, a régua real.
+3. As 50 maiores com pesos iguais e o mesmo custo.
+
+**Critério para seguir (todos):**
+1. Retorno anual líquido acima do Ibovespa **e** do DIVO11 no período.
+2. Diferença mensal contra o Ibovespa com t ≥ 1,65.
+3. Diferença positiva em pelo menos 60% das janelas móveis de 36 meses.
+
+Também reportados: maior queda, pior ano, diferença ano a ano, giro e DY médio da carteira.
+
+**Variantes secundárias, todas reportadas.**
+- (a) as 15 maiores;
+- (b) só setores BEST: bancos e intermediação financeira, energia elétrica, saneamento, seguradoras e
+  telecomunicações, incluindo as holdings de cada setor;
+- (c) DY de 12 meses;
+- (d) sem o filtro de constância;
+- (e) rebalanceamento semestral;
+- (f) universo das 100 maiores.
+
+**Limitações conhecidas.**
+- O Yahoo não tem várias pagadoras que saíram da bolsa (Cielo, EDP Brasil, AES Tietê, BR Malls, Copel PNB).
+  Como algumas caíram e outras foram compradas com prêmio, o efeito tem sinal incerto.
+- O Yahoo trata o JCP como bruto, o que superestima levemente o retorno das pagadoras de JCP (15% de IR
+  retido).
+- O IR sobre dividendos a partir de 2026 não é modelado.
+- É um único caminho histórico de ~14 anos.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
