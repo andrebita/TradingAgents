@@ -127,6 +127,14 @@ def _dividends_paid(doc: dict, cnpj: str) -> float | None:
     return None
 
 
+_VENDOR_SPAN = cvm._span
+
+
+def _year_to_date(rows: list[tuple]) -> tuple[str, str]:
+    """The longest span a statement reports: the year to date in an interim filing."""
+    return min({(r[4], r[5]) for r in rows})
+
+
 def statements(cnpj: str, as_of: date) -> list[dict]:
     """Up to three annual statements and a newer interim one, public by ``as_of``, newest first."""
     annual = cvm._documents(cnpj, as_of, "annual")
@@ -137,9 +145,15 @@ def statements(cnpj: str, as_of: date) -> list[dict]:
     out = []
     for doc in docs:
         values = {}
-        for kind in ("income_statement", "balance_sheet", "cashflow"):
-            v, _ = cvm._values(doc, cnpj, cvm._STATEMENTS[kind][1])
-            values.update({c: (name, amount) for c, (name, amount, eps) in v.items() if not eps})
+        # An interim income statement comes for the quarter and for the year to date; the
+        # cash flow only for the year to date. Take the year to date for both.
+        cvm._span = _year_to_date if doc["kind"] == "itr" else _VENDOR_SPAN
+        try:
+            for kind in ("income_statement", "balance_sheet", "cashflow"):
+                v, _ = cvm._values(doc, cnpj, cvm._STATEMENTS[kind][1])
+                values.update({c: (name, amount) for c, (name, amount, eps) in v.items() if not eps})
+        finally:
+            cvm._span = _VENDOR_SPAN
         if values:
             months = int(doc["refer"][5:7])
             out.append({"kind": doc["kind"], "refer": doc["refer"], "months": months if doc["kind"] == "itr" else 12,
