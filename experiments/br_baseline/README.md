@@ -429,6 +429,38 @@ Previsão de ~US$ 3,90 para as 60 células, com teto de US$ 5.
     python experiments/br_baseline/experiment3_eval.py experiments/br_baseline/results/experiment3 exp3_news \
         --out experiments/br_baseline/results/experiment3/exp3_eval.json
 
+## Experimento 3: resultado (`exp3_news`, 60 células, US$ 4,10)
+
+A execução levou 21 minutos, sem falhas (`results/experiment3/exp3_eval.json`).
+
+**Cobertura e auditoria.**
+- O analista chamou `get_news` nas 60 células e recebeu texto de imprensa em todas, e texto de documentos da
+  CVM em 35. A mediana foi de 36 mil caracteres lidos por célula.
+- **Auditoria de data:** dos 2.294 itens datados que ele leu, nenhum é posterior à data analisada.
+
+| Braço | Brier | Prob. média | Acima de 50% | IC de ranking (média das datas) |
+|---|---|---|---|---|
+| `new` (notícias reais) | 0,2525 | 48,2% | 23% | −0,06 |
+| `old` (pacote do exp. 2, perguntado de novo) | 0,2520 | 47,5% | 8% | +0,06 |
+| `exp2` (resposta original do exp. 2) | 0,2506 | 47,5% | 8% | +0,09 |
+| sempre 50% | 0,2500 | 50% | — | — |
+
+- **Primária, `new − old`:** +0,0005 de Brier. Por janela: +0,0076, −0,0038, −0,0015 e −0,0001.
+  IC95 de −0,0073 a +0,0084; p de troca de sinais 1,0. Nenhum efeito.
+- **O relatório mudou muito, a probabilidade quase nada.** O deslocamento médio foi de 1,4 p.p., contra
+  0,4 p.p. de ruído do decisor (`old` contra `exp2`). Só 1 célula mudou mais de 5 p.p. As probabilidades
+  ficam entre 44% e 53%, com desvio-padrão de 2,6 p.p.
+- **Os deslocamentos não apontam para o desfecho.**
+  - A correlação de ranking entre o deslocamento e o alfa foi +0,03.
+  - Das 31 células que subiram, 52% bateram o Ibovespa; das 13 que desceram, 54%.
+- **O pessimismo diminuiu um pouco:** a média passou de 47,5% para 48,2%, e a parcela acima de 50% de 8%
+  para 23%. Isso não melhorou o Brier.
+
+Leitura: dar ao analista o conteúdo real (texto dos fatos relevantes e imprensa com visões de corretoras)
+torna o relatório muito mais informativo para um leitor humano, mas não dá ao decisor capacidade de prever o
+retorno relativo em 20 pregões. É o resultado esperado se essas informações já estão nos preços no dia D.
+O decisor reage a isso ficando perto de 50%, o que é a resposta coerente sem vantagem.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada

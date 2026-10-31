@@ -1,0 +1,91 @@
+{
+  "run_id": "exp3_news",
+  "cells_with_outcome": 60,
+  "cells_without_outcome": 0,
+  "share_beating_benchmark": 0.5166666666666667,
+  "arms": {
+    "new": {
+      "cells": 60,
+      "coverage": 1.0,
+      "brier": 0.25248833333333337,
+      "mean_probability": 0.4815,
+      "share_above_50": 0.23333333333333334,
+      "share_below_50": 0.65,
+      "hit_rate_of_lean": 0.49056603773584906,
+      "rank_ic_mean_by_date": -0.06376226194327692
+    },
+    "old": {
+      "cells": 60,
+      "coverage": 1.0,
+      "brier": 0.25195500000000004,
+      "mean_probability": 0.4745,
+      "share_above_50": 0.08333333333333333,
+      "share_below_50": 0.7833333333333333,
+      "hit_rate_of_lean": 0.46153846153846156,
+      "rank_ic_mean_by_date": 0.056507152524482775
+    },
+    "exp2": {
+      "cells": 60,
+      "coverage": 1.0,
+      "brier": 0.25056166666666674,
+      "mean_probability": 0.4751666666666666,
+      "share_above_50": 0.08333333333333333,
+      "share_below_50": 0.7833333333333333,
+      "hit_rate_of_lean": 0.4423076923076923,
+      "rank_ic_mean_by_date": 0.09389519779546836
+    }
+  },
+  "paired_new_minus_old": {
+    "cells": 60,
+    "windows": 4,
+    "mean_delta": 0.0005333333333333291,
+    "mean_delta_by_window": {
+      "2026-07-06": 0.0076,
+      "2026-08-03": -0.003827,
+      "2026-08-31": -0.001507,
+      "2026-09-29": -0.000133
+    },
+    "mean_of_window_means": 0.0005333333333333292,
+    "ci95_over_windows": [
+      -0.007344576291181899,
+      0.008411242957848557
+    ],
+    "sign_flip_p_over_windows": 1.0
+  },
+  "paired_old_minus_exp2_noise": {
+    "cells": 60,
+    "windows": 4,
+    "mean_delta": 0.0013933333333333354,
+    "mean_delta_by_window": {
+      "2026-07-06": 0.00024,
+      "2026-08-03": 0.00062,
+      "2026-08-31": 0.002127,
+      "2026-09-29": 0.002587
+    },
+    "mean_of_window_means": 0.0013933333333333354,
+    "ci95_over_windows": [
+      -0.00041836895929808163,
+      0.0032050356259647524
+    ],
+    "sign_flip_p_over_windows": 0.125
+  },
+  "probability_shift_pp": {
+    "mean_abs_new_vs_old": 1.3666666666666667,
+    "mean_abs_old_vs_exp2_noise": 0.4,
+    "cells_moved_over_5pp": 1
+  },
+  "failed_decisions": [],
+  "news_inputs": {
+    "cells": 60,
+    "cells_calling_get_news": 60,
+    "median_chars_read": 36183.5,
+    "cells_with_filing_text": 35,
+    "cells_with_press_text": 60
+  },
+  "cost_usd_by_node": {
+    "agent": 0.3488,
+    "decider:new": 1.9437,
+    "decider:old": 1.8088
+  },
+  "cost_usd_total": 4.1012
+}
