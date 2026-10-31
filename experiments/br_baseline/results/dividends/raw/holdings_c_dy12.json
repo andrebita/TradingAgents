@@ -1,0 +1,930 @@
+[
+ {
+  "t": "2012-03-30",
+  "codes": [
+   "ISAE4",
+   "BRAP4",
+   "GFSA3",
+   "LIGT3",
+   "SBSP3",
+   "BBAS3",
+   "PSSA3",
+   "EGIE3",
+   "CPFE3",
+   "PETR4"
+  ],
+  "turnover": 1.0
+ },
+ {
+  "t": "2012-06-29",
+  "codes": [
+   "BBAS3",
+   "BRAP4",
+   "SBSP3",
+   "BRSR6",
+   "RSID3",
+   "CPFE3",
+   "LIGT3",
+   "ITSA4",
+   "VALE3",
+   "PETR4"
+  ],
+  "turnover": 0.8535029810120175
+ },
+ {
+  "t": "2012-09-28",
+  "codes": [
+   "ISAE4",
+   "BRAP4",
+   "CMIG4",
+   "LIGT3",
+   "BBAS3",
+   "CPFE3",
+   "SBSP3",
+   "RSID3",
+   "EGIE3",
+   "BRSR6"
+  ],
+  "turnover": 0.6861382716874352
+ },
+ {
+  "t": "2012-12-28",
+  "codes": [
+   "CMIG4",
+   "LIGT3",
+   "CPFE3",
+   "RSID3",
+   "BBAS3",
+   "BRSR6",
+   "EGIE3",
+   "PSSA3",
+   "SANB11",
+   "OIBR4"
+  ],
+  "turnover": 0.6444764854089131
+ },
+ {
+  "t": "2013-03-28",
+  "codes": [
+   "OIBR4",
+   "RSID3",
+   "CMIG4",
+   "EGIE3",
+   "LIGT3",
+   "CPFE3",
+   "BBAS3",
+   "BRAP4",
+   "MRVE3",
+   "VALE3"
+  ],
+  "turnover": 0.727034983046004
+ },
+ {
+  "t": "2013-06-28",
+  "codes": [
+   "OIBR4",
+   "CMIG4",
+   "BBAS3",
+   "LIGT3",
+   "TAEE11",
+   "EGIE3",
+   "SANB11",
+   "BRAP4",
+   "PSSA3",
+   "CPFE3"
+  ],
+  "turnover": 0.7013686523790917
+ },
+ {
+  "t": "2013-09-30",
+  "codes": [
+   "OIBR4",
+   "CMIG4",
+   "BBAS3",
+   "MOTV3",
+   "EGIE3",
+   "LIGT3",
+   "BRSR6",
+   "BRAP4",
+   "ITSA4",
+   "ECOR3"
+  ],
+  "turnover": 0.8325665994458772
+ },
+ {
+  "t": "2013-12-30",
+  "codes": [
+   "OIBR4",
+   "BBAS3",
+   "CMIG4",
+   "EGIE3",
+   "BRAP4",
+   "BRSR6",
+   "ECOR3",
+   "ITSA4",
+   "PSSA3",
+   "PETR4"
+  ],
+  "turnover": 0.46714382886794525
+ },
+ {
+  "t": "2014-03-31",
+  "codes": [
+   "SANB11",
+   "PSSA3",
+   "BBAS3",
+   "OIBR4",
+   "CMIG4",
+   "BRAP4",
+   "ECOR3",
+   "PETR4",
+   "CPFE3",
+   "EGIE3"
+  ],
+  "turnover": 0.488942282546546
+ },
+ {
+  "t": "2014-06-30",
+  "codes": [
+   "OIBR4",
+   "CMIG4",
+   "SANB11",
+   "BBAS3",
+   "BRAP4",
+   "PSSA3",
+   "ECOR3",
+   "LIGT3",
+   "VALE3",
+   "PETR4"
+  ],
+  "turnover": 0.4949526647459104
+ },
+ {
+  "t": "2014-09-30",
+  "codes": [
+   "CMIG4",
+   "SANB11",
+   "TAEE11",
+   "ECOR3",
+   "BRAP4",
+   "PSSA3",
+   "LIGT3",
+   "VALE3",
+   "BBAS3",
+   "PETR4"
+  ],
+  "turnover": 0.2641244116417803
+ },
+ {
+  "t": "2014-12-30",
+  "codes": [
+   "CMIG4",
+   "BRAP4",
+   "SANB11",
+   "ECOR3",
+   "PETR4",
+   "TAEE11",
+   "PSSA3",
+   "VALE3",
+   "LIGT3",
+   "BBAS3"
+  ],
+  "turnover": 0.12184471692027035
+ },
+ {
+  "t": "2015-03-31",
+  "codes": [
+   "BRAP4",
+   "CMIG4",
+   "ECOR3",
+   "VALE3",
+   "PETR4",
+   "LIGT3",
+   "ABEV3",
+   "TAEE11",
+   "BRSR6",
+   "BBAS3"
+  ],
+  "turnover": 0.5362496716204685
+ },
+ {
+  "t": "2015-06-30",
+  "codes": [
+   "BRAP4",
+   "CMIG4",
+   "ECOR3",
+   "ABEV3",
+   "VALE3",
+   "BBAS3",
+   "TAEE11",
+   "EGIE3",
+   "MRVE3",
+   "MOTV3"
+  ],
+  "turnover": 0.6563220215586796
+ },
+ {
+  "t": "2015-09-30",
+  "codes": [
+   "BRAP4",
+   "CMIG4",
+   "ECOR3",
+   "BRSR6",
+   "BBAS3",
+   "TAEE11",
+   "VALE3",
+   "SANB11",
+   "ABEV3",
+   "MRVE3"
+  ],
+  "turnover": 0.5184403340411304
+ },
+ {
+  "t": "2015-12-30",
+  "codes": [
+   "BRAP4",
+   "BRSR6",
+   "BBAS3",
+   "TAEE11",
+   "ABEV3",
+   "ECOR3",
+   "VALE3",
+   "CMIG4",
+   "BBDC4",
+   "BBSE3"
+  ],
+  "turnover": 0.5738850260649452
+ },
+ {
+  "t": "2016-03-31",
+  "codes": [
+   "BRAP4",
+   "SANB11",
+   "TAEE11",
+   "BBAS3",
+   "CMIG4",
+   "ECOR3",
+   "VALE3",
+   "MOTV3",
+   "BBSE3",
+   "ITSA4"
+  ],
+  "turnover": 0.6446216840892056
+ },
+ {
+  "t": "2016-06-30",
+  "codes": [
+   "SANB11",
+   "BRAP4",
+   "BBAS3",
+   "CMIG4",
+   "BRKM5",
+   "BBSE3",
+   "ITSA4",
+   "CSAN3",
+   "MOTV3",
+   "PSSA3"
+  ],
+  "turnover": 0.7079658162386326
+ },
+ {
+  "t": "2016-09-30",
+  "codes": [
+   "TAEE11",
+   "BRAP4",
+   "CMIG4",
+   "BBSE3",
+   "BBAS3",
+   "BRKM5",
+   "ITSA4",
+   "MOTV3",
+   "EGIE3",
+   "SANB11"
+  ],
+  "turnover": 0.45248203220627
+ },
+ {
+  "t": "2016-12-29",
+  "codes": [
+   "TAEE11",
+   "YDUQ3",
+   "CMIG4",
+   "BRKM5",
+   "ITSA4",
+   "FLRY3",
+   "BBSE3",
+   "CSAN3",
+   "EGIE3",
+   "PSSA3"
+  ],
+  "turnover": 0.9339488930553905
+ },
+ {
+  "t": "2017-03-31",
+  "codes": [
+   "TAEE11",
+   "YDUQ3",
+   "BRKM5",
+   "FLRY3",
+   "CMIG4",
+   "ITSA4",
+   "BBSE3",
+   "SAPR4",
+   "EGIE3",
+   "MRVE3"
+  ],
+  "turnover": 0.4666904966860467
+ },
+ {
+  "t": "2017-06-30",
+  "codes": [
+   "YDUQ3",
+   "TAEE11",
+   "EGIE3",
+   "ITSA4",
+   "SANB11",
+   "BBSE3",
+   "SAPR4",
+   "BRAP4",
+   "CMIG4",
+   "MRVE3"
+  ],
+  "turnover": 0.47240014953105824
+ },
+ {
+  "t": "2017-09-29",
+  "codes": [
+   "TAEE11",
+   "EGIE3",
+   "SAPR4",
+   "SANB11",
+   "BBSE3",
+   "WIZC3",
+   "CMIG4",
+   "YDUQ3",
+   "ITSA4",
+   "MRVE3"
+  ],
+  "turnover": 0.37184561769435215
+ },
+ {
+  "t": "2017-12-29",
+  "codes": [
+   "BRAP4",
+   "TAEE11",
+   "EGIE3",
+   "BBSE3",
+   "SANB11",
+   "MRVE3",
+   "ISAE4",
+   "QUAL3",
+   "ITSA4",
+   "MOTV3"
+  ],
+  "turnover": 0.8039067691820335
+ },
+ {
+  "t": "2018-03-29",
+  "codes": [
+   "BRAP4",
+   "TAEE11",
+   "ITSA4",
+   "EGIE3",
+   "QUAL3",
+   "BBSE3",
+   "ITUB4",
+   "MOTV3",
+   "ECOR3",
+   "SANB11"
+  ],
+  "turnover": 0.5209728813637653
+ },
+ {
+  "t": "2018-06-29",
+  "codes": [
+   "BRAP4",
+   "CSMG3",
+   "EGIE3",
+   "TAEE11",
+   "BRKM5",
+   "ITSA4",
+   "PSSA3",
+   "QUAL3",
+   "ITUB4",
+   "BBSE3"
+  ],
+  "turnover": 0.640943145412381
+ },
+ {
+  "t": "2018-09-28",
+  "codes": [
+   "EGIE3",
+   "BRAP4",
+   "TAEE11",
+   "ITSA4",
+   "BRKM5",
+   "QUAL3",
+   "MOTV3",
+   "ITUB4",
+   "BBSE3",
+   "CMIG4"
+  ],
+  "turnover": 0.49930302525655423
+ },
+ {
+  "t": "2018-12-28",
+  "codes": [
+   "ISAE4",
+   "EGIE3",
+   "TAEE11",
+   "BBSE3",
+   "MRVE3",
+   "BRKM5",
+   "BRAP4",
+   "ITSA4",
+   "CYRE3",
+   "YDUQ3"
+  ],
+  "turnover": 0.9384155786634972
+ },
+ {
+  "t": "2019-03-29",
+  "codes": [
+   "EGIE3",
+   "BRAP4",
+   "BBSE3",
+   "ITSA4",
+   "BRKM5",
+   "MRVE3",
+   "ITUB4",
+   "CYRE3",
+   "CSMG3",
+   "YDUQ3"
+  ],
+  "turnover": 0.4459370551682154
+ },
+ {
+  "t": "2019-06-28",
+  "codes": [
+   "BBSE3",
+   "ITSA4",
+   "EGIE3",
+   "BRAP4",
+   "ITUB4",
+   "YDUQ3",
+   "KLBN11",
+   "MOTV3",
+   "BBAS3",
+   "SANB11"
+  ],
+  "turnover": 0.8373629775263132
+ },
+ {
+  "t": "2019-09-30",
+  "codes": [
+   "ITSA4",
+   "BBSE3",
+   "ITUB4",
+   "BRAP4",
+   "BBAS3",
+   "KLBN11",
+   "CYRE3",
+   "YDUQ3",
+   "EGIE3",
+   "SANB11"
+  ],
+  "turnover": 0.29385874345362517
+ },
+ {
+  "t": "2019-12-30",
+  "codes": [
+   "ITSA4",
+   "ITUB4",
+   "CYRE3",
+   "BBDC4",
+   "CMIG4",
+   "MRVE3",
+   "BBAS3",
+   "SANB11",
+   "BBSE3",
+   "MOTV3"
+  ],
+  "turnover": 0.8590871261392261
+ },
+ {
+  "t": "2020-03-31",
+  "codes": [
+   "BBSE3",
+   "CYRE3",
+   "BBDC4",
+   "ITSA4",
+   "MRVE3",
+   "ITUB4",
+   "BBAS3",
+   "CMIG4",
+   "MOTV3",
+   "QUAL3"
+  ],
+  "turnover": 0.29715144270777855
+ },
+ {
+  "t": "2020-06-30",
+  "codes": [
+   "BBSE3",
+   "SANB11",
+   "BBDC4",
+   "ITSA4",
+   "CYRE3",
+   "ITUB4",
+   "BBAS3",
+   "PCAR3",
+   "MOTV3",
+   "BRAP4"
+  ],
+  "turnover": 0.7212791448515969
+ },
+ {
+  "t": "2020-09-30",
+  "codes": [
+   "BBSE3",
+   "BBDC4",
+   "ITSA4",
+   "MOTV3",
+   "CMIG4",
+   "BBAS3",
+   "ITUB4",
+   "PCAR3",
+   "CYRE3",
+   "VBBR3"
+  ],
+  "turnover": 0.4780227297174581
+ },
+ {
+  "t": "2020-12-30",
+  "codes": [
+   "BBSE3",
+   "SANB11",
+   "CYRE3",
+   "BRAP4",
+   "ITSA4",
+   "PCAR3",
+   "VBBR3",
+   "ITUB4",
+   "BBAS3",
+   "MOTV3"
+  ],
+  "turnover": 0.49204363405598806
+ },
+ {
+  "t": "2021-03-31",
+  "codes": [
+   "VIVT3",
+   "CYRE3",
+   "VALE3",
+   "BRAP4",
+   "BBSE3",
+   "BBAS3",
+   "CMIG4",
+   "VBBR3",
+   "MOTV3",
+   "SBSP3"
+  ],
+  "turnover": 1.0310744155642297
+ },
+ {
+  "t": "2021-06-30",
+  "codes": [
+   "BRAP4",
+   "CYRE3",
+   "VBBR3",
+   "CMIG4",
+   "VIVT3",
+   "VALE3",
+   "BBAS3",
+   "BBSE3",
+   "PCAR3",
+   "SANB11"
+  ],
+  "turnover": 0.4547185520953536
+ },
+ {
+  "t": "2021-09-30",
+  "codes": [
+   "BRAP4",
+   "CYRE3",
+   "VBBR3",
+   "PETR4",
+   "USIM5",
+   "GOAU4",
+   "BBAS3",
+   "SANB11",
+   "VIVT3",
+   "GGBR4"
+  ],
+  "turnover": 0.8389175951013375
+ },
+ {
+  "t": "2021-12-30",
+  "codes": [
+   "BRAP4",
+   "GOAU4",
+   "PETR4",
+   "VALE3",
+   "CPFE3",
+   "GGBR4",
+   "CMIG4",
+   "VBBR3",
+   "USIM5",
+   "BBAS3"
+  ],
+  "turnover": 0.6485928482360436
+ },
+ {
+  "t": "2022-03-31",
+  "codes": [
+   "BRAP4",
+   "GOAU4",
+   "PETR4",
+   "VALE3",
+   "CMIG4",
+   "CPFE3",
+   "USIM5",
+   "GGBR4",
+   "VBBR3",
+   "BBAS3"
+  ],
+  "turnover": 0.0827887532006282
+ },
+ {
+  "t": "2022-06-30",
+  "codes": [
+   "PETR4",
+   "BRAP4",
+   "GOAU4",
+   "USIM5",
+   "CMIG4",
+   "VALE3",
+   "GGBR4",
+   "TAEE11",
+   "BBAS3",
+   "VIVT3"
+  ],
+  "turnover": 0.5200464473303327
+ },
+ {
+  "t": "2022-09-30",
+  "codes": [
+   "PETR4",
+   "GOAU4",
+   "CMIG4",
+   "GGBR4",
+   "USIM5",
+   "VALE3",
+   "BBAS3",
+   "VIVT3",
+   "ENGI11",
+   "BBSE3"
+  ],
+  "turnover": 0.4873591630335675
+ },
+ {
+  "t": "2022-12-29",
+  "codes": [
+   "PETR4",
+   "CMIG4",
+   "TAEE11",
+   "GGBR4",
+   "BBAS3",
+   "BRAP4",
+   "GOAU4",
+   "USIM5",
+   "VALE3",
+   "KLBN11"
+  ],
+  "turnover": 0.7271933808714375
+ },
+ {
+  "t": "2023-03-31",
+  "codes": [
+   "PETR4",
+   "CMIG4",
+   "GGBR4",
+   "BBAS3",
+   "GOAU4",
+   "BBSE3",
+   "USIM5",
+   "VIVT3",
+   "BBDC4",
+   "VALE3"
+  ],
+  "turnover": 0.6494787756249216
+ },
+ {
+  "t": "2023-06-30",
+  "codes": [
+   "PETR4",
+   "GGBR4",
+   "TIMS3",
+   "GOAU4",
+   "TAEE11",
+   "BBSE3",
+   "BBAS3",
+   "VALE3",
+   "CMIG4",
+   "BBDC4"
+  ],
+  "turnover": 0.5137008331642237
+ },
+ {
+  "t": "2023-09-29",
+  "codes": [
+   "PETR4",
+   "GGBR4",
+   "BBSE3",
+   "TIMS3",
+   "BBAS3",
+   "CMIG4",
+   "ITSA4",
+   "BBDC4",
+   "BEEF3",
+   "VALE3"
+  ],
+  "turnover": 0.45091708832090915
+ },
+ {
+  "t": "2023-12-28",
+  "codes": [
+   "PETR4",
+   "GOAU4",
+   "BRAP4",
+   "CMIG4",
+   "BBSE3",
+   "BBDC4",
+   "TIMS3",
+   "ISAE4",
+   "VALE3",
+   "BBAS3"
+  ],
+  "turnover": 0.6346450595763397
+ },
+ {
+  "t": "2024-03-28",
+  "codes": [
+   "PETR4",
+   "GOAU4",
+   "BRAP4",
+   "VALE3",
+   "TIMS3",
+   "CMIG4",
+   "BBSE3",
+   "CPFE3",
+   "ITSA4",
+   "BBDC4"
+  ],
+  "turnover": 0.4795046291111331
+ },
+ {
+  "t": "2024-06-28",
+  "codes": [
+   "PETR4",
+   "BRAP4",
+   "GOAU4",
+   "VALE3",
+   "CMIG4",
+   "TAEE11",
+   "BBDC4",
+   "BBSE3",
+   "ITSA4",
+   "ISAE4"
+  ],
+  "turnover": 0.43532207968077047
+ },
+ {
+  "t": "2024-09-30",
+  "codes": [
+   "PETR4",
+   "BRAP4",
+   "CMIG4",
+   "GOAU4",
+   "VALE3",
+   "BBDC4",
+   "BBSE3",
+   "VBBR3",
+   "POMO4",
+   "ITSA4"
+  ],
+  "turnover": 0.42966583368953154
+ },
+ {
+  "t": "2024-12-30",
+  "codes": [
+   "PETR4",
+   "BRAP4",
+   "CMIG4",
+   "ALOS3",
+   "VALE3",
+   "BBAS3",
+   "VBBR3",
+   "TIMS3",
+   "ITUB4",
+   "POMO4"
+  ],
+  "turnover": 0.8531495834679321
+ },
+ {
+  "t": "2025-03-31",
+  "codes": [
+   "PETR4",
+   "CMIG4",
+   "ALOS3",
+   "VBBR3",
+   "POMO4",
+   "ITSA4",
+   "CXSE3",
+   "BBAS3",
+   "BBSE3",
+   "BBDC4"
+  ],
+  "turnover": 0.8881020748672015
+ },
+ {
+  "t": "2025-06-30",
+  "codes": [
+   "PETR4",
+   "CMIG4",
+   "DIRR3",
+   "BBAS3",
+   "BBSE3",
+   "VALE3",
+   "VBBR3",
+   "ITSA4",
+   "CXSE3",
+   "TIMS3"
+  ],
+  "turnover": 0.7534191209990448
+ },
+ {
+  "t": "2025-09-30",
+  "codes": [
+   "PETR4",
+   "CMIG4",
+   "BBSE3",
+   "ITSA4",
+   "BBDC4",
+   "VALE3",
+   "TIMS3",
+   "BBAS3",
+   "CXSE3",
+   "ABEV3"
+  ],
+  "turnover": 0.44833259707159756
+ },
+ {
+  "t": "2025-12-30",
+  "codes": [
+   "POMO4",
+   "DIRR3",
+   "ITSA4",
+   "CMIG4",
+   "CURY3",
+   "CYRE3",
+   "BBSE3",
+   "TIMS3",
+   "ITUB4",
+   "PETR4"
+  ],
+  "turnover": 1.0468443258238902
+ },
+ {
+  "t": "2026-03-31",
+  "codes": [
+   "DIRR3",
+   "CYRE3",
+   "CMIG4",
+   "BBSE3",
+   "CURY3",
+   "RDOR3",
+   "TIMS3",
+   "ITSA4",
+   "KLBN11",
+   "ITUB4"
+  ],
+  "turnover": 0.46700918046662176
+ },
+ {
+  "t": "2026-06-30",
+  "codes": [
+   "CURY3",
+   "RDOR3",
+   "CYRE3",
+   "CMIG4",
+   "BBSE3",
+   "DIRR3",
+   "ALOS3",
+   "ITSA4",
+   "KLBN11",
+   "BBDC4"
+  ],
+  "turnover": 0.454999491955578
+ }
+]

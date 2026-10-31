@@ -63,6 +63,25 @@ def sector_at(sectors: dict[int, str], year: int) -> str:
     return sectors[max(known)] if known else ""
 
 
+# A one-day rise above 100% or fall beyond 90% in a large B3 stock is a corporate action
+# Yahoo misadjusted (the Assaí spin-off in PCAR3 on 2021-03-01, Azul's 2026 reverse
+# splits), not a market move: that day's return is set to zero. Real crashes, such as
+# Americanas' -77% in January 2023, stay. Added after the first run (see the README).
+MAX_RISE, MAX_FALL = 1.0, -0.9
+
+
+def clean(frame: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
+    """``frame`` with misadjusted one-day jumps in Adj Close neutralized, and the days changed."""
+    returns = frame["Adj Close"].pct_change()
+    bad = returns[(returns > MAX_RISE) | (returns < MAX_FALL)].index
+    if not len(bad):
+        return frame, []
+    returns.loc[bad] = 0.0
+    fixed = frame.copy()
+    fixed["Adj Close"] = frame["Adj Close"].iloc[0] * (1 + returns.fillna(0)).cumprod()
+    return fixed, [d.date().isoformat() for d in bad]
+
+
 def prices(codes: set[str], cache: Path) -> dict[str, pd.DataFrame]:
     """Daily Close, Adj Close, Volume and Dividends per code from Yahoo, cached; missing codes left out."""
     folder = cache / "prices"
@@ -91,8 +110,13 @@ def prices(codes: set[str], cache: Path) -> dict[str, pd.DataFrame]:
         frame = pd.read_csv(folder / f"{code}.csv", index_col=0, parse_dates=True)
         if len(frame):
             frame.index = pd.DatetimeIndex(frame.index).tz_localize(None).normalize()
-            out[code] = frame.sort_index()
+            out[code], days = clean(frame.sort_index())
+            if days:
+                CLEANED[code] = days
     return out
+
+
+CLEANED: dict[str, list[str]] = {}
 
 
 def series(symbol: str, cache: Path) -> pd.Series:
@@ -217,7 +241,9 @@ def main():
     sessions = bvsp.loc["2008-01-01":].index
     data = {"companies_with_codes": len(codes), "codes": len(set().union(*codes.values())),
             "codes_with_yahoo_prices": len(px),
-            "companies_with_prices": len({c for c, cs in codes.items() if any(k in px for k in cs)})}
+            "companies_with_prices": len({c for c, cs in codes.items() if any(k in px for k in cs)}),
+            "codes_with_days_neutralized": len(CLEANED), "days_neutralized": sum(len(v) for v in CLEANED.values()),
+            "neutralized": {k: CLEANED[k] for k in ("PCAR3", "AZUL3") if k in CLEANED}}
     print(json.dumps(data, indent=2), flush=True)
 
     variants = {"primary": {}, "a_top15": {"top": 15}, "b_best_sectors": {"best_only": True},
