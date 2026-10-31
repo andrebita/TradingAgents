@@ -1097,6 +1097,50 @@ viés de sobrevivência já declarado.
 **Correção em produção:** o padrão de ticker aceita dígito na raiz (B3SA3). Os códigos inválidos do FCA ainda
 deixam BTG e CSN fora do universo da rotina ao vivo.
 
+## Revisão 5, disputa de seleção: dados e desvios declarados antes de qualquer retorno (31/10/2026)
+
+**Base de dados** (`contest_r5/`). Até aqui só foram calculadas a cobertura e a tabela de demonstrativos;
+nenhum retorno, sinal de seleção ou carteira da disputa.
+
+- **Preços e volume:** COTAHIST da B3, 2013–2026, mercado à vista, lote padrão, como negociados. Ficam só ações e
+  units de companhias (ISIN do tipo ACN ou CDA); ETFs, FIIs e BDRs saem.
+- **Universo:** as 50 empresas de maior mediana de volume em 63 pregões, em cada uma das 25 decisões (último pregão
+  de jun/dez, de jun/2014 a jun/2026). São 129 códigos ao todo.
+- **Empresas e setores:** FCA da CVM. Dezessete códigos que o FCA não lista, ou lista com erro, foram ligados ao
+  CNPJ pelo nome da companhia, numa tabela fixa (`contest_r5/data.py`, `MANUAL_CNPJ`). Exemplos: B3SA3, BPAC11,
+  CSNA3, KROT3/COGN3, TBLE3/EGIE3, ALLL3/RUMO3. Todos os 129 códigos têm CNPJ e setor.
+- **Demonstrativos:** DFP de 2010 a 2025, com a data de entrega (`results/contest_r5/dfp_table.csv.gz`).
+
+**Desvios do protocolo, conhecidos agora:**
+1. **Proventos e desdobramentos de 34 dos 129 códigos.**
+   - Para 95 códigos, o Yahoo tem o registro, no próprio código ou no da mesma empresa e classe com ticker novo
+     (por exemplo, ELET3 em AXIA3).
+   - Para os outros 34 (Cielo, Fibria, BR Malls, JBS, Vivo PN, Vale PNA e outros), não há fonte de proventos. O
+     retorno deles fica subestimado, e a regra de dividendos não consegue classificá-los.
+   - Os desdobramentos desses 34 são detectados no próprio COTAHIST: salto de preço perto de um fator simples,
+     confirmado pela quantidade negociada. Bonificações pequenas (10% a 20%) escapam e aparecem como queda.
+   - Para cada braço, será publicada a fatia da carteira, em valor e meses, nesses códigos.
+2. **Data de pagamento** = data ex + 30 dias, com o recebível no patrimônio entre as duas.
+3. **JCP contra dividendos:** a separação não existe nos dados. Pelo §3, publicam-se os limites com 0% e com 100%
+   dos proventos tratados como JCP (17,5% retidos). O primário é o de 100%, o conservador para os braços de ações.
+4. **Troca de ticker e fusões:** quando um código em carteira para de negociar, o tratamento depende do caso.
+   - Se um código da mesma empresa e classe começar em até 10 pregões, a posição é convertida pelo valor.
+   - Se não, ela vira caixa pelo último fechamento, como uma venda tributável. Isso inclui incorporações como
+     BRF e Marfrig em MBRF3, porque a relação de troca não está nos dados.
+5. **Valor (V):** o lucro por ação da DFP é o da classe negociada (ON para código 3, PN para 4, 5 e 6). Units
+   (código 11) ficam inelegíveis em V, como manda o §2.
+6. **ETFs (BOVA11 e DIVO11):** preço do COTAHIST, sem distribuições.
+7. **O resto segue o protocolo:**
+   - executor mensal, ações inteiras, no máximo 3 compras e 3 vendas por mês depois da montagem inicial;
+   - vendas de ações planejadas em até R$ 19 mil;
+   - 0,15% por ordem, caixa sem rendimento, IR por braço como contribuinte isolado;
+   - escalas, subperíodos, janelas de 60 meses, bootstrap com Holm e atribuição pelo NEFIN.
+   - Os arquivos do NEFIN foram baixados, e a checagem 2001–2011 do revisor foi reproduzida exatamente: HML
+     −0,39% (t −0,08) e 10,14% (t 2,17); WML 6,74% (t 0,95) e 11,62% (t 1,60).
+
+**O que este resultado poderá ser, pelo próprio protocolo:** exploratório. O período 2012–2026 já foi explorado, e
+os desvios 1 e 4 afetam trechos da amostra. Ele serve para eliminar regras frágeis, não para provar uma vencedora.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada

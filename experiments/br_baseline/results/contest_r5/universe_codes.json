@@ -1,0 +1,335 @@
+{
+"codes": [
+"ABEV3",
+"AEDU3",
+"ALLL3",
+"ALOS3",
+"ALSO3",
+"AMER3",
+"ARZZ3",
+"ASAI3",
+"AXIA3",
+"AZUL4",
+"AZZA3",
+"B3SA3",
+"BBAS3",
+"BBDC4",
+"BBSE3",
+"BEEF3",
+"BIDI11",
+"BPAN4",
+"BRAP4",
+"BRAV3",
+"BRDT3",
+"BRFS3",
+"BRKM5",
+"BRML3",
+"BRPR3",
+"BTOW3",
+"BVMF3",
+"CASH3",
+"CCRO3",
+"CEAB3",
+"CESP6",
+"CIEL3",
+"CMIG4",
+"COGN3",
+"CPFE3",
+"CPLE3",
+"CPLE6",
+"CRFB3",
+"CRUZ3",
+"CSAN3",
+"CSMG3",
+"CSNA3",
+"CTIP3",
+"CURY3",
+"CVCB3",
+"CYRE3",
+"DIRR3",
+"ECOR3",
+"EGIE3",
+"ELET3",
+"EMBJ3",
+"EMBR3",
+"ENBR3",
+"ENEV3",
+"ENGI11",
+"EQTL3",
+"ESTC3",
+"FIBR3",
+"FLRY3",
+"GGBR4",
+"GNDI3",
+"GOAU4",
+"GOLL4",
+"HAPV3",
+"HGTX3",
+"HYPE3",
+"IGTA3",
+"IRBR3",
+"ITSA4",
+"ITUB4",
+"JBSS3",
+"KLBN11",
+"KROT3",
+"LAME4",
+"LREN3",
+"LWSA3",
+"MBRF3",
+"MGLU3",
+"MOTV3",
+"MRFG3",
+"MRVE3",
+"MULT3",
+"NATU3",
+"NEOE3",
+"NTCO3",
+"OIBR4",
+"PCAR3",
+"PCAR4",
+"PDGR3",
+"PETR4",
+"PETZ3",
+"POMO4",
+"PRIO3",
+"PSSA3",
+"QUAL3",
+"RADL3",
+"RAIL3",
+"RDOR3",
+"RENT3",
+"RRRP3",
+"RUMO3",
+"SANB11",
+"SBSP3",
+"SMFT3",
+"SMLE3",
+"SMLS3",
+"SOMA3",
+"SULA11",
+"SUZB3",
+"SUZB5",
+"TAEE11",
+"TBLE3",
+"TIMP3",
+"TIMS3",
+"TOTS3",
+"TRPL4",
+"UGPA3",
+"USIM5",
+"VALE3",
+"VALE5",
+"VBBR3",
+"VIIA3",
+"VIVA3",
+"VIVT3",
+"VIVT4",
+"VVAR11",
+"VVAR3",
+"WEGE3",
+"YDUQ3"
+],
+"peers": {
+"RAIL3": [
+"ALLL3",
+"RUMO3"
+],
+"NATU3": [],
+"JBSS3": [],
+"BRAP4": [],
+"ENGI11": [],
+"AMER3": [
+"BTOW3"
+],
+"ARZZ3": [
+"AZZA3"
+],
+"VIVT4": [],
+"MRFG3": [
+"MBRF3"
+],
+"ALSO3": [
+"ALOS3",
+"SSBR3"
+],
+"SMLS3": [],
+"CPLE6": [],
+"IGTA3": [],
+"SANB11": [],
+"WEGE3": [],
+"PCAR3": [],
+"BTOW3": [
+"AMER3"
+],
+"EQTL3": [],
+"YDUQ3": [
+"ESTC3"
+],
+"BEEF3": [],
+"MBRF3": [
+"MRFG3"
+],
+"PCAR4": [],
+"HGTX3": [],
+"RENT3": [],
+"AZUL4": [],
+"RADL3": [],
+"AEDU3": [],
+"USIM5": [],
+"OIBR4": [],
+"NTCO3": [],
+"VALE3": [],
+"RDOR3": [],
+"SMFT3": [],
+"FLRY3": [],
+"BRDT3": [
+"VBBR3"
+],
+"VVAR3": [
+"BHIA3",
+"VIIA3"
+],
+"ALOS3": [
+"ALSO3",
+"SSBR3"
+],
+"ASAI3": [],
+"ENEV3": [],
+"ECOR3": [],
+"VIIA3": [
+"BHIA3",
+"VVAR3"
+],
+"BPAN4": [],
+"AXIA3": [
+"ELET3"
+],
+"HYPE3": [],
+"EMBR3": [
+"EMBJ3"
+],
+"LAME4": [],
+"IRBR3": [],
+"CSAN3": [],
+"BBAS3": [],
+"COGN3": [
+"KROT3"
+],
+"SOMA3": [],
+"KLBN11": [],
+"RUMO3": [
+"ALLL3",
+"RAIL3"
+],
+"ESTC3": [
+"YDUQ3"
+],
+"CTIP3": [],
+"SULA11": [],
+"SUZB3": [],
+"VBBR3": [
+"BRDT3"
+],
+"CPFE3": [],
+"EMBJ3": [
+"EMBR3"
+],
+"EGIE3": [
+"TBLE3"
+],
+"BRAV3": [
+"RRRP3"
+],
+"PETR4": [],
+"MULT3": [],
+"ITUB4": [],
+"CYRE3": [],
+"CRFB3": [],
+"BRFS3": [],
+"BRKM5": [],
+"CSNA3": [],
+"KROT3": [
+"COGN3"
+],
+"VIVA3": [],
+"PDGR3": [],
+"DIRR3": [],
+"NEOE3": [],
+"B3SA3": [
+"BVMF3"
+],
+"BRML3": [],
+"HAPV3": [],
+"ALLL3": [
+"RAIL3",
+"RUMO3"
+],
+"ABEV3": [],
+"MOTV3": [
+"CCRO3"
+],
+"PETZ3": [],
+"CPLE3": [],
+"CURY3": [],
+"CMIG4": [],
+"TIMS3": [],
+"ITSA4": [],
+"CRUZ3": [],
+"BVMF3": [
+"B3SA3"
+],
+"VVAR11": [],
+"GOLL4": [],
+"TRPL4": [
+"ISAE4"
+],
+"GOAU4": [],
+"CASH3": [],
+"QUAL3": [],
+"UGPA3": [],
+"GGBR4": [],
+"BBSE3": [],
+"CIEL3": [],
+"SUZB5": [],
+"MGLU3": [],
+"LREN3": [],
+"TBLE3": [
+"EGIE3"
+],
+"VIVT3": [],
+"POMO4": [],
+"CCRO3": [
+"MOTV3"
+],
+"CESP6": [],
+"ELET3": [
+"AXIA3"
+],
+"PRIO3": [],
+"LWSA3": [],
+"BRPR3": [],
+"SMLE3": [],
+"PSSA3": [],
+"AZZA3": [
+"ARZZ3"
+],
+"TIMP3": [],
+"MRVE3": [],
+"GNDI3": [],
+"RRRP3": [
+"BRAV3"
+],
+"TAEE11": [],
+"BBDC4": [],
+"FIBR3": [],
+"TOTS3": [],
+"CEAB3": [],
+"ENBR3": [],
+"SBSP3": [],
+"VALE5": [],
+"CSMG3": [],
+"BIDI11": [],
+"CVCB3": []
+}
+}
