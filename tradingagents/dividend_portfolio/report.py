@@ -57,8 +57,11 @@ def render(as_of: str, rebalance: bool, target: pd.DataFrame, holdings: list[dic
             out += ["| Ordem | Ação | Quantidade | Preço | Valor | Motivo |", "|---|---|---|---|---|---|"]
             for o in plan.orders:
                 out.append(f"| {o.side} | {o.code} | {o.quantity} | {brl(o.price)} | {brl(o.value)} | {o.reason} |")
+        elif rebalance:
+            out.append("Nenhuma ordem: a carteira já segue a regra.")
         else:
-            out.append("Nenhuma ordem: a carteira está dentro da regra.")
+            out.append("Nenhuma ordem: fora de junho e dezembro nada é vendido, e só há compra quando entra "
+                       "dinheiro novo (`--aporte`).")
         if plan.deferred:
             out += ["", "Vendas adiadas (próximos meses): " + ", ".join(f"{o.code} {o.quantity}" for o in plan.deferred)]
         out += ["", f"- Vendas no mês: {brl(plan.sales_this_month)} (isenção até {brl(EXEMPT_MONTHLY_SALES)})",

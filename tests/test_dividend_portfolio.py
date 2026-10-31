@@ -206,3 +206,11 @@ def test_the_report_shows_orders_tax_and_alerts_in_portuguese():
     assert "| AAAA3 | Empresa A | Bancos | 10,0% | 9,5% | 35% |" in text
     assert "🔴 alerta · dividendos: Corte de dividendos anunciado." in text
     assert "| Carteira-sombra | +8,0% |" in text and brl(1234567.891) == "R$ 1.234.567,89"
+
+
+@pytest.mark.unit
+def test_a_week_without_orders_says_why():
+    plan = plan_orders(_book(("OLDA3", 10, 8.0)), ["AAAA3"], {"OLDA3": 10.0, "AAAA3": 25.0}, sell=False)
+    target = pd.DataFrame([{"code": "AAAA3", "name": "A", "sector": "Bancos", "dy12": 0.1, "dy24": 0.1}])
+    text = render("2026-10-30", False, target, [], plan, {}, {}, None, 0.0, False)
+    assert "fora de junho e dezembro nada é vendido" in text and "já segue a regra" not in text
