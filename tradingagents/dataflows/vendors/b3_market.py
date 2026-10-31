@@ -13,6 +13,7 @@ from datetime import date
 from pathlib import Path
 
 import pandas as pd
+import requests
 import yfinance as yf
 
 from tradingagents.dataflows.config import get_config
@@ -128,3 +129,19 @@ def index_series(symbol: str, start: str = "2008-01-01") -> pd.Series:
         frame.index = frame.index.tz_localize(None).normalize()
         frame[["Close"]].to_csv(path)
     return pd.read_csv(path, index_col=0, parse_dates=True)["Close"].sort_index()
+
+
+def sgs_series(series: int, start_year: int = 2010) -> pd.Series:
+    """A Banco Central SGS series (e.g. 12, the daily CDI in % a day), cached for ``PRICE_TTL``."""
+    path = _folder() / f"sgs_{series}.csv"
+    if not path.exists() or time.time() - path.stat().st_mtime > PRICE_TTL:
+        rows = []
+        for year in range(start_year, date.today().year + 1):   # the API caps a request's span
+            url = (f"https://api.bcb.gov.br/dados/serie/bcdata.sgs.{series}/dados?formato=json"
+                   f"&dataInicial=01/01/{year}&dataFinal=31/12/{year}")
+            response = requests.get(url, timeout=60)
+            response.raise_for_status()
+            rows += response.json()
+        pd.Series({pd.to_datetime(r["data"], dayfirst=True): float(r["valor"]) for r in rows}).sort_index() \
+            .to_csv(path, header=["value"])
+    return pd.read_csv(path, index_col=0, parse_dates=True)["value"]

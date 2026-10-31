@@ -23,8 +23,9 @@ from tradingagents.llm_clients import create_tier_client
 logger = logging.getLogger(__name__)
 
 # US$ per million input and output tokens; an unknown model is priced as the dearer one.
-PRICES = {"claude-haiku-5-5": (0.10, 0.50), "claude-sonnet-5-5": (2.0, 10.0)}
-DEFAULT_PRICE = (2.0, 10.0)
+PRICES = {"claude-haiku-5-5": (0.10, 0.50), "claude-sonnet-5-5": (2.0, 10.0), "claude-opus-5-5": (4.0, 20.0),
+          "claude-fable-5-1": (10.0, 50.0)}
+DEFAULT_PRICE = (10.0, 50.0)
 
 
 class CostMeter(BaseCallbackHandler):

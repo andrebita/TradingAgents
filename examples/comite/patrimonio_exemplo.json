@@ -1,0 +1,65 @@
+{
+ "as_of": "2026-09-30",
+ "cash": 0.0,
+ "fixed_income": [
+  {
+   "name": "Tesouro Selic 2029",
+   "kind": "tesouro_selic",
+   "issuer": "Tesouro",
+   "indexer": "SELIC",
+   "maturity": "2029-03-01",
+   "value": 50000.0,
+   "liquidity_days": 1
+  },
+  {
+   "name": "CDB liquidez diária",
+   "kind": "cdb",
+   "issuer": "Banco Exemplo",
+   "indexer": "CDI",
+   "value": 15000.0,
+   "liquidity_days": 0,
+   "fgc": true
+  },
+  {
+   "name": "Tesouro IPCA+ 2045",
+   "kind": "tesouro_ipca",
+   "issuer": "Tesouro",
+   "indexer": "IPCA",
+   "maturity": "2045-05-15",
+   "value": 20000.0,
+   "liquidity_days": 1
+  },
+  {
+   "name": "LCI 2027",
+   "kind": "lci",
+   "issuer": "Banco Exemplo",
+   "indexer": "CDI",
+   "maturity": "2027-06-01",
+   "value": 10000.0,
+   "tax_exempt": true,
+   "fgc": true,
+   "applied_on": "2025-06-01"
+  }
+ ],
+ "listed": [
+  {
+   "code": "BBSE3",
+   "quantity": 50,
+   "average_price": 33.0
+  },
+  {
+   "code": "TAEE11",
+   "quantity": 100,
+   "average_price": 35.0
+  },
+  {
+   "code": "HGLG11",
+   "quantity": 20,
+   "kind": "fii",
+   "value": 3200.0
+  }
+ ],
+ "notes": [
+  "Exemplo fictício."
+ ]
+}

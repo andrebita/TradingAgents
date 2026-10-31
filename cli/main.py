@@ -247,5 +247,36 @@ def carteira_revisar(
     console.print(f"\nRelatório salvo em {result.report_path}")
 
 
+comite = typer.Typer(help="Comitê de investimentos: cinco analistas e um diretor financeiro, dentro da sua política.")
+app.add_typer(comite, name="comite")
+
+
+@comite.command("reunir")
+def comite_reunir(
+    politica: str = typer.Option(..., "--politica", help="JSON da política de investimentos"),
+    patrimonio: str = typer.Option(..., "--patrimonio", help="JSON do patrimônio completo"),
+    aporte: float = typer.Option(None, "--aporte", help="Aporte deste mês, em R$ (padrão: o da política)"),
+    data: str = typer.Option(None, "--data", help="Data da reunião, AAAA-MM-DD (padrão: hoje)"),
+    sem_llm: bool = typer.Option(False, "--sem-llm", help="Só os fatos e a regra, sem analistas nem diretor"),
+):
+    """Reúne o comitê: analistas, decisão do diretor conferida pela política e carta ao investidor."""
+    from datetime import date as _date
+
+    from rich.markdown import Markdown
+
+    from tradingagents.committee.meeting import hold
+    from tradingagents.committee.policy import load_policy
+    from tradingagents.committee.wealth import load_wealth
+
+    try:
+        meeting = hold(load_policy(politica), load_wealth(patrimonio), contribution=aporte,
+                       as_of=_date.fromisoformat(data) if data else None, use_llm=not sem_llm)
+    except Exception as exc:  # a bad file, a missing key or an unreachable source is a setup error
+        console.print(f"[red]{escape(str(exc))}[/red]")
+        raise typer.Exit(code=1) from None
+    console.print(Markdown(meeting.letter))
+    console.print(f"\nCarta salva em {meeting.path} · custo US$ {meeting.spent_usd:.3f}")
+
+
 if __name__ == "__main__":
     app()

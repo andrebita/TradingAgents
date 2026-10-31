@@ -1,0 +1,295 @@
+"""The committee's analysts: facts computed in code, then read by each analyst's model.
+
+Each analyst returns a ``Report``: the facts the director sees (plain data, so
+the numbers are the code's, never the model's), the analyst's reading of them
+and the warnings the code itself raised. A failed model call leaves the facts
+and says so; the meeting goes on.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+from dataclasses import dataclass, field
+from datetime import date
+
+import numpy as np
+import pandas as pd
+from pydantic import BaseModel, Field
+
+from tradingagents.committee.policy import InvestmentPolicy
+from tradingagents.committee.wealth import Wealth
+from tradingagents.dataflows.errors import VendorError
+from tradingagents.dataflows.router import route_to_vendor
+from tradingagents.dataflows.vendors import b3_market
+from tradingagents.dividend_portfolio.monitor import CostMeter
+from tradingagents.llm_clients import create_tier_client
+
+logger = logging.getLogger(__name__)
+
+ROLES = {"fixed_income": "Analista de Renda Fixa", "equities": "Analista de Ações", "risk": "Analista de Risco",
+         "tax": "Analista Tributário", "macro": "Analista Macro"}
+
+
+class View(BaseModel):
+    """An analyst's reading, for the director."""
+
+    summary: str = Field(description="Four to eight sentences in Portuguese: what the facts say for this investor.")
+    recommendations: list[str] = Field(description="Concrete recommendations in Portuguese, within the policy.")
+    risks: list[str] = Field(description="Risks or open questions in Portuguese.")
+
+
+@dataclass
+class Report:
+    role: str
+    facts: dict
+    view: View | None = None
+    warnings: list[str] = field(default_factory=list)
+    error: str | None = None
+
+
+@dataclass
+class Models:
+    """One cost meter per model, shared by the members running on it, and the clients they need."""
+
+    config: dict
+    budget_usd: float
+    meters: dict[str, CostMeter] = field(default_factory=dict)
+
+    def llm(self, model: str, effort: str = "medium"):
+        meter = self.meters.setdefault(model, CostMeter(model, self.budget_usd))
+        tier = {**self.config, "llm_provider": "anthropic", "deep_think_llm": model, "anthropic_effort": effort}
+        return create_tier_client(tier, "deep", callbacks=[meter]).get_llm()
+
+    @property
+    def spent(self) -> float:
+        return sum(m.spent for m in self.meters.values())
+
+
+def ask_view(models: Models, model: str, role: str, brief: str, facts: dict, policy: InvestmentPolicy) -> View:
+    if models.spent >= models.budget_usd:
+        raise RuntimeError("orçamento de LLM da reunião esgotado")
+    prompt = (f"You are the {role} of a private investment committee in Brazil, reporting to the financial director. "
+              f"{brief}\n\nThe investor's policy:\n{policy.model_dump_json(indent=1, exclude={'models'})}\n\n"
+              f"The facts, computed by the committee's code (trust these numbers; do not recompute them):\n"
+              f"{json.dumps(facts, ensure_ascii=False, indent=1, default=str)}\n\n"
+              "Write for the director in Portuguese. Stay within the policy. Do not forecast prices or rates: "
+              "the committee's backtests found no edge in timing the market.")
+    return models.llm(model).with_structured_output(View).invoke(prompt)
+
+
+def _with_view(report: Report, models: Models | None, model: str, brief: str, policy: InvestmentPolicy) -> Report:
+    if models is None:
+        return report
+    try:
+        report.view = ask_view(models, model, report.role, brief, report.facts, policy)
+    except Exception as exc:  # the facts still reach the director
+        logger.warning("%s failed: %s", report.role, exc)
+        report.error = f"{type(exc).__name__}: {exc}"[:300]
+    return report
+
+
+# --- Allocation: the numbers every analyst shares ---------------------------------------
+
+def allocation(policy: InvestmentPolicy, wealth: Wealth, stock_values: dict[str, float],
+               contribution: float) -> dict:
+    """Where the wealth stands against the policy, and the rule's move for this month.
+
+    Investable wealth is everything outside the emergency reserve. The contribution
+    goes first to stocks while they are below target; a shortfall beyond the band is
+    closed from fixed income in equal monthly transfers over the transition; listed
+    funds above their ceiling get no new money (nothing is sold).
+    """
+    stocks = sum(stock_values.values())
+    funds = sum(x.value or 0.0 for x in wealth.listed_funds())
+    fixed = sum(x.value for x in wealth.fixed_income) + wealth.cash
+    total = stocks + funds + fixed
+    investable = max(total - policy.reserve, 0.0)
+    target_stocks = policy.stock_target * (investable + contribution)
+    to_stocks = min(max(target_stocks - stocks, 0.0), contribution)
+    gap = target_stocks - stocks - to_stocks
+    transfer = 0.0
+    if gap > policy.band * investable:
+        liquid = sum(x.value for x in wealth.fixed_income if x.liquidity_days is not None and x.liquidity_days <= 1)
+        transfer = min(gap / policy.transition_months, max(liquid - policy.reserve, 0.0))
+    def share(v: float) -> float:
+        return v / investable if investable else 0.0
+
+    return {"total": round(total, 2), "reserve_target": policy.reserve, "investable": round(investable, 2),
+            "stocks": round(stocks, 2), "listed_funds": round(funds, 2), "fixed_income": round(fixed, 2),
+            "stock_share_of_investable": round(share(stocks), 4), "stock_target": policy.stock_target,
+            "listed_funds_share_of_investable": round(share(funds), 4), "listed_funds_max": policy.listed_funds_max,
+            "listed_funds_above_ceiling": share(funds) > policy.listed_funds_max,
+            "contribution": contribution, "rule_contribution_to_stocks": round(to_stocks, 2),
+            "rule_contribution_to_fixed_income": round(contribution - to_stocks, 2),
+            "stock_gap_after_contribution": round(gap, 2), "rule_monthly_transfer": round(transfer, 2),
+            "transition_months": policy.transition_months}
+
+
+# --- Fixed income ---------------------------------------------------------------------------
+
+def fixed_income_facts(policy: InvestmentPolicy, wealth: Wealth, today: date) -> tuple[dict, list[str]]:
+    fi = wealth.fixed_income
+    liquid = [x for x in fi if x.liquidity_days is not None and x.liquidity_days <= 1]
+    liquid_value = sum(x.value for x in liquid)
+    by_indexer: dict[str, float] = {}
+    for x in fi:
+        by_indexer[x.indexer] = by_indexer.get(x.indexer, 0.0) + x.value
+    issuers: dict[str, float] = {}
+    for x in fi:
+        if not x.sovereign:
+            issuers[x.issuer] = issuers.get(x.issuer, 0.0) + x.value
+    soon = [{"name": x.name, "maturity": x.maturity, "value": x.value} for x in fi
+            if x.maturity and (x.maturity - today).days <= 365]
+    long_dated = [{"name": x.name, "maturity": x.maturity, "value": x.value} for x in fi
+                  if x.indexer in ("IPCA", "PRE") and x.maturity and (x.maturity - today).days > 10 * 365]
+    warnings = []
+    if liquid_value < policy.reserve:
+        warnings.append(f"Reserva de emergência descoberta: R$ {liquid_value:,.0f} com liquidez diária contra "
+                        f"R$ {policy.reserve:,.0f} da política.")
+    for issuer, value in issuers.items():
+        if value > policy.private_issuer_max:
+            warnings.append(f"{issuer}: R$ {value:,.0f} acima do limite do FGC por instituição.")
+    uncovered = [x.name for x in fi if not x.sovereign and not x.fgc and x.kind != "fund"]
+    facts = {"total": round(sum(x.value for x in fi), 2),
+             "sovereign": round(sum(x.value for x in fi if x.sovereign), 2),
+             "daily_liquidity": round(liquid_value, 2), "reserve_target": policy.reserve,
+             "liquid_beyond_reserve": round(liquid_value - policy.reserve, 2),
+             "liquid_positions": [{"name": x.name, "value": x.value, "kind": x.kind} for x in liquid],
+             "by_indexer": {k: round(v, 2) for k, v in by_indexer.items()},
+             "private_issuers": {k: round(v, 2) for k, v in issuers.items()},
+             "without_fgc_guarantee": uncovered, "maturing_within_12_months": soon,
+             "long_dated_marked_to_market": long_dated,
+             "tax_exempt": [x.name for x in fi if x.tax_exempt]}
+    return facts, warnings
+
+
+def fixed_income(policy, wealth, today, models: Models | None) -> Report:
+    facts, warnings = fixed_income_facts(policy, wealth, today)
+    brief = ("Assess the emergency reserve, where this month's transfer to stocks should come from (liquid money "
+             "beyond the reserve first; never break long-dated bonds marked to market at a loss to fund it), what to "
+             "do with maturities, and issuer and guarantee concentration.")
+    return _with_view(Report(ROLES["fixed_income"], facts, warnings=warnings), models, policy.models.fixed_income,
+                      brief, policy)
+
+
+# --- Risk -----------------------------------------------------------------------------------
+
+def class_returns(start: str = "2012-02-01") -> pd.DataFrame:
+    """Monthly returns of the three classes: stocks (BOVA11, and DIVO11 for the dividend tilt), listed funds
+    (XFIX11 from December 2020, before it the average of HGLG11 and KNRI11) and fixed income (CDI net of a 15%
+    income tax)."""
+    def monthly(series: pd.Series) -> pd.Series:
+        return series.groupby(series.index.to_period("M")).last().pct_change()
+
+    bova, divo = monthly(b3_market.index_series("BOVA11.SA")), monthly(b3_market.index_series("DIVO11.SA"))
+    xfix = monthly(b3_market.index_series("XFIX11.SA"))
+    old = pd.concat([monthly(b3_market.index_series(s)) for s in ("HGLG11.SA", "KNRI11.SA")], axis=1).mean(axis=1)
+    funds = xfix.combine_first(old)
+    cdi = b3_market.sgs_series(12)
+    cdi = (1 + cdi / 100).groupby(cdi.index.to_period("M")).prod() - 1
+    # What the investor keeps: 15% income tax on the yield (the long-term rate), as an approximation.
+    frame = pd.DataFrame({"stocks_index": bova, "stocks_dividend": divo, "listed_funds": funds, "cdi": 0.85 * cdi})
+    return frame.loc[pd.Period(start, "M"):].dropna()
+
+
+def stress(returns: pd.DataFrame, stock_share: float, funds_share: float, stock_col: str) -> dict:
+    mix = (stock_share * returns[stock_col] + funds_share * returns["listed_funds"]
+           + (1 - stock_share - funds_share) * returns["cdi"])
+    curve = (1 + mix).cumprod()
+    drawdown = curve / curve.cummax().clip(lower=1.0) - 1   # from the starting value too
+    rolling = (1 + mix).rolling(12).apply(np.prod, raw=True) - 1
+    yearly = (1 + mix).groupby(mix.index.year).prod() - 1
+    worst_year = int(yearly.idxmin())
+    return {"annual_return": round(float(curve.iloc[-1] ** (12 / len(mix)) - 1), 4),
+            "worst_drawdown": round(float(drawdown.min()), 4),
+            "worst_drawdown_month": str(drawdown.idxmin()),
+            "worst_12_months": round(float(rolling.min()), 4),
+            "worst_calendar_year": {"year": worst_year, "return": round(float(yearly.min()), 4)},
+            "share_of_negative_12_month_windows": round(float((rolling < 0).mean()), 3)}
+
+
+def risk_facts(policy, wealth, alloc: dict, stock_values: dict[str, float], sectors: dict[str, str]) -> tuple[dict, list]:
+    investable = alloc["investable"] or 1.0
+    returns = class_returns()
+    now = (alloc["stocks"] / investable, alloc["listed_funds"] / investable)
+    target = (policy.stock_target, min(alloc["listed_funds"] / investable, policy.listed_funds_max))
+    stocks_total = sum(stock_values.values()) or 1.0
+    largest = sorted(stock_values.items(), key=lambda kv: -kv[1])[:5]
+    by_sector: dict[str, float] = {}
+    for code, value in stock_values.items():
+        by_sector[sectors.get(code, "não identificado")] = by_sector.get(sectors.get(code, "não identificado"), 0) + value
+    warnings = []
+    top_sector, top_value = max(by_sector.items(), key=lambda kv: kv[1]) if by_sector else ("", 0)
+    if top_value / stocks_total > 0.4:
+        warnings.append(f"{top_value / stocks_total:.0%} das ações num só setor ({top_sector}).")
+    facts = {"history": f"{returns.index[0]} a {returns.index[-1]}, mensal, rebalanceado todo mês; reserva fora",
+             "listed_funds_proxy": "XFIX11 desde dez/2020; antes, média de HGLG11 e KNRI11",
+             "fixed_income_proxy": "CDI líquido de 15% de IR (aproximação)",
+             "current_mix": {"stocks": round(now[0], 3), "listed_funds": round(now[1], 3),
+                             "with_index": stress(returns, *now, "stocks_index"),
+                             "with_dividend_tilt": stress(returns, *now, "stocks_dividend")},
+             "target_mix": {"stocks": target[0], "listed_funds": round(target[1], 3),
+                            "with_index": stress(returns, *target, "stocks_index"),
+                            "with_dividend_tilt": stress(returns, *target, "stocks_dividend")},
+             "fixed_income_only": stress(returns, 0.0, 0.0, "stocks_index"),
+             "largest_stocks": [{"code": c, "share_of_stocks": round(v / stocks_total, 3)} for c, v in largest],
+             "stocks_by_sector": {k: round(v / stocks_total, 3) for k, v in
+                                  sorted(by_sector.items(), key=lambda kv: -kv[1])}}
+    return facts, warnings
+
+
+def risk(policy, wealth, alloc, stock_values, sectors, models: Models | None) -> Report:
+    facts, warnings = risk_facts(policy, wealth, alloc, stock_values, sectors)
+    brief = ("Explain how the current and the target mix of the investable wealth fared in past crises (worst fall, "
+             "worst year, how often 12 months ended negative), whether the investor's tolerance of a 20% fall holds, "
+             "and the concentration of the stocks.")
+    return _with_view(Report(ROLES["risk"], facts, warnings=warnings), models, policy.models.risk, brief, policy)
+
+
+# --- Tax ------------------------------------------------------------------------------------
+
+REGRESSIVE = [(180, 0.225), (360, 0.20), (720, 0.175), (None, 0.15)]
+
+
+def tax_facts(policy, wealth, equity_plan) -> dict:
+    taxable = [x for x in wealth.fixed_income if not x.tax_exempt]
+    return {"stock_sales_this_month": round(getattr(equity_plan, "sales_this_month", 0.0), 2),
+            "stock_sales_exemption": 20_000.0,
+            "estimated_tax_on_stock_sales": round(getattr(equity_plan, "estimated_tax", 0.0), 2),
+            "loss_carryforward_after": round(getattr(equity_plan, "loss_carryforward_after", 0.0), 2),
+            "deferred_sales": [f"{o.code} {o.quantity}" for o in getattr(equity_plan, "deferred", [])],
+            "fixed_income_regressive_table": "até 180 dias 22,5%; até 360 20%; até 720 17,5%; acima 15%; "
+                                             "IOF nos primeiros 30 dias",
+            "purchase_dates_known": all(x.applied_on for x in taxable),
+            "taxable_fixed_income": [{"name": x.name, "value": x.value, "liquidity_days": x.liquidity_days}
+                                     for x in taxable],
+            "tax_exempt_fixed_income": [x.name for x in wealth.fixed_income if x.tax_exempt],
+            "dividends": "isentos para pessoa física (confirmar as regras de 2026 para valores altos)",
+            "interest_on_capital": "JCP com 15% retido na fonte"}
+
+
+def tax(policy, wealth, equity_plan, models: Models | None) -> Report:
+    facts = tax_facts(policy, wealth, equity_plan)
+    brief = ("Say which money to move first for this month's transfer to stocks at the least tax (liquid post-fixed "
+             "positions beyond the reserve, maturities; exempt positions earn more net, so they go last), whether "
+             "the stock sales fit the monthly exemption, and what the investor should record for the tax return.")
+    return _with_view(Report(ROLES["tax"], facts), models, policy.models.tax, brief, policy)
+
+
+# --- Macro ----------------------------------------------------------------------------------
+
+MACRO = ("selic", "ipca_12m", "focus_selic", "focus_ipca", "usd_brl")
+
+
+def macro(policy, today: date, models: Models | None) -> Report:
+    facts = {}
+    for alias in MACRO:
+        try:
+            facts[alias] = route_to_vendor("get_macro_indicators", alias, today.isoformat(), 120)
+        except VendorError as exc:
+            facts[alias] = f"indisponível: {exc}"
+    brief = ("Summarize rates, inflation and the market's expectations as context for the director: the real rate "
+             "on fixed income, what it means for the investor's choice between post-fixed, inflation-linked and "
+             "fixed-rate bonds at his horizon. Context only: no market timing.")
+    return _with_view(Report(ROLES["macro"], facts), models, policy.models.macro, brief, policy)

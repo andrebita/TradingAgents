@@ -1,0 +1,25 @@
+{
+ "objective": "Crescimento do patrimônio no longo prazo (5 anos ou mais)",
+ "monthly_expenses": 10000,
+ "reserve_months": 6,
+ "monthly_contribution": 2000,
+ "stock_target": 0.4,
+ "stock_target_max": 0.6,
+ "stock_step_per_year": 0.1,
+ "listed_funds_max": 0.15,
+ "band": 0.05,
+ "transition_months": 12,
+ "private_issuer_max": 250000,
+ "excluded_sectors": [],
+ "autonomy": "recommend",
+ "models": {
+  "director": "claude-fable-5-1",
+  "fixed_income": "claude-sonnet-5-5",
+  "equities_news": "claude-haiku-5-5",
+  "equities_fundamentals": "claude-sonnet-5-5",
+  "risk": "claude-sonnet-5-5",
+  "tax": "claude-sonnet-5-5",
+  "macro": "claude-haiku-5-5"
+ },
+ "budget_usd": 3.0
+}
