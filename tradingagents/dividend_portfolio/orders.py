@@ -10,7 +10,9 @@ month's net gain, after losses carried from earlier months. So the plan:
   stocks furthest below their equal share, in whole shares (the odd-lot market
   trades single shares);
 * never trims a winner still in the target: new money evens the weights out,
-  which avoids taxable sales.
+  which avoids taxable sales;
+* between rebalances sells nothing and places new money in the current target,
+  so a book starting from cash is built up month by month.
 
 The tax figures are estimates for planning, not tax advice: day trades, other
 assets and the rules of each year are out of scope.
@@ -68,7 +70,7 @@ def plan_orders(book: PortfolioContext, target: list[str], prices: dict[str, flo
     ``band``: a target stock is topped up only when it sits more than this fraction
     below its equal share. ``stay_exempt``: sell only as much as keeps the month's
     sales within the exemption, deferring the rest. ``sell=False`` (between
-    rebalances) only places new money, in the target stocks already held.
+    rebalances) only places new money, in the current target; nothing is sold.
     """
     plan = Plan()
     held: dict[str, tuple[float, float | None]] = {}
@@ -120,7 +122,7 @@ def plan_orders(book: PortfolioContext, target: list[str], prices: dict[str, flo
     for o in plan.orders:
         remaining[o.code] -= o.quantity
     invested = sum(q * prices[c] for c, q in remaining.items() if c in prices and q > 0)
-    priced = [c for c in target if c in prices and (sell or c in held)]
+    priced = [c for c in target if c in prices]
     plan.target_value = (invested + cash) / len(priced) if priced else 0.0
     bought: dict[str, int] = {}
 

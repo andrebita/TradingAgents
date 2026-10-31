@@ -11,7 +11,8 @@ ações. Toda a evidência por trás dela está em `experiments/br_baseline/READ
 - **Universo:** as 50 empresas mais negociadas da B3.
 - **Seleção:** entre as que pagaram proventos em cada um dos últimos 3 anos, as **10 com maior dividendo médio dos
   últimos 24 meses** sobre o preço, com pesos iguais.
-- **Rebalanceamento:** em **junho e dezembro**. Nos outros meses só entra dinheiro novo, e nada é vendido.
+- **Rebalanceamento:** em **junho e dezembro**. Nos outros meses só entra dinheiro novo, nas ações da seleção, e
+  nada é vendido. Assim uma carteira que começa do zero é montada aos poucos, com os aportes.
 
 **Histórico (abr/2012 a out/2026, com proventos reinvestidos, sem IR):**
 

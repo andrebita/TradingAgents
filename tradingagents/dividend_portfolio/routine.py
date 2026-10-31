@@ -2,7 +2,7 @@
 
 In a rebalance month (June, December) the target is recomputed, recorded in the
 shadow portfolio, and the orders may sell what left it. In any other week only
-new money is placed, in the target stocks already held, and nothing is sold.
+new money is placed, in the current target, and nothing is sold.
 """
 
 from __future__ import annotations

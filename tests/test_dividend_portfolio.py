@@ -122,11 +122,18 @@ def test_new_money_goes_to_the_stocks_furthest_below_their_share_without_overspe
 
 
 @pytest.mark.unit
-def test_between_rebalances_nothing_is_sold_and_new_money_stays_in_held_targets():
+def test_between_rebalances_nothing_is_sold_and_new_money_goes_to_the_target():
     book = _book(("AAAA3", 100, 10.0), ("OLDA3", 100, 10.0))
     plan = plan_orders(book, ["AAAA3", "BBBB4"], {"AAAA3": 10.0, "BBBB4": 10.0, "OLDA3": 10.0},
                        contribution=500.0, sell=False)
-    assert all(o.side == "compra" for o in plan.orders) and {o.code for o in plan.orders} <= {"AAAA3"}
+    assert all(o.side == "compra" for o in plan.orders) and {o.code for o in plan.orders} <= {"AAAA3", "BBBB4"}
+
+
+@pytest.mark.unit
+def test_a_book_in_cash_is_built_up_between_rebalances():
+    plan = plan_orders(PortfolioContext(cash=0.0), ["AAAA3", "BBBB4"], {"AAAA3": 10.0, "BBBB4": 20.0},
+                       contribution=2000.0, sell=False)
+    assert {o.code: o.value for o in plan.orders} == {"AAAA3": 1000.0, "BBBB4": 1000.0}
 
 
 @pytest.mark.unit
