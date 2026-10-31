@@ -224,3 +224,21 @@ reports/
 # experiment run artifacts
 experiments/**/cache/
 experiments/**/*.lock
+
+# Personal investment data never goes into the repository: the investor's wealth,
+# policy and broker statements, and what the committee and the routine write about
+# them. Only the fictional examples under examples/comite are tracked.
+patrimonio*.json
+politica*.json
+minha_carteira*.json
+carteira_sombra.json
+sombra_*.json
+decisoes.jsonl
+carta_*.md
+relatorio_*.md
+**/minha/
+DOC-*.pdf
+*extrato*.pdf
+*Relatorio*Consolidado*.pdf
+!examples/comite/patrimonio_exemplo.json
+!examples/comite/politica_exemplo.json

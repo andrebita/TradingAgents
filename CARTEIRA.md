@@ -6,6 +6,32 @@ ações. Toda a evidência por trás dela está em `experiments/br_baseline/READ
 > **Não é recomendação de investimento.** O resultado passado não garante o futuro, e a vantagem histórica não
 > passou no teste estatístico rigoroso que fixamos antes de rodar.
 
+## Comitê de investimentos
+
+Para o patrimônio inteiro, e não só as ações, use o comitê:
+- **Cinco analistas:** renda fixa, ações, risco, tributário e macro.
+- **Um diretor financeiro**, que decide dentro da sua política e escreve uma carta mensal.
+- **Uma checagem em código:** cada decisão é conferida contra a política e trazida de volta aos limites quando
+  sai deles.
+
+```bash
+tradingagents comite reunir --politica ~/.tradingagents/minha/politica.json \
+    --patrimonio ~/.tradingagents/minha/patrimonio.json --aporte 3000
+```
+
+- **Modelos de arquivo:** `examples/comite/politica_exemplo.json` e `examples/comite/patrimonio_exemplo.json`.
+- **Modelo de cada membro:** fica na política. O padrão é Fable 5.1 para o diretor, Sonnet 5.5 para os analistas
+  de renda fixa, risco e tributário, e Haiku 5.5 para os alertas e o macro.
+- **Custo medido:** US$ 0,63 por reunião, com teto configurável (`budget_usd`).
+- **Saídas:** a carta vai para `~/.tradingagents/logs/comite/carta_AAAA-MM-DD.md`, junto com o registro das
+  decisões (`decisoes.jsonl`) e a carteira-sombra do diretor (`sombra_diretor.json`). A sombra mede, daqui para
+  frente, se o julgamento dele agrega à regra.
+
+**Seus dados não vão para o repositório.** Guarde a política, o patrimônio e os extratos fora da pasta do projeto,
+por exemplo em `~/.tradingagents/minha/`. O `.gitignore` também bloqueia `patrimonio*.json`, `politica*.json`,
+`minha_carteira*.json`, extratos em PDF, cartas, relatórios e registros de decisão, caso algum vá parar ali por
+engano.
+
 ## A regra
 
 - **Universo:** as 50 empresas mais negociadas da B3.
@@ -81,7 +107,7 @@ export ANTHROPIC_API_KEY=...     # para os alertas; sem chave, use --sem-llm
 tradingagents carteira revisar --carteira minha_carteira.json --aporte 1000
 ```
 
-`minha_carteira.json` (o preço médio serve para estimar o IR):
+`minha_carteira.json`, guardado fora do repositório (o preço médio serve para estimar o IR):
 
 ```json
 {
