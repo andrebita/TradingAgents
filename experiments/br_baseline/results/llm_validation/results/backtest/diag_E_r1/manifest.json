@@ -1,0 +1,43 @@
+{
+  "provider": "anthropic",
+  "quick": "claude-haiku-5-5",
+  "deep": "claude-sonnet-5-5",
+  "effort_setting": "anthropic_effort",
+  "effort_effective": {
+    "quick": "medium",
+    "deep": "medium"
+  },
+  "analysts": [
+    "fundamentals",
+    "market",
+    "news"
+  ],
+  "holding_days": 20,
+  "benchmark": "^BVSP",
+  "decision_memory": false,
+  "workers": 2,
+  "data_vendors": {
+    "core_stock_apis": "yfinance",
+    "technical_indicators": "yfinance",
+    "fundamental_data": "cvm,sec_edgar,yfinance",
+    "news_data": "cvm,yfinance",
+    "macro_data": "bcb,fred",
+    "prediction_markets": "polymarket"
+  },
+  "tool_vendors": {},
+  "debate_rounds": 1,
+  "risk_rounds": 1,
+  "max_tool_rounds": 20,
+  "llm_max_retries": null,
+  "max_tokens": null,
+  "temperature": null,
+  "dependencies": {
+    "anthropic": "2.3.0",
+    "langchain-core": "1.7.3",
+    "langchain-anthropic": "1.7.7",
+    "langgraph": "1.2.18",
+    "yfinance": "1.7.0",
+    "pandas": "3.1.0"
+  },
+  "code": "71a7dcd94eaa5fb610c3f72b82726022ddca2403"
+}
