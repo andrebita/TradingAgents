@@ -32,6 +32,15 @@ class FixedIncome(BaseModel):
     def sovereign(self) -> bool:
         return self.kind.startswith("tesouro")
 
+    @property
+    def reserve_eligible(self) -> bool:
+        """Cash within a day with no risk of a loss: post-fixed (Selic, CDI) with daily liquidity.
+
+        An inflation-linked or fixed-rate bond sells within a day too, but at the market
+        price, which can be below what was paid: it is not emergency money.
+        """
+        return self.liquidity_days is not None and self.liquidity_days <= 1 and self.indexer in ("SELIC", "CDI")
+
 
 class Listed(BaseModel):
     code: str
@@ -63,6 +72,24 @@ class Wealth(BaseModel):
     listed: list[Listed] = Field(default_factory=list)
     tax: TaxState = Field(default_factory=TaxState)
     notes: list[str] = Field(default_factory=list)
+
+    def reserve_eligible(self) -> float:
+        """Cash plus the post-fixed positions with daily liquidity: what the emergency reserve can count."""
+        return self.cash + sum(x.value for x in self.fixed_income if x.reserve_eligible)
+
+    def transfer_sources(self, amount: float) -> list[tuple[str, float]]:
+        """Where ``amount`` leaves fixed income from: cash, then the reserve-eligible positions, taxable
+        before exempt (an exempt yield is worth more net), larger first. ``("Caixa", x)`` is cash."""
+        out, left = [], amount
+        if left > 0 and self.cash > 0:
+            out.append(("Caixa", min(self.cash, left)))
+            left -= out[-1][1]
+        for x in sorted((x for x in self.fixed_income if x.reserve_eligible), key=lambda x: (x.tax_exempt, -x.value)):
+            if left <= 0.005:
+                break
+            out.append((x.name, min(x.value, left)))
+            left -= out[-1][1]
+        return [(name, round(v, 2)) for name, v in out if v > 0]
 
     def stocks(self) -> list[Listed]:
         return [x for x in self.listed if x.kind == "acao"]

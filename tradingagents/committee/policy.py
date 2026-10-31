@@ -33,6 +33,8 @@ class InvestmentPolicy(BaseModel):
     listed_funds_max: float = Field(0.15, ge=0, le=1, description="Ceiling for listed real-estate, agro and "
                                                                   "infrastructure funds")
     band: float = Field(0.05, ge=0, le=1, description="Drift tolerated before moving money between classes")
+    max_drawdown_tolerance: float = Field(0.20, gt=0, le=1, description="Largest fall of the investable wealth "
+                                                                        "the investor accepts")
     transition_months: int = Field(12, ge=1)
     private_issuer_max: float = Field(250_000.0, ge=0, description="Most in one private issuer: the FGC guarantee")
     excluded_sectors: list[str] = Field(default_factory=list)

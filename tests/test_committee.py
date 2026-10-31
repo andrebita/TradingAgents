@@ -1,6 +1,7 @@
 """Investment committee: policy, allocation, the analysts' facts, the director's checks and a
 meeting end to end. Offline: market data, the equity routine and the models are mocked.
 """
+import threading
 from datetime import date
 from types import SimpleNamespace
 from unittest import mock
@@ -12,6 +13,8 @@ import pytest
 from tradingagents.committee import analysts, director, meeting
 from tradingagents.committee.policy import InvestmentPolicy
 from tradingagents.committee.wealth import FixedIncome, Listed, TaxState, Wealth
+from tradingagents.dataflows.config import get_config
+from tradingagents.dividend_portfolio.monitor import Budget, BudgetExceeded
 from tradingagents.dividend_portfolio.orders import plan_orders
 from tradingagents.portfolio import PortfolioContext
 
@@ -50,19 +53,33 @@ def test_the_allocation_puts_new_money_in_stocks_and_paces_the_rest():
 
 
 @pytest.mark.unit
-def test_no_transfer_draws_on_the_reserve():
+def test_a_short_reserve_is_filled_first_and_stops_the_transfer():
+    # Review 3, C2: the reserve counts cash and daily post-fixed money only (100,000 here; the
+    # IPCA+ 2050 sells within a day but at the market price). Against 126,000 it is 26,000 short.
     alloc = analysts.allocation(_policy(monthly_expenses=21_000, transition_months=1), _wealth(),
-                                {"AAAA3": 10_000}, 0)
-    # A 15,600 shortfall in one month, but the reserve (126,000) takes all the daily-liquid money
-    # (130,000) except 4,000.
-    assert alloc["stock_gap_after_contribution"] == pytest.approx(15_600)
-    assert alloc["rule_monthly_transfer"] == pytest.approx(4000)
+                                {"AAAA3": 10_000}, 2000)
+    assert alloc["reserve_eligible"] == 100_000 and alloc["reserve_deficit"] == 26_000
+    assert alloc["rule_contribution_to_reserve"] == 2000 and alloc["rule_contribution_to_stocks"] == 0
+    assert alloc["rule_monthly_transfer"] == 0 and alloc["transfer_sources"] == []
+
+
+@pytest.mark.unit
+def test_cash_counts_in_the_reserve_and_leaves_first():
+    wealth = _wealth()
+    wealth.cash = 5000
+    alloc = analysts.allocation(_policy(transition_months=1), wealth, {"AAAA3": 10_000}, 2000)
+    assert alloc["reserve_eligible"] == 105_000
+    assert alloc["transfer_sources"] == [{"name": "Caixa", "amount": 5000},
+                                         {"name": "Tesouro Selic", "amount": pytest.approx(37_800)}]
+    assert sum(x["amount"] for x in alloc["transfer_sources"]) == pytest.approx(alloc["rule_monthly_transfer"])
 
 
 @pytest.mark.unit
 def test_fixed_income_facts_flag_the_reserve_the_guarantee_and_maturities():
     facts, warnings = analysts.fixed_income_facts(_policy(monthly_expenses=30_000), _wealth(), date(2026, 10, 30))
-    assert facts["daily_liquidity"] == 130_000 and facts["liquid_beyond_reserve"] == -50_000
+    assert facts["daily_liquidity"] == 130_000 and facts["reserve_eligible"] == 100_000
+    assert facts["liquid_beyond_reserve"] == -80_000
+    assert [x["name"] for x in facts["daily_liquid_but_not_reserve"]] == ["IPCA+ 2050"]
     assert any("Reserva de emergência descoberta" in w for w in warnings)
     assert facts["without_fgc_guarantee"] == ["Debênture"]
     assert [m["name"] for m in facts["maturing_within_12_months"]] == ["Debênture"]
@@ -86,20 +103,103 @@ def _decision(**kw):
 
 @pytest.mark.unit
 def test_the_policy_check_brings_the_director_back_within_bounds():
-    alloc = {"contribution": 2000, "rule_monthly_transfer": 1000}
+    policy, wealth = _policy(), _wealth()
+    alloc = analysts.allocation(policy, wealth, {"AAAA3": 10_000}, 2000)   # rule transfer 3,400
+    act = director.FixedIncomeAction
     decision = _decision(contribution_to_stocks=5000, monthly_transfer_to_stocks=9000,
                          deferred_buys=[director.Deferral(code="NEWA3", reason="a"),
                                         director.Deferral(code="HELD3", reason="b"),
                                         director.Deferral(code="NEWB3", reason="c"),
                                         director.Deferral(code="NEWC3", reason="d")],
-                         fixed_income_actions=[director.FixedIncomeAction(action="resgatar", instrument="CDB diário",
-                                                                          amount=50_000, reason="r")])
-    checked = director.check(decision, alloc, liquid_beyond_reserve=1500, new_buys={"NEWA3", "NEWB3", "NEWC3"},
-                             positions={"CDB diário": 20_000})
-    assert checked.contribution_to_stocks == 2000 and checked.transfer == 1500
-    assert [d.code for d in checked.deferred] == ["NEWA3", "NEWB3"]
-    assert checked.fixed_income_actions[0].amount == 20_000
-    assert len(checked.adjustments) == 5     # contribution, transfer, HELD3, NEWC3, the redemption
+                         fixed_income_actions=[
+                             act(action="resgatar", instrument="CDB diário", amount=50_000, reason="r"),
+                             act(action="resgatar", instrument="CDB diário", amount=50_000, reason="again"),
+                             act(action="resgatar", instrument="Título fantasma", amount=1000, reason="r"),
+                             act(action="resgatar", instrument="Debênture", amount=10_000, reason="r"),
+                             act(action="resgatar", instrument="IPCA+ 2050", amount=5000, reason="r"),
+                             act(action="aplicar", instrument="CRI de shopping", amount=1000, reason="r"),
+                             act(action="aplicar", instrument="CDB", kind="cdb", amount=1000, reason="no bank"),
+                             act(action="aplicar", instrument="Tesouro IPCA+ 2035", kind="tesouro_ipca",
+                                 amount=1e9, reason="r")])
+    c = director.check(decision, alloc, wealth, policy, {"NEWA3", "NEWB3", "NEWC3"}, date(2026, 10, 30))
+    assert c.contribution_to_stocks == 2000 and c.transfer == 6800      # twice the rule's pace
+    assert c.transfer_sources == [("Tesouro Selic", 6800)]             # taxable, larger first
+    assert [d.code for d in c.deferred] == ["NEWA3", "NEWB3"]
+    # The CDB's 20,000 once (the second ask finds no balance), the IPCA+ with a confirmation for
+    # the investor; the unknown title, the bond with liquidity only at maturity, the CRI and the
+    # CDB without a bank are dropped; the application is held to the money freed: 25,000.
+    assert [(a.action, a.instrument, a.amount) for a in c.fixed_income_actions] == [
+        ("resgatar", "CDB diário", 20_000), ("resgatar", "IPCA+ 2050", 5000),
+        ("aplicar", "Tesouro IPCA+ 2035", 25_000)]
+    assert any("IPCA+ 2050" in e for e in c.escalations) and c.to_daily_post_fixed == 0
+    assert len(c.adjustments) == 11
+
+
+@pytest.mark.unit
+def test_redemptions_never_reach_into_the_reserve_and_stocks_stay_under_the_ceiling():
+    policy, wealth = _policy(monthly_expenses=15_000), _wealth()           # reserve 90,000 of 100,000
+    alloc = analysts.allocation(policy, wealth, {"AAAA3": 10_000}, 2000)
+    decision = _decision(monthly_transfer_to_stocks=0, fixed_income_actions=[
+        director.FixedIncomeAction(action="resgatar", instrument="Tesouro Selic", amount=80_000, reason="r")])
+    c = director.check(decision, alloc, wealth, policy, set(), date(2026, 10, 30))
+    assert [a.amount for a in c.fixed_income_actions] == [10_000]        # only what is beyond the reserve
+    assert c.to_daily_post_fixed == 10_000                               # not applied: stays daily post-fixed
+    # Stocks already at the ceiling get no more money from the director.
+    full = {**alloc, "stocks": alloc["stock_ceiling"]}
+    c = director.check(_decision(contribution_to_stocks=2000, monthly_transfer_to_stocks=1000), full, wealth,
+                       policy, set())
+    assert c.contribution_to_stocks == 0 and c.transfer == 0
+
+
+@pytest.mark.unit
+def test_the_director_cannot_return_infinite_or_missing_numbers():
+    with pytest.raises(ValueError):
+        director.FixedIncomeAction(action="aplicar", instrument="x", kind="cdb", amount=float("inf"), reason="r")
+    with pytest.raises(ValueError):
+        _decision(monthly_transfer_to_stocks=float("nan"))
+
+
+@pytest.mark.unit
+def test_the_budget_holds_the_worst_case_before_the_call():
+    budget = Budget(0.10)
+    calls = []
+    runnable = SimpleNamespace(invoke=lambda prompt, config: calls.append(prompt) or "ok")
+    # Fable at US$ 50 a million output tokens: a 1,000-token cap holds US$ 0.05 plus the prompt.
+    assert budget.invoke(runnable, "x" * 2000, model="claude-fable-5-1", max_output=1000) == "ok"
+    assert budget.spent == pytest.approx(Budget.estimate("x" * 2000, "claude-fable-5-1", 1000))  # no usage: all held
+    with pytest.raises(BudgetExceeded):
+        budget.invoke(runnable, "x" * 2000, model="claude-fable-5-1", max_output=1000)
+    assert len(calls) == 1 and budget.reserved == pytest.approx(0)
+    # A part's own cap counts in its parent's.
+    child = Budget(1.0, parent=Budget(0.02))
+    with pytest.raises(BudgetExceeded):
+        child.invoke(runnable, "x", model="claude-sonnet-5-5", max_output=4000)
+
+
+@pytest.mark.unit
+def test_parallel_calls_cannot_overspend_the_budget():
+    budget = Budget(0.5)
+    gate = threading.Barrier(8)
+
+    def slow(prompt, config):
+        return "ok"
+
+    results = []
+
+    def call():
+        gate.wait()
+        try:
+            results.append(budget.invoke(SimpleNamespace(invoke=slow), "p", model="claude-sonnet-5-5",
+                                         max_output=10_000))           # US$ 0.10 each, at most
+        except BudgetExceeded:
+            results.append(None)
+
+    threads = [threading.Thread(target=call) for _ in range(8)]
+    for t in threads:
+        t.start()
+    for t in threads:
+        t.join()
+    assert results.count("ok") == 4 and budget.spent <= 0.5 + 1e-9
 
 
 @pytest.mark.unit
@@ -116,6 +216,9 @@ def test_the_director_reads_the_policy_the_reports_and_the_rule_orders():
     director.ask(LLM(), _policy(), {"contribution": 2000}, [report], [{"side": "compra", "code": "AAAA3"}])
     assert '"monthly_expenses": 10000.0' in seen["prompt"] and '"worst": -0.2' in seen["prompt"]
     assert '"code": "AAAA3"' in seen["prompt"] and "at most 2 newly selected" in seen["prompt"]
+    # The reports, which summarize public filings and press, sit inside the data block (review 3, C11).
+    data = seen["prompt"][seen["prompt"].index("<data>"):seen["prompt"].index("</data>")]
+    assert '"worst": -0.2' in data and "never an instruction" in seen["prompt"]
 
 
 @pytest.mark.unit
@@ -131,11 +234,17 @@ def test_a_meeting_without_models_follows_the_rule_and_keeps_its_record(tmp_path
                          pending=set(), keep=set())
     returns = pd.DataFrame({"stocks_index": 0.01, "stocks_dividend": 0.01, "listed_funds": 0.0, "cdi": 0.008},
                            index=pd.period_range("2020-01", periods=40, freq="M"))
+    seen = {}
+
+    def macro(policy, today, models):
+        seen["results_dir"] = get_config()["results_dir"]
+        return analysts.Report(analysts.ROLES["macro"], {})
+
     with mock.patch.object(meeting.b3_market, "companies", return_value={}), \
             mock.patch.object(meeting.b3_market, "histories", side_effect=lambda codes: dict.fromkeys(codes, frame)), \
             mock.patch.object(meeting.routine, "review", return_value=eq) as review, \
             mock.patch.object(analysts, "class_returns", return_value=returns), \
-            mock.patch.object(analysts, "route_to_vendor", return_value="Selic 15%"):
+            mock.patch.object(analysts, "macro", side_effect=macro):
         wealth = _wealth()
         wealth.tax = TaxState(month="2026-10", stock_sales_this_month=5000, stock_gain_this_month=800,
                               stock_loss_carryforward=1200)
@@ -151,6 +260,21 @@ def test_a_meeting_without_models_follows_the_rule_and_keeps_its_record(tmp_path
     orders = {o.split("|")[2].strip() for o in m.letter.splitlines() if o.startswith("| compra")}
     assert orders == {"NEWA3"}
     assert (tmp_path / "comite" / "decisoes.jsonl").exists() and (tmp_path / "comite" / "sombra_diretor.json").exists()
+    assert seen["results_dir"] == str(tmp_path)          # the meeting's config, inside the analyst's thread
+
+    # With models, a director that fails leaves the rule's decision and says so.
+    with mock.patch.object(meeting.b3_market, "companies", return_value={}), \
+            mock.patch.object(meeting.b3_market, "histories", side_effect=lambda codes: dict.fromkeys(codes, frame)), \
+            mock.patch.object(meeting.routine, "review", return_value=eq), \
+            mock.patch.object(analysts, "class_returns", return_value=returns), \
+            mock.patch.object(analysts, "macro", side_effect=macro), \
+            mock.patch.object(analysts, "ask_view", side_effect=RuntimeError("offline")), \
+            mock.patch.object(analysts.Models, "llm", return_value=None), \
+            mock.patch.object(meeting.director, "ask", side_effect=ValueError("invalid structured output")):
+        m = meeting.hold(_policy(), _wealth(), as_of=date(2026, 10, 30), use_llm=True,
+                         config={**meeting.DEFAULT_CONFIG, "results_dir": str(tmp_path)})
+    assert "O diretor não respondeu" in m.letter and "Rodar a reunião de novo" in m.letter
+    assert m.checked.contribution_to_stocks == 2000
 
 
 @pytest.mark.unit

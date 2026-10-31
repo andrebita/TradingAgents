@@ -22,7 +22,7 @@ from tradingagents.committee.wealth import Wealth
 from tradingagents.dataflows.errors import VendorError
 from tradingagents.dataflows.router import route_to_vendor
 from tradingagents.dataflows.vendors import b3_market
-from tradingagents.dividend_portfolio.monitor import CostMeter
+from tradingagents.dividend_portfolio.monitor import Budget
 from tradingagents.llm_clients import create_tier_client
 
 logger = logging.getLogger(__name__)
@@ -48,34 +48,36 @@ class Report:
     error: str | None = None
 
 
+ANALYST_MAX_OUTPUT = 4_000
+DIRECTOR_MAX_OUTPUT = 24_000
+
+
 @dataclass
 class Models:
-    """One cost meter per model, shared by the members running on it, and the clients they need."""
+    """The clients the members need, and the meeting's budget, held before every call."""
 
     config: dict
-    budget_usd: float
-    meters: dict[str, CostMeter] = field(default_factory=dict)
+    budget: Budget
 
-    def llm(self, model: str, effort: str = "medium"):
-        meter = self.meters.setdefault(model, CostMeter(model, self.budget_usd))
-        tier = {**self.config, "llm_provider": "anthropic", "deep_think_llm": model, "anthropic_effort": effort}
-        return create_tier_client(tier, "deep", callbacks=[meter]).get_llm()
+    def llm(self, model: str, effort: str = "medium", max_output: int = ANALYST_MAX_OUTPUT):
+        tier = {**self.config, "llm_provider": "anthropic", "deep_think_llm": model, "anthropic_effort": effort,
+                "max_tokens": max_output}
+        return create_tier_client(tier, "deep").get_llm()
 
     @property
     def spent(self) -> float:
-        return sum(m.spent for m in self.meters.values())
+        return self.budget.spent
 
 
 def ask_view(models: Models, model: str, role: str, brief: str, facts: dict, policy: InvestmentPolicy) -> View:
-    if models.spent >= models.budget_usd:
-        raise RuntimeError("orçamento de LLM da reunião esgotado")
     prompt = (f"You are the {role} of a private investment committee in Brazil, reporting to the financial director. "
               f"{brief}\n\nThe investor's policy:\n{policy.model_dump_json(indent=1, exclude={'models'})}\n\n"
               f"The facts, computed by the committee's code (trust these numbers; do not recompute them):\n"
               f"{json.dumps(facts, ensure_ascii=False, indent=1, default=str)}\n\n"
               "Write for the director in Portuguese. Stay within the policy. Do not forecast prices or rates: "
               "the committee's backtests found no edge in timing the market.")
-    return models.llm(model).with_structured_output(View).invoke(prompt)
+    return models.budget.invoke(models.llm(model).with_structured_output(View), prompt, model=model,
+                                max_output=ANALYST_MAX_OUTPUT)
 
 
 def _with_view(report: Report, models: Models | None, model: str, brief: str, policy: InvestmentPolicy) -> Report:
@@ -95,27 +97,40 @@ def allocation(policy: InvestmentPolicy, wealth: Wealth, stock_values: dict[str,
                contribution: float) -> dict:
     """Where the wealth stands against the policy, and the rule's move for this month.
 
-    Investable wealth is everything outside the emergency reserve. The contribution
-    goes first to stocks while they are below target; a shortfall beyond the band is
-    closed from fixed income in equal monthly transfers over the transition; listed
-    funds above their ceiling get no new money (nothing is sold).
+    Investable wealth is everything outside the emergency reserve. The reserve counts
+    only cash and post-fixed positions with daily liquidity, and comes first: the
+    contribution tops it up before anything else, and no money leaves fixed income
+    for stocks while it is short. Then the contribution goes to stocks while they are
+    below target; a shortfall beyond the band is closed from the money beyond the
+    reserve in equal monthly transfers over the transition. Listed funds above their
+    ceiling get no new money (nothing is sold). ``stock_ceiling`` (target plus band)
+    is the most the stocks may reach with the month's money.
     """
     stocks = sum(stock_values.values())
     funds = sum(x.value or 0.0 for x in wealth.listed_funds())
     fixed = sum(x.value for x in wealth.fixed_income) + wealth.cash
     total = stocks + funds + fixed
     investable = max(total - policy.reserve, 0.0)
-    target_stocks = policy.stock_target * (investable + contribution)
-    to_stocks = min(max(target_stocks - stocks, 0.0), contribution)
+    eligible = wealth.reserve_eligible()
+    deficit = max(policy.reserve - eligible, 0.0)
+    to_reserve = min(deficit, contribution)
+    base = investable + contribution
+    target_stocks = policy.stock_target * base
+    to_stocks = min(max(target_stocks - stocks, 0.0), contribution - to_reserve)
     gap = target_stocks - stocks - to_stocks
     transfer = 0.0
-    if gap > policy.band * investable:
-        liquid = sum(x.value for x in wealth.fixed_income if x.liquidity_days is not None and x.liquidity_days <= 1)
-        transfer = min(gap / policy.transition_months, max(liquid - policy.reserve, 0.0))
+    if gap > policy.band * investable and not deficit:
+        transfer = min(gap / policy.transition_months, eligible - policy.reserve)
+
     def share(v: float) -> float:
         return v / investable if investable else 0.0
 
     return {"total": round(total, 2), "reserve_target": policy.reserve, "investable": round(investable, 2),
+            "cash": round(wealth.cash, 2), "reserve_eligible": round(eligible, 2), "reserve_deficit": round(deficit, 2),
+            "liquid_beyond_reserve": round(eligible - policy.reserve, 2),
+            "rule_contribution_to_reserve": round(to_reserve, 2),
+            "stock_ceiling": round((policy.stock_target + policy.band) * base, 2),
+            "transfer_sources": [{"name": n, "amount": v} for n, v in wealth.transfer_sources(transfer)],
             "stocks": round(stocks, 2), "listed_funds": round(funds, 2), "fixed_income": round(fixed, 2),
             "stock_share_of_investable": round(share(stocks), 4), "stock_target": policy.stock_target,
             "listed_funds_share_of_investable": round(share(funds), 4), "listed_funds_max": policy.listed_funds_max,
@@ -132,6 +147,7 @@ def fixed_income_facts(policy: InvestmentPolicy, wealth: Wealth, today: date) ->
     fi = wealth.fixed_income
     liquid = [x for x in fi if x.liquidity_days is not None and x.liquidity_days <= 1]
     liquid_value = sum(x.value for x in liquid)
+    eligible = wealth.reserve_eligible()
     by_indexer: dict[str, float] = {}
     for x in fi:
         by_indexer[x.indexer] = by_indexer.get(x.indexer, 0.0) + x.value
@@ -144,18 +160,22 @@ def fixed_income_facts(policy: InvestmentPolicy, wealth: Wealth, today: date) ->
     long_dated = [{"name": x.name, "maturity": x.maturity, "value": x.value} for x in fi
                   if x.indexer in ("IPCA", "PRE") and x.maturity and (x.maturity - today).days > 10 * 365]
     warnings = []
-    if liquid_value < policy.reserve:
-        warnings.append(f"Reserva de emergência descoberta: R$ {liquid_value:,.0f} com liquidez diária contra "
-                        f"R$ {policy.reserve:,.0f} da política.")
+    if eligible < policy.reserve:
+        warnings.append(f"Reserva de emergência descoberta: R$ {eligible:,.0f} em caixa e pós-fixados de liquidez "
+                        f"diária contra R$ {policy.reserve:,.0f} da política. O aporte completa a reserva primeiro, "
+                        "e nada vai da renda fixa para ações até ela estar completa.")
     for issuer, value in issuers.items():
         if value > policy.private_issuer_max:
             warnings.append(f"{issuer}: R$ {value:,.0f} acima do limite do FGC por instituição.")
     uncovered = [x.name for x in fi if not x.sovereign and not x.fgc and x.kind != "fund"]
     facts = {"total": round(sum(x.value for x in fi), 2),
              "sovereign": round(sum(x.value for x in fi if x.sovereign), 2),
-             "daily_liquidity": round(liquid_value, 2), "reserve_target": policy.reserve,
-             "liquid_beyond_reserve": round(liquid_value - policy.reserve, 2),
-             "liquid_positions": [{"name": x.name, "value": x.value, "kind": x.kind} for x in liquid],
+             "cash": round(wealth.cash, 2), "reserve_target": policy.reserve,
+             "reserve_eligible": round(eligible, 2), "liquid_beyond_reserve": round(eligible - policy.reserve, 2),
+             "reserve_positions": [x.name for x in fi if x.reserve_eligible],
+             "daily_liquidity": round(liquid_value, 2),
+             "daily_liquid_but_not_reserve": [{"name": x.name, "value": x.value, "why": "marcado a mercado"}
+                                              for x in liquid if not x.reserve_eligible],
              "by_indexer": {k: round(v, 2) for k, v in by_indexer.items()},
              "private_issuers": {k: round(v, 2) for k, v in issuers.items()},
              "without_fgc_guarantee": uncovered, "maturing_within_12_months": soon,
@@ -223,7 +243,12 @@ def risk_facts(policy, wealth, alloc: dict, stock_values: dict[str, float], sect
     top_sector, top_value = max(by_sector.items(), key=lambda kv: kv[1]) if by_sector else ("", 0)
     if top_value / stocks_total > 0.4:
         warnings.append(f"{top_value / stocks_total:.0%} das ações num só setor ({top_sector}).")
+    target_fall = stress(returns, *target, "stocks_dividend")["worst_drawdown"]
+    if -target_fall > policy.max_drawdown_tolerance:
+        warnings.append(f"A pior queda histórica do mix-alvo ({target_fall:.0%}) passa da sua tolerância "
+                        f"(−{policy.max_drawdown_tolerance:.0%}).")
     facts = {"history": f"{returns.index[0]} a {returns.index[-1]}, mensal, rebalanceado todo mês; reserva fora",
+             "investor_drawdown_tolerance": policy.max_drawdown_tolerance,
              "listed_funds_proxy": "XFIX11 desde dez/2020; antes, média de HGLG11 e KNRI11",
              "fixed_income_proxy": "CDI líquido de 15% de IR (aproximação)",
              "current_mix": {"stocks": round(now[0], 3), "listed_funds": round(now[1], 3),
@@ -242,8 +267,9 @@ def risk_facts(policy, wealth, alloc: dict, stock_values: dict[str, float], sect
 def risk(policy, wealth, alloc, stock_values, sectors, models: Models | None) -> Report:
     facts, warnings = risk_facts(policy, wealth, alloc, stock_values, sectors)
     brief = ("Explain how the current and the target mix of the investable wealth fared in past crises (worst fall, "
-             "worst year, how often 12 months ended negative), whether the investor's tolerance of a 20% fall holds, "
-             "and the concentration of the stocks.")
+             "worst year, how often 12 months ended negative), whether the investor's drawdown tolerance (in the "
+             "facts) holds, and the concentration of the stocks. The history uses index proxies for whole classes; "
+             "say that the investor's own positions can fall more.")
     return _with_view(Report(ROLES["risk"], facts, warnings=warnings), models, policy.models.risk, brief, policy)
 
 

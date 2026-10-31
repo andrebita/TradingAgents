@@ -96,9 +96,10 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
            sold_earlier_this_month: float = 0.0, gain_earlier_this_month: float = 0.0,
            loss_carryforward: float = 0.0, fixed_income: float | None = None, target_share: float | None = None,
            band: float = 0.05, transition_months: int = 12, config: dict | None = None,
-           rules: selection.Rules = selection.DEFAULT_RULES) -> Result:
+           rules: selection.Rules = selection.DEFAULT_RULES, budget=None) -> Result:
     """``target_share`` (0-1) with ``fixed_income`` (R$) splits the contribution between the two classes and
-    adds the month's transfer from fixed income to the stocks' cash; without it all of it goes to stocks."""
+    adds the month's transfer from fixed income to the stocks' cash; without it all of it goes to stocks.
+    ``budget``: a ``monitor.Budget`` shared with the caller; else the run has its own of ``budget_usd``."""
     config = copy.deepcopy(config or DEFAULT_CONFIG)
     out_dir = Path(config["results_dir"]) / "carteira"
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -160,7 +161,7 @@ def review(book: PortfolioContext | None = None, *, contribution: float = 0.0, a
         if use_llm:
             from tradingagents.dividend_portfolio.monitor import Assistant
 
-            assistant = Assistant(config, budget_usd=budget_usd)
+            assistant = Assistant(config, budget_usd=budget_usd, budget=budget)
             for code in sorted(held_codes):
                 alerts[code] = assistant.news(code, day.date())
             if rebalance:
