@@ -14,6 +14,49 @@ ações. Toda a evidência por trás dela está em `experiments/br_baseline/READ
 > Um ponto a favor das ações, fora do critério: venda de ações até R$ 20 mil por mês é isenta, e venda de ETF não
 > é. Detalhes em `experiments/br_baseline/README.md`, "Replay da rotina real".
 
+## Carteira por índices (a política recomendada desde a revisão 5)
+
+Os testes de 2009 a 2026 levaram a uma carteira simples:
+- **Seleção de ações:** seis regras de seleção (dividendos, qualidade, valor, momentum, baixa volatilidade e a
+  combinação) ficaram atrás dos ETFs de índice depois de custos e IR.
+- **Alocação:** a mistura com ações globais teve a maior chance de ganhar do Tesouro Selic em 5 anos (78% no
+  bootstrap, ou 60% sem a desvalorização passada do real), contra cerca de 50% só com ações brasileiras.
+
+Detalhes em `experiments/br_baseline/README.md`, seções "Revisão 5".
+
+Para usar, a política ganha um bloco `index_plan`:
+
+```json
+"index_plan": {"brazil": 0.20, "international": 0.40, "fixed_income": 0.40,
+               "brazil_menu": ["BOVA11", "DIVO11"], "brazil_default": "BOVA11",
+               "international_vehicle": "WRLD11", "horizon_end": "2031-11-01",
+               "migration_start": "2026-11-01", "listed_funds_exit_months": 12}
+```
+
+**O que o código faz a cada reunião:**
+1. **Reserva primeiro:** só conta caixa e pós-fixado diário.
+2. **Migração do que está fora do plano:**
+   - ações individuais saem dentro da isenção de R$ 20 mil por mês, das maiores para as menores;
+   - fundos listados saem aos poucos, ao longo dos meses definidos;
+   - Tesouro IPCA+ e prefixados que vencem depois do seu horizonte vão para o Tesouro Selic;
+   - o resto da renda fixa fica até o vencimento.
+3. **Dinheiro novo e da migração:** vai para a classe mais abaixo do alvo, em cotas inteiras de ETF e em Tesouro
+   Selic. O título é o de maior taxa entre os que vencem em até 5 anos, com a taxa do dia do Tesouro Direto.
+4. **Rebalanceamento:** só em junho e dezembro, e só quando uma classe passa do alvo mais a faixa.
+5. **Situação de mercado:** a queda de cada ETF desde a máxima de 12 meses. A partir de 15%, a carta traz o plano
+   de crise escrito; a partir de 30%, chama uma reunião extraordinária.
+
+**O diretor:**
+- escolhe o ETF da parte Brasil dentro do cardápio (BOVA11, DIVO11 ou metade de cada). A escolha vale para o
+  dinheiro novo, porque vender ETF paga 15% de IR;
+- pode adiar até duas vendas de migração;
+- explica o mês na carta.
+
+Valores, ritmo e alvos são do código, e a checagem recusa o que sair do cardápio.
+
+**A carta** abre com a carteira recomendada ativo a ativo: o que comprar, vender, resgatar, aplicar ou manter,
+com quantidade, valor e motivo.
+
 ## Comitê de investimentos
 
 Para o patrimônio inteiro, e não só as ações, use o comitê:

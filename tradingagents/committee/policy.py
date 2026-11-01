@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from datetime import date
 from pathlib import Path
 from typing import Literal
 
@@ -22,6 +23,40 @@ class Models(BaseModel):
     risk: str = "claude-sonnet-5-5"
     tax: str = "claude-sonnet-5-5"
     macro: str = "claude-haiku-5-5"
+
+
+class IndexPlan(BaseModel):
+    """The portfolio by index funds (review 5): sleeves of the investable wealth and their vehicles.
+
+    The selection contest found no stock-picking rule that beat the index funds, so the Brazil sleeve holds an
+    index ETF chosen by the director from ``brazil_menu`` (``brazil_default`` without one), the international
+    sleeve a global ETF, the rest Tesouro Selic. Holdings outside the plan (single stocks, listed funds, bonds
+    maturing after the horizon) are migrated out at the pace below.
+    """
+
+    brazil: float = Field(0.20, ge=0, le=1, description="Brazilian equities, through an index ETF")
+    international: float = Field(0.40, ge=0, le=1, description="Global equities, through a B3-listed ETF")
+    fixed_income: float = Field(0.40, ge=0, le=1, description="Tesouro Selic")
+    brazil_menu: list[str] = Field(default_factory=lambda: ["BOVA11", "DIVO11"])
+    brazil_default: str = "BOVA11"
+    international_vehicle: str = "WRLD11"
+    horizon_end: date | None = Field(None, description="When the money may be needed: bonds maturing later are "
+                                                       "moved to Tesouro Selic; earlier ones are held to maturity")
+    migration_start: date | None = Field(None, description="When the investor adopted the plan; paces the exits")
+    listed_funds_exit_months: int = Field(12, ge=1, description="Months to sell the listed funds down to zero")
+    stock_sales_cap: float = Field(19_000.0, gt=0, description="Most single-stock sales a month, within the "
+                                                               "R$ 20,000 exemption")
+    crisis_alert: float = Field(0.15, gt=0, le=1, description="Fall of an equity ETF from its 12-month high that "
+                                                              "puts the crisis plan on the table")
+    crisis_plan: float = Field(0.30, gt=0, le=1, description="Fall that calls an extraordinary meeting")
+
+    @model_validator(mode="after")
+    def _sums(self):
+        if abs(self.brazil + self.international + self.fixed_income - 1) > 1e-6:
+            raise ValueError("the index plan's sleeves must add up to 100%")
+        if self.brazil_default not in self.brazil_menu:
+            raise ValueError("brazil_default must be in brazil_menu")
+        return self
 
 
 class InvestmentPolicy(BaseModel):
@@ -47,6 +82,8 @@ class InvestmentPolicy(BaseModel):
     autonomy: Literal["recommend"] = "recommend"
     models: Models = Field(default_factory=Models)
     budget_usd: float = Field(3.0, gt=0, description="Most a committee meeting may spend on models")
+    index_plan: IndexPlan | None = Field(None, description="The portfolio by index funds; without it, the "
+                                                           "dividend rule of the earlier versions")
 
     @model_validator(mode="after")
     def _ordered(self):

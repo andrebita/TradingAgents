@@ -83,6 +83,11 @@ def rule_decision(alloc: dict, failure: str | None = None) -> director.DirectorD
 
 def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None = None, as_of: date | None = None,
          use_llm: bool = True, config: dict | None = None) -> Meeting:
+    if policy.index_plan is not None:
+        from tradingagents.committee import index_meeting
+
+        return index_meeting.hold(policy, wealth, contribution=contribution, as_of=as_of, use_llm=use_llm,
+                                  config=config)
     config = copy.deepcopy(config or DEFAULT_CONFIG)
     out = Path(config["results_dir"]) / "comite"
     out.mkdir(parents=True, exist_ok=True)

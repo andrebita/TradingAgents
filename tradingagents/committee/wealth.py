@@ -31,6 +31,7 @@ class FixedIncome(BaseModel):
     tax_exempt: bool = False
     fgc: bool = Field(False, description="Covered by the FGC deposit guarantee")
     applied_on: date | None = Field(None, description="Purchase date, for the regressive income-tax table")
+    applied_value: float | None = Field(None, ge=0, description="Amount invested, R$: the gain is taxed on a sale")
 
     @property
     def sovereign(self) -> bool:
