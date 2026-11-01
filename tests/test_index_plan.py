@@ -298,7 +298,8 @@ def test_december_rebalancing_puts_the_proceeds_to_work():
     # The proceeds, net of the tax, buy the sleeve furthest below target (abroad) and the rest goes to Selic; the
     # month's transition from Selic buys equities too.
     bought = sum(o.value for o in plan.orders if o.side in ("compra", "aplicar"))
-    assert bought == pytest.approx(sale.value - sale.tax + plan.transfer, abs=1.0)
+    redeemed = sum(o.value for o in plan.orders if o.side == "resgatar")
+    assert bought - redeemed == pytest.approx(sale.value - sale.tax, abs=1.0)
     assert any(o.side == "compra" and o.asset == "WRLD11" for o in plan.orders)
     blocked = Wealth(as_of=wealth.as_of, fixed_income=wealth.fixed_income,
                      listed=[Listed(code="BOVA11", quantity=300, kind="etf", counts_as="acoes")])
@@ -385,3 +386,21 @@ def test_a_tiny_partial_sale_waits_for_the_next_month():
     plan = indices.build(_policy(), wealth, PRICES, TODAY, 3000)
     assert [o.asset for o in plan.orders if o.side == "venda"] == ["PETR4"]
     assert any("ITSA4" in p for p in plan.pending)
+
+
+@pytest.mark.unit
+def test_the_transition_nets_against_the_months_application():
+    wealth = Wealth(as_of=date(2026, 10, 31), fixed_income=[
+        FixedIncome(name="Tesouro Selic 2031", kind="tesouro_selic", issuer="Tesouro", indexer="SELIC",
+                    value=200_000, liquidity_days=1),
+        FixedIncome(name="Tesouro IPCA+ 2045", kind="tesouro_ipca", issuer="Tesouro", indexer="IPCA", value=20_000,
+                    maturity=date(2045, 5, 15), liquidity_days=1, applied_on=date(2023, 1, 10), applied_value=20_000)])
+    plan = indices.build(_policy(), wealth, PRICES, TODAY, 0)
+    assert plan.transfer > 0
+    fixed = [o for o in plan.orders if o.sleeve == "renda_fixa" and o.asset != "Tesouro IPCA+ 2045"]
+    # The bond's R$ 20,000 goes to Selic less the transition (plus what whole quotas leave over): one application,
+    # no redemption of Selic.
+    assert [o.side for o in fixed] == ["aplicar"]
+    bought = sum(o.value for o in plan.orders if o.side == "compra")
+    assert fixed[0].value + bought == pytest.approx(20_000, abs=1.0)
+    assert fixed[0].value == pytest.approx(20_000 - plan.transfer, abs=160)

@@ -383,14 +383,20 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
             leftover += part - q * p
     selic_amount = buys.get("renda_fixa", 0.0) + leftover + fixed_cash + to_reserve
     if selic_amount > 1.0:
-        rate = f" (Selic + {plan.selic_rate:.2f}% ao ano)" if plan.selic_rate is not None else ""
-        plan.orders.append(Order("aplicar", selic_name + rate, selic_amount, "reserva, resgates e o que sobra do "
-                                 "mês vão para o pós-fixado", sleeve="renda_fixa"))
         after["renda_fixa"] += selic_amount - fixed_cash - to_reserve
-    if plan.transfer:
-        plan.orders.append(Order("resgatar", "Tesouro Selic e pós-fixados acima da reserva", plan.transfer,
-                                 f"transição para ações: a diferença dividida pelos meses que faltam da transição "
-                                 f"de {policy.transition_months} meses",
+    # The month's application and the transition's redemption net out: one order, never both (a redemption may
+    # pay income tax on money that would be applied again the same day).
+    net = selic_amount - plan.transfer
+    transition = (f"transição para ações: a diferença dividida pelos meses que faltam da transição de "
+                  f"{policy.transition_months} meses")
+    if net > 1.0:
+        rate = f" (Selic + {plan.selic_rate:.2f}% ao ano)" if plan.selic_rate is not None else ""
+        reason = "reserva, resgates e o que sobra do mês vão para o pós-fixado"
+        if plan.transfer:
+            reason += f"; já descontados {brl(plan.transfer)} da {transition}"
+        plan.orders.append(Order("aplicar", selic_name + rate, net, reason, sleeve="renda_fixa"))
+    elif net < -1.0:
+        plan.orders.append(Order("resgatar", "Tesouro Selic e pós-fixados acima da reserva", -net, transition,
                                  sleeve="renda_fixa"))
 
     # -- Rebalancing sales in June and December -------------------------------------------------------
