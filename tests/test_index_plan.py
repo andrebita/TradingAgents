@@ -73,9 +73,12 @@ def test_the_plan_migrates_at_its_pace_and_fills_the_largest_gap():
     bond = by[("resgatar", "Tesouro IPCA+ 2045")]
     assert bond.tax == pytest.approx(600)
     assert any(h.startswith("Tesouro IPCA+ 2029") for h in plan.holds)
-    # The matured CDB goes to Selic; the equity money goes to the largest gap, the global ETF.
+    # The matured CDB goes to Selic; PETR4's proceeds buy the Brazil ETF (a swap within the sleeve), the rest of
+    # the equity money goes to the largest gap, the global ETF.
     assert any(o.side == "aplicar" and o.reason == "vencimento de CDB 2026" for o in plan.orders)
-    assert by[("compra", "WRLD11")].quantity > 0 and ("compra", "BOVA11") not in by
+    # Up to the Brazil target: 20% of R$ 91,000 investable is R$ 18,200, less the R$ 2,000 left in stocks.
+    assert by[("compra", "BOVA11")].value == pytest.approx(16_200, abs=160)
+    assert by[("compra", "WRLD11")].quantity > 0
     # Sales only: nothing in the plan spends money it does not have.
     spent = sum(o.value for o in plan.orders if o.side == "compra")
     sources = sum(o.value - (o.tax or 0) for o in plan.orders if o.side == "venda") + 3000 + plan.transfer

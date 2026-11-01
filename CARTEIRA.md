@@ -40,10 +40,13 @@ Para usar, a política ganha um bloco `index_plan`:
    - fundos listados saem aos poucos, ao longo dos meses definidos;
    - Tesouro IPCA+ e prefixados que vencem depois do seu horizonte vão para o Tesouro Selic;
    - o resto da renda fixa fica até o vencimento.
-3. **Dinheiro novo e da migração:** vai para a classe mais abaixo do alvo, em cotas inteiras de ETF e em Tesouro
-   Selic. O título é o de maior taxa entre os que vencem em até 5 anos, com a taxa do dia do Tesouro Direto.
-4. **Rebalanceamento:** só em junho e dezembro, e só quando uma classe passa do alvo mais a faixa.
-5. **Situação de mercado:** a queda de cada ETF desde a máxima de 12 meses. A partir de 15%, a carta traz o plano
+3. **Dinheiro da venda de ações individuais:** compra primeiro o ETF Brasil. É uma troca dentro da mesma classe:
+   a migração não tira dinheiro do Brasil para o exterior depois de uma queda, nem o contrário.
+4. **Dinheiro novo e o resto da migração:** vai para a classe mais abaixo do alvo, em cotas inteiras de ETF e em
+   Tesouro Selic. O título é o de maior taxa entre os que vencem em até 5 anos, com a taxa do dia do Tesouro
+   Direto.
+5. **Rebalanceamento:** só em junho e dezembro, e só quando uma classe passa do alvo mais a faixa.
+6. **Situação de mercado:** a queda de cada ETF desde a máxima de 12 meses. A partir de 15%, a carta traz o plano
    de crise escrito; a partir de 30%, chama uma reunião extraordinária.
 
 **O diretor:**

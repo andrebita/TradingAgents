@@ -11,8 +11,9 @@ two migration sales (``director.check_index``). The plan:
    - Tesouro IPCA+ and fixed-rate bonds maturing after ``horizon_end``, redeemed into Tesouro Selic: their
      duration does not fit the horizon (review 4). Those maturing earlier, and bank deposits and debentures
      with liquidity only at maturity, are held to maturity.
-3. **New money and proceeds to the sleeves furthest below target**, in reais: the Brazil ETF, the global ETF,
-   Tesouro Selic. A shortfall in equities beyond the band also draws a monthly transfer from Tesouro Selic
+3. **Proceeds of single stocks buy the Brazil ETF first** (a swap within the sleeve, so the migration does not
+   move money between Brazil and abroad after whatever the market did); **new money and the other proceeds go
+   to the sleeves furthest below target**, in reais: the Brazil ETF, the global ETF, Tesouro Selic. A shortfall in equities beyond the band also draws a monthly transfer from Tesouro Selic
    beyond the reserve, over ``transition_months``, never while the reserve is short.
 4. **Rebalancing sales** only in June and December, and only for a sleeve more than ``band`` above target.
 5. **Crisis status** from each equity ETF's fall from its 12-month high: the written crisis plan applies from
@@ -202,7 +203,7 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     # -- Migration sales ------------------------------------------------------------------------------
     sold_this_month, _, _ = wealth.tax.for_month(today)
     room = max(ip.stock_sales_cap - sold_this_month, 0.0)
-    equity_cash, fixed_cash = 0.0, 0.0
+    equity_cash, fixed_cash, brazil_cash = 0.0, 0.0, 0.0
     no_cost, later = [], []
     singles = sorted((c for c, x in kinds.items() if x.kind == "acao" and c not in menu and c in prices),
                      key=lambda c: -values.get(c, 0.0))
@@ -217,7 +218,7 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
         plan.orders.append(Order("venda", code, q * p, "migração: ações individuais saem da carteira; isento até "
                                  "R$ 20 mil de vendas no mês", q, p, 0.0, "brasil"))
         room -= q * p
-        equity_cash += q * p
+        brazil_cash += q * p
         if x.average_price is None:
             no_cost.append(code)
 
@@ -287,13 +288,17 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     to_reserve = min(deficit, contribution)
     money = contribution - to_reserve
     after["renda_fixa"] += to_reserve
-    equity_gap = sum(max(target[s] - after[s], 0.0) for s in ("brasil", "internacional")) - equity_cash - money
+    equity_gap = (sum(max(target[s] - after[s], 0.0) for s in ("brasil", "internacional"))
+                  - equity_cash - brazil_cash - money)
     if equity_gap > policy.band * investable and not deficit and not unvalued:
         beyond = max(eligible + fixed_cash - reserve, 0.0)
         plan.transfer = min(equity_gap / policy.transition_months, beyond)
     cash = equity_cash + money + plan.transfer
     after["renda_fixa"] -= plan.transfer
-    buys: dict[str, float] = {}
+    # Single stocks swap into the Brazil ETF first: same sleeve, so the swap does not move money between Brazil
+    # and abroad at whatever the market did that month; any excess over the Brazil target joins the pool.
+    buys: dict[str, float] = {"brasil": min(brazil_cash, max(target["brasil"] - after["brasil"], 0.0))}
+    cash += brazil_cash - buys["brasil"]
     while cash > 1.0:
         gaps = {s: target[s] - after[s] - buys.get(s, 0.0) for s in ("brasil", "internacional", "renda_fixa")}
         s = max(gaps, key=gaps.get)
