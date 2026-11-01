@@ -115,7 +115,8 @@ tradingagents comite reunir --politica ~/.tradingagents/minha/politica.json \
     --patrimonio ~/.tradingagents/minha/patrimonio.json --aporte 3000
 ```
 
-- **Modelos de arquivo:** `examples/comite/politica_exemplo.json` e `examples/comite/patrimonio_exemplo.json`.
+- **Modelos de arquivo:** `examples/comite/politica_exemplo.json` e `examples/comite/patrimonio_exemplo.json`;
+  para a carteira por índices, `examples/comite/politica_indices_exemplo.json`. Todos os valores são fictícios.
   - **No patrimônio:**
     - um ETF diz em que classe conta: `"asset_class": "acoes"`, `"internacional"` ou `"renda_fixa"`;
     - BDRs contam como internacional;

@@ -1,0 +1,32 @@
+{
+ "objective": "Maior chance de um resultado bom em 5 anos: terminar acima de 100% do Tesouro Selic, depois de liquidar a carteira e pagar o IR.",
+ "monthly_expenses": 10000.0,
+ "reserve_months": 6,
+ "monthly_contribution": 2000.0,
+ "band": 0.05,
+ "max_drawdown_tolerance": 0.25,
+ "transition_months": 12,
+ "private_issuer_max": 250000.0,
+ "fixed_income_kinds": [
+  "tesouro_selic"
+ ],
+ "autonomy": "recommend",
+ "budget_usd": 3.0,
+ "index_plan": {
+  "brazil": 0.2,
+  "international": 0.4,
+  "fixed_income": 0.4,
+  "brazil_menu": [
+   "BOVA11",
+   "DIVO11"
+  ],
+  "brazil_default": "BOVA11",
+  "international_vehicle": "WRLD11",
+  "horizon_end": "2031-11-01",
+  "migration_start": "2026-11-01",
+  "listed_funds_exit_months": 12,
+  "stock_sales_cap": 19000.0,
+  "crisis_alert": 0.15,
+  "crisis_plan": 0.3
+ }
+}
