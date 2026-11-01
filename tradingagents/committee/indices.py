@@ -35,6 +35,7 @@ from tradingagents.committee.wealth import Wealth
 from tradingagents.dividend_portfolio.report import brl
 
 ETF_TAX, FUND_TAX = 0.15, 0.20
+MIN_PARTIAL_SALE = 100.0      # R$: a partial single-stock sale below this waits for the next month
 REGRESSIVE = ((180, 0.225), (360, 0.20), (720, 0.175))
 SLEEVES = ("brasil", "internacional", "renda_fixa", "fundos_listados")
 
@@ -244,7 +245,7 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
             continue
         x, p = kinds[code], prices[code]
         q = min(x.quantity, math.floor(room / p)) if p > 0 else 0
-        if q <= 0:
+        if q <= 0 or (q < x.quantity and q * p < MIN_PARTIAL_SALE):   # no order of a few reais to fill the room
             later.append(code)
             continue
         plan.orders.append(Order("venda", code, q * p, "migração: ações individuais saem da carteira; isento até "

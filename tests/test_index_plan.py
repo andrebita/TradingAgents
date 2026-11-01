@@ -373,3 +373,15 @@ def test_a_single_vehicle_menu_leaves_nothing_to_choose():
     llm2 = Capture()
     director.ask_index(llm2, _policy(), {}, [], "BOVA11")
     assert "DIVO11 IRR" in llm2.prompt
+
+
+@pytest.mark.unit
+def test_a_tiny_partial_sale_waits_for_the_next_month():
+    wealth = Wealth(as_of=date(2026, 10, 31), fixed_income=[
+        FixedIncome(name="Tesouro Selic 2031", kind="tesouro_selic", issuer="Tesouro", indexer="SELIC",
+                    value=80_000, liquidity_days=1)],
+        listed=[Listed(code="PETR4", quantity=474, average_price=30.0), Listed(code="ITSA4", quantity=100)])
+    # PETR4 takes R$ 18,960 of the R$ 19,000 room; R$ 40 would sell 4 ITSA4 of 100: it waits instead.
+    plan = indices.build(_policy(), wealth, PRICES, TODAY, 3000)
+    assert [o.asset for o in plan.orders if o.side == "venda"] == ["PETR4"]
+    assert any("ITSA4" in p for p in plan.pending)

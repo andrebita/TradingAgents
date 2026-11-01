@@ -181,7 +181,8 @@ def execution_steps(plan: indices.Plan) -> list[str]:
     steps = []
     if "venda" in sides:
         steps.append("Na corretora, venda primeiro, com ordem limitada perto do preço de referência. A venda na B3 "
-                     "liquida em D+2: o dinheiro fica livre dois dias úteis depois.")
+                     "liquida em D+2: o dinheiro fica livre dois dias úteis depois. Ações emprestadas no aluguel também "
+                     "podem ser vendidas: a corretora pede a devolução; confira no app que a quantidade está liberada.")
     if "resgatar" in sides:
         steps.append("No Tesouro Direto, peça os resgates em dia útil até as 13h para o dinheiro cair no mesmo dia; "
                      "depois das 13h, ele cai às 13h do dia útil seguinte.")
