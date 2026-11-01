@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import logging
+import os
 from dataclasses import dataclass, field
 from datetime import date
 
@@ -58,6 +59,11 @@ class Models:
 
     config: dict
     budget: Budget
+
+    def __post_init__(self):
+        # Cloud sessions drop ANTHROPIC_* variables; the key may come under another name.
+        if not os.environ.get("ANTHROPIC_API_KEY") and os.environ.get("TRADINGAGENTS_CLAUDE_KEY"):
+            os.environ["ANTHROPIC_API_KEY"] = os.environ["TRADINGAGENTS_CLAUDE_KEY"]
 
     def llm(self, model: str, effort: str = "medium", max_output: int = ANALYST_MAX_OUTPUT):
         tier = {**self.config, "llm_provider": "anthropic", "deep_think_llm": model, "anthropic_effort": effort,
