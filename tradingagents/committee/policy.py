@@ -54,11 +54,21 @@ class IndexPlan(BaseModel):
     crisis_alert: float = Field(0.15, gt=0, le=1, description="Fall of an equity ETF from its 12-month high that "
                                                               "puts the crisis plan on the table")
     crisis_plan: float = Field(0.30, gt=0, le=1, description="Fall that calls an extraordinary meeting")
+    equity_min: float | None = Field(None, ge=0, le=1, description="Lowest share of the investable wealth in "
+                                     "equities (Brazil plus global) the director may recommend when fixed income "
+                                     "pays well; the plan's mix is the ceiling. Without it the mix is fixed")
+    equity_step_max: float = Field(0.10, gt=0, le=1, description="Most the equity share may move in one meeting")
+
+    @property
+    def equity_share(self) -> float:
+        return self.brazil + self.international
 
     @model_validator(mode="after")
     def _sums(self):
         if abs(self.brazil + self.international + self.fixed_income - 1) > 1e-6:
             raise ValueError("the index plan's sleeves must add up to 100%")
+        if self.equity_min is not None and self.equity_min > self.equity_share + 1e-9:
+            raise ValueError("equity_min cannot exceed the plan's equity share")
         if self.brazil_default not in self.brazil_menu:
             raise ValueError("brazil_default must be in brazil_menu")
         return self

@@ -216,6 +216,34 @@ def previous_episode(out: Path) -> dict | None:
     return None
 
 
+def previous_equity_share(out: Path) -> float | None:
+    """The equity share the last meeting planned, under a mandate."""
+    log = out / "decisoes.jsonl"
+    if log.exists():
+        for line in reversed(log.read_text(encoding="utf-8").splitlines()):
+            record = json.loads(line)
+            if record.get("mode") == "indices" and record.get("equity_share") is not None:
+                return float(record["equity_share"])
+    return None
+
+
+def fixed_income_yields(offers, today: date) -> dict:
+    """What Tesouro Direto pays today, for the director's weighing of fixed income against equities: the Selic
+    bonds' spread and the real and nominal rates of IPCA+ and fixed-rate bonds up to ten years. Bank deposits are
+    the investor's to report; equities' earnings yield is not computed yet, and the facts say so."""
+    out = {"tesouro_selic_spread_over_selic": {}, "tesouro_ipca_real_rate": {}, "tesouro_prefixado_rate": {},
+           "bank_deposits": "não informado: o investidor ainda não passou as ofertas de CDB, LCI e LCA",
+           "equity_earnings_yield": "não calculado: não há dado do lucro sobre o preço do índice"}
+    for o in offers or []:
+        if o.maturity <= today or (o.maturity - today).days > 3660:
+            continue
+        key = {"Tesouro Selic": "tesouro_selic_spread_over_selic", "Tesouro IPCA+": "tesouro_ipca_real_rate",
+               "Tesouro Prefixado": "tesouro_prefixado_rate"}.get(o.kind)
+        if key:
+            out[key][o.maturity.isoformat()] = o.rate
+    return out
+
+
 def previous_vehicle(out: Path, default: str) -> str:
     log = out / "decisoes.jsonl"
     if log.exists():
@@ -256,10 +284,12 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
             offers = None
         previous = previous_vehicle(out, ip.brazil_default)
         episode = previous_episode(out)
+        prev_share = previous_equity_share(out) if ip.equity_min is not None else None
 
-        def rebuild(held_back=frozenset(), vehicle=previous):
+        def rebuild(held_back=frozenset(), vehicle=previous, share=prev_share):
             return indices.build(policy, wealth, prices, today, contribution, offers=offers, history=history,
-                                 brazil_vehicle=vehicle, held_back=set(held_back), episode=episode)
+                                 brazil_vehicle=vehicle, held_back=set(held_back), episode=episode,
+                                 equity_share=share)
 
         plan = first = rebuild()
         models = analysts.Models(config, Budget(policy.budget_usd)) if use_llm else None
@@ -287,18 +317,21 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
         director_ran, no_letter = False, "Reunião sem modelos: o plano acima é o do código, sem leitura do diretor."
         if models is not None:
             facts = {**plan.facts(), "if_held_back": hold_back_effects(plan, rebuild)}
+            if ip.equity_min is not None:
+                facts["fixed_income_yields"] = fixed_income_yields(offers, today)
             try:
                 decision = director.ask_index(models.llm(policy.models.director, effort="high",
                                                          max_output=analysts.DIRECTOR_MAX_OUTPUT),
                                               policy, facts, reports, previous, budget=models.budget,
-                                              max_output=analysts.DIRECTOR_MAX_OUTPUT)
+                                              max_output=analysts.DIRECTOR_MAX_OUTPUT, previous_share=prev_share)
                 director_ran = True
             except Exception as exc:  # a refusal, an invalid answer or the budget: the code's plan stands
                 logger.warning("The director failed: %s", exc)
                 no_letter = f"O diretor não respondeu nesta reunião ({type(exc).__name__}). O plano acima é o do código."
                 decision.escalations = [f"Rodar a reunião de novo: o diretor falhou ({type(exc).__name__})."]
-        checked = director.check_index(decision, policy, {o.asset for o in plan.migration_sales()})
-        plan = rebuild(checked.held_back, checked.vehicle)
+        checked = director.check_index(decision, policy, {o.asset for o in plan.migration_sales()}, prev_share)
+        plan = rebuild(checked.held_back, checked.vehicle,
+                       checked.equity_share if checked.equity_share is not None else prev_share)
         reasons = {h.asset: h.reason for h in checked.decision.held_back_sales if h.asset in checked.held_back}
         changes = order_changes(first, plan, reasons)
         escalations, repeated = director.merge_escalations(plan.pending, checked.decision.escalations)
@@ -336,9 +369,35 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                              "adjustments": checked.adjustments, "changes_after_director": changes,
                              "plan": plan.facts(), "escalations": escalations,
                              "escalations_repeating_pending": repeated, "key_points": checked.decision.key_points,
-                             "letter_audit": audit, "cost_usd": round(spent, 4)},
+                             "letter_audit": audit, "cost_usd": round(spent, 4),
+                             "equity_share": plan.equity_share if ip.equity_min is not None else None,
+                             "equity_share_fixed_mix": ip.equity_share,
+                             "equity_share_reason": checked.decision.equity_share_reason or None},
                             ensure_ascii=False, default=str) + "\n")
+    record = json.loads((out / "decisoes.jsonl").read_text(encoding="utf-8").splitlines()[-1])
+    sync_store(record, letter, plan.pending + escalations)
     return Meeting(letter, path, spent, checked, reports)
+
+
+def sync_store(record: dict, letter: str, pending: list[str]) -> bool:
+    """With the store's variables in the environment, save the meeting, its orders and its pending items there
+    (keyed by their text, so a repeated item keeps its row). Without them, or if the store fails, the files stand."""
+    import hashlib
+    import os
+
+    from tradingagents.committee import store
+
+    if not (os.environ.get("TRADINGAGENTS_SUPABASE_URL") and os.environ.get("TRADINGAGENTS_SUPABASE_KEY")):
+        return False
+    try:
+        st = store.Store.from_env()
+        meeting_id = st.save_meeting(record, letter_md=letter)
+        st.upsert_pending([{"key": "reuniao:" + hashlib.sha1(p.encode("utf-8")).hexdigest()[:12], "owner": "investidor",
+                            "text": p, "meeting_id": meeting_id, "opened_on": record["date"]} for p in pending])
+        return True
+    except Exception as exc:  # the meeting's files are written already
+        logger.warning("The store could not be updated: %s", exc)
+        return False
 
 
 ACTION = {"compra": "Comprar", "venda": "Vender", "resgatar": "Resgatar", "aplicar": "Aplicar"}
@@ -389,6 +448,11 @@ def render(day: date, policy: InvestmentPolicy, wealth: Wealth, plan: indices.Pl
     if plan.transfer:
         out.append(f"- Transição: {brl(plan.transfer)} da Selic acima da reserva vão para ações neste mês.")
     out.append(f"- ETF da parte Brasil: **{checked.vehicle}** ({d.brazil_vehicle_reason.strip()})")
+    if ip.equity_min is not None:
+        why = f" ({d.equity_share_reason.strip()})" if d.equity_share_reason.strip() else ""
+        out.append(f"- Parcela em ações: **{plan.equity_share:.0%}** do patrimônio investível; o plano fixo é "
+                   f"{ip.equity_share:.0%}, e o diretor pode recomendar de {ip.equity_min:.0%} a "
+                   f"{ip.equity_share:.0%}{why}.")
     t = totals(plan)
     line = f"IR estimado nas vendas e resgates do mês: **{brl(t['tax_known'])}**"
     if t["tax_unknown_for"]:

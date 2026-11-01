@@ -1,6 +1,7 @@
 """The portfolio by index funds (review 5): policy, Tesouro offers, the month's plan, the director's menu and a
 meeting without models. Offline: prices, offers and the macro analyst are synthetic or mocked.
 """
+import json
 from datetime import date
 from unittest import mock
 
@@ -405,3 +406,60 @@ def test_the_transition_nets_against_the_months_application():
     bought = sum(o.value for o in plan.orders if o.side == "compra")
     assert fixed[0].value + bought == pytest.approx(20_000, abs=1.0)
     assert fixed[0].value == pytest.approx(20_000 - plan.transfer, abs=160)
+
+
+def _mandate(**kw):
+    return _policy(equity_min=0.40, **kw)
+
+
+@pytest.mark.unit
+def test_the_equity_share_scales_both_equity_sleeves_and_never_exceeds_the_mix():
+    plan = indices.build(_mandate(), _wealth(), PRICES, TODAY, 3000, equity_share=0.45)
+    # 91,000 investable plus contribution: 15% Brazil, 30% global, 55% fixed income (plus the reserve).
+    assert plan.sleeves["brasil"]["target"] == pytest.approx(0.15 * 91_000)
+    assert plan.sleeves["internacional"]["target"] == pytest.approx(0.30 * 91_000)
+    assert plan.sleeves["renda_fixa"]["target"] == pytest.approx(0.55 * 91_000 + 60_000)
+    assert indices.build(_mandate(), _wealth(), PRICES, TODAY, 3000, equity_share=0.9).equity_share == pytest.approx(0.6)
+    with pytest.raises(ValueError):
+        IndexPlan(equity_min=0.7)
+
+
+@pytest.mark.unit
+def test_the_director_moves_the_equity_share_within_floor_ceiling_and_step():
+    def decide(share):
+        return director.IndexDecision(brazil_vehicle="BOVA11", brazil_vehicle_reason="r", equity_share=share)
+
+    assert director.check_index(decide(0.55), _mandate(), set(), 0.60).equity_share == pytest.approx(0.55)
+    assert director.check_index(decide(0.30), _mandate(), set(), 0.60).equity_share == pytest.approx(0.50)  # step
+    assert director.check_index(decide(0.30), _mandate(), set(), 0.45).equity_share == pytest.approx(0.40)  # floor
+    assert director.check_index(decide(0.90), _mandate(), set(), 0.55).equity_share == pytest.approx(0.60)  # mix
+    assert director.check_index(decide(None), _mandate(), set(), 0.50).equity_share == pytest.approx(0.50)
+    assert director.check_index(decide(0.30), _policy(), set()).equity_share is None    # no mandate, no share
+    assert "equity_share:" in director.equity_rule(_mandate(), 0.55) and director.equity_rule(_policy(), None) == ""
+
+
+@pytest.mark.unit
+def test_a_meeting_under_a_mandate_logs_the_share_beside_the_fixed_mix(tmp_path):
+    decision = director.IndexDecision(brazil_vehicle="BOVA11", brazil_vehicle_reason="padrão", equity_share=0.5,
+                                      equity_share_reason="A Selic real está alta.")
+    frames = _frames()
+    config = {**index_meeting.DEFAULT_CONFIG, "results_dir": str(tmp_path)}
+    with mock.patch.object(index_meeting.b3_market, "histories",
+                           side_effect=lambda codes: {c: frames[c] for c in codes if c in frames}), \
+            mock.patch.object(tesouro_direto, "offers", side_effect=RuntimeError("offline")), \
+            mock.patch.object(index_meeting.analysts, "macro",
+                              return_value=index_meeting.analysts.Report("Analista Macro", {})), \
+            mock.patch.object(index_meeting.analysts, "Models") as models, \
+            mock.patch.object(index_meeting.analysts, "_with_view", side_effect=lambda r, *a, **k: r), \
+            mock.patch.object(director, "ask_index", return_value=decision) as ask, \
+            mock.patch.object(director, "write_letter", return_value="Carta."):
+        models.return_value.spent = 0.0
+        models.return_value.budget.by_model = {}
+        from tradingagents.committee import meeting
+
+        m = meeting.hold(_mandate(), _wealth(), as_of=TODAY, config=config)
+    assert "fixed_income_yields" in ask.call_args.args[2] and ask.call_args.kwargs["previous_share"] is None
+    assert "Parcela em ações: **50%**" in m.letter and "o plano fixo é 60%" in m.letter
+    log = json.loads((tmp_path / "comite" / "decisoes.jsonl").read_text().splitlines()[-1])
+    assert log["equity_share"] == pytest.approx(0.5) and log["equity_share_fixed_mix"] == pytest.approx(0.6)
+    assert index_meeting.previous_equity_share(tmp_path / "comite") == pytest.approx(0.5)

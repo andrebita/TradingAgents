@@ -253,8 +253,10 @@ app.add_typer(comite, name="comite")
 
 @comite.command("reunir")
 def comite_reunir(
-    politica: str = typer.Option(..., "--politica", help="JSON da política de investimentos"),
-    patrimonio: str = typer.Option(..., "--patrimonio", help="JSON do patrimônio completo"),
+    politica: str = typer.Option(None, "--politica", help="JSON da política de investimentos"),
+    patrimonio: str = typer.Option(None, "--patrimonio", help="JSON do patrimônio completo"),
+    do_banco: bool = typer.Option(False, "--do-banco", help="Lê a política e o patrimônio mais recentes do Supabase "
+                                  "(TRADINGAGENTS_SUPABASE_URL e TRADINGAGENTS_SUPABASE_KEY)"),
     aporte: float = typer.Option(None, "--aporte", help="Aporte deste mês, em R$ (padrão: o da política)"),
     data: str = typer.Option(None, "--data", help="Data da reunião, AAAA-MM-DD (padrão: hoje)"),
     sem_llm: bool = typer.Option(False, "--sem-llm", help="Só os fatos e a regra, sem analistas nem diretor"),
@@ -269,7 +271,16 @@ def comite_reunir(
     from tradingagents.committee.wealth import load_wealth
 
     try:
-        meeting = hold(load_policy(politica), load_wealth(patrimonio), contribution=aporte,
+        if do_banco:
+            from tradingagents.committee.store import Store
+
+            st = Store.from_env()
+            policy, wealth = st.latest_policy(), st.latest_wealth()
+        elif politica and patrimonio:
+            policy, wealth = load_policy(politica), load_wealth(patrimonio)
+        else:
+            raise ValueError("informe --politica e --patrimonio, ou --do-banco")
+        meeting = hold(policy, wealth, contribution=aporte,
                        as_of=_date.fromisoformat(data) if data else None, use_llm=not sem_llm)
     except Exception as exc:  # a bad file, a missing key or an unreachable source is a setup error
         console.print(f"[red]{escape(str(exc))}[/red]")

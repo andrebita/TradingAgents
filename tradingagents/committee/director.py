@@ -281,6 +281,9 @@ class IndexDecision(BaseModel):
     key_points: list[str] = Field(default_factory=list,
                                   description="At most five points, in Portuguese, that the letter to the investor "
                                               "must convey: your reading of the month, grounded in the data.")
+    equity_share: float | None = Field(None, description="The share of the investable wealth in equities (Brazil "
+                                       "plus global) you recommend, as a fraction; null keeps the previous one.")
+    equity_share_reason: str = Field("", description="Two or three sentences in Portuguese, citing the data.")
 
 
 @dataclass
@@ -289,6 +292,7 @@ class CheckedIndex:
     vehicle: str
     held_back: set[str]
     adjustments: list[str] = field(default_factory=list)
+    equity_share: float | None = None       # None: the plan's fixed mix (no mandate)
 
 
 INDEX_PROMPT = """You are the senior financial director of a private investment committee in Brazil. Your client is one individual investor, who decides and executes; you recommend.
@@ -301,7 +305,7 @@ The investor's plan, chosen after the committee's tests (2009-2026; the allocati
 
 Your discretion, checked by code:
 - brazil_vehicle: {vehicle_rule}
-- held_back_sales: at most {max_vetoes} of this month's migration sales or redemptions to postpone, by exact asset name, with a reason (for example, a tax or a pending fact). Everything else in the plan is fixed by code: amounts, targets, pace. The pace holds: the plan's 'if_held_back' says, for each sale, what the code sells in its place if you postpone it. Weigh that substitute before you choose, and name it in your key points.
+{equity_rule}- held_back_sales: at most {max_vetoes} of this month's migration sales or redemptions to postpone, by exact asset name, with a reason (for example, a tax or a pending fact). Everything else in the plan is fixed by code: amounts, pace and, apart from equity_share when you have it, the targets. The pace holds: the plan's 'if_held_back' says, for each sale, what the code sells in its place if you postpone it. Weigh that substitute before you choose, and name it in your key points.
 - escalations: only what the investor must decide or confirm that is not already in the plan's 'pending' list. That list is shown to the investor word for word: do not repeat it.
 - key_points: what the letter must convey, at most five points.
 - If the crisis status is not 'normal', a key point explains the written crisis plan. A price fall alone is not a reason to sell, and you do not suggest selling because of it. If the data show that the investor's situation changed (a dated need for the money, a change in what they can bear), escalate a policy review with those facts.
@@ -328,8 +332,31 @@ CONTEST_EVIDENCE = ("BOVA11 IRR 9.1% a year, maximum fall -47%; DIVO11 IRR 11.1%
                     "without 2016; the protocol keeps BOVA11 as the default")
 
 
+EQUITY_EVIDENCE = ("in the committee's tests (2012-2026), switching between equities and CDI on valuation lost to "
+                   "holding a fixed mix. Lowering equities from 60% to 45% of the investable wealth left the chance of "
+                   "ending 5 years ahead of Selic about the same (79% vs 78% in the bootstrap, 61% vs 60% without "
+                   "the real's past depreciation) but cut the median gain (+7.2% vs +9.4% over Selic in 5 years) and "
+                   "the loss in a simultaneous fall (18% vs 24%). Raising equities above the plan's mix was not tested")
+
+
+def equity_rule(policy: InvestmentPolicy, previous_share: float | None) -> str:
+    ip = policy.index_plan
+    if ip.equity_min is None:
+        return ""
+    prev = ip.equity_share if previous_share is None else previous_share
+    return (f"- equity_share: the share of the investable wealth in equities (Brazil and global together, kept at "
+            f"their 1:2 proportion), from {ip.equity_min:.0%} to {ip.equity_share:.0%}; it was {prev:.0%}, and it "
+            f"may move at most {ip.equity_step_max:.0%} in one meeting. The investor asked you to weigh how much "
+            f"fixed income pays (Selic and bank deposits above it) against what equities offer, and to recommend how "
+            f"much to keep in equities. The evidence: {EQUITY_EVIDENCE}. So lower it only for a reason grounded in "
+            f"the data (the real rate fixed income pays, its spread over Selic, the investor's risk), never on a "
+            f"price forecast, and keep it when the data give no clear reason. The code keeps the plan's fixed mix "
+            f"alongside yours, so the investor sees whether your choice helped. State the reason in "
+            f"equity_share_reason.\n")
+
+
 def ask_index(llm, policy: InvestmentPolicy, plan_facts: dict, reports: list, previous: str, *, budget=None,
-              max_output: int = 24_000) -> IndexDecision:
+              max_output: int = 24_000, previous_share: float | None = None) -> IndexDecision:
     def report_json(r):
         return {"role": r.role, "facts": r.facts, "warnings": r.warnings, "error": r.error,
                 "reading": r.view.model_dump() if r.view else None}
@@ -343,7 +370,8 @@ def ask_index(llm, policy: InvestmentPolicy, plan_facts: dict, reports: list, pr
                 f"contest (June 2014 to October 2026, same flows, after taxes): {CONTEST_EVIDENCE}. The previous "
                 f"choice was {previous}. A change applies to new money only: selling an ETF pays 15% on the gain with "
                 "no exemption.")
-    prompt = INDEX_PROMPT.format(vehicle_rule=rule, max_vetoes=MAX_VETOES, policy=policy.for_models(),
+    prompt = INDEX_PROMPT.format(vehicle_rule=rule, equity_rule=equity_rule(policy, previous_share),
+                                 max_vetoes=MAX_VETOES, policy=policy.for_models(),
                                  plan=json.dumps(plan_facts, ensure_ascii=False, indent=1, default=str),
                                  reports=json.dumps([report_json(r) for r in reports], ensure_ascii=False, indent=1,
                                                     default=str))
@@ -353,10 +381,22 @@ def ask_index(llm, policy: InvestmentPolicy, plan_facts: dict, reports: list, pr
     return budget.invoke(runnable, prompt, model=policy.models.director, max_output=max_output)
 
 
-def check_index(decision: IndexDecision, policy: InvestmentPolicy, migration_assets: set[str]) -> CheckedIndex:
-    """The vehicle from the menu (the default otherwise) and at most two real migration sales held back."""
+def check_index(decision: IndexDecision, policy: InvestmentPolicy, migration_assets: set[str],
+                previous_share: float | None = None) -> CheckedIndex:
+    """The vehicle from the menu (the default otherwise), at most two real migration sales held back and, under a
+    mandate, an equity share within its floor, the plan's mix and the step from the previous meeting."""
     ip = policy.index_plan
     notes = []
+    share = None
+    if ip.equity_min is not None:
+        prev = ip.equity_share if previous_share is None else previous_share
+        asked = prev if decision.equity_share is None else decision.equity_share
+        lo, hi = max(ip.equity_min, prev - ip.equity_step_max), min(ip.equity_share, prev + ip.equity_step_max)
+        share = min(max(asked, lo), hi)
+        if abs(share - asked) > 1e-9:
+            notes.append(f"Parcela em ações de {asked:.0%} trazida para {share:.0%}: o mandato vai de "
+                         f"{ip.equity_min:.0%} a {ip.equity_share:.0%}, com no máximo {ip.equity_step_max:.0%} de "
+                         "mudança por reunião.")
     vehicle = decision.brazil_vehicle.strip().upper()
     allowed = {c.upper() for c in ip.brazil_menu} | ({"METADE"} if len(ip.brazil_menu) > 1 else set())
     if vehicle not in allowed:
@@ -372,7 +412,7 @@ def check_index(decision: IndexDecision, policy: InvestmentPolicy, migration_ass
             notes.append(f"Adiamento de '{h.asset}' desconsiderado: no máximo {MAX_VETOES} por reunião.")
         else:
             held.add(h.asset)
-    return CheckedIndex(decision, vehicle, held, notes)
+    return CheckedIndex(decision, vehicle, held, notes, share)
 
 
 STOPWORDS = {"para", "pelo", "pela", "pelos", "pelas", "como", "mais", "isso", "disso", "esse", "essa", "este",

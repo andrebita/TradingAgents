@@ -133,3 +133,10 @@ def _isolate_config():
     config_module._config = copy.deepcopy(default_config.DEFAULT_CONFIG)
     yield
     config_module._config = copy.deepcopy(default_config.DEFAULT_CONFIG)
+
+
+@pytest.fixture(autouse=True)
+def _no_personal_store(monkeypatch):
+    """The investor's Supabase project is never touched by tests, even with its key in the environment."""
+    for env_var in ("TRADINGAGENTS_SUPABASE_URL", "TRADINGAGENTS_SUPABASE_KEY"):
+        monkeypatch.delenv(env_var, raising=False)

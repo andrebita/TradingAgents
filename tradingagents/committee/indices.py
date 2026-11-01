@@ -78,6 +78,7 @@ class Plan:
     selic_rate: float | None = None
     transfer: float = 0.0
     unvalued: list[str] = field(default_factory=list)
+    equity_share: float = 0.0          # of the investable wealth, as planned this month
 
     def migration_sales(self) -> list[Order]:
         return [o for o in self.orders if o.side in ("venda", "resgatar") and o.reason.startswith("migração")]
@@ -92,7 +93,8 @@ class Plan:
                            for o in self.orders],
                 "held_to_maturity": self.holds, "pending": self.pending, "crisis": self.crisis,
                 "brazil_vehicle": self.brazil_vehicle, "selic_bond": self.selic_bond,
-                "monthly_transfer_to_equities": round(self.transfer, 2), "unvalued": self.unvalued}
+                "monthly_transfer_to_equities": round(self.transfer, 2), "unvalued": self.unvalued,
+                "equity_share": round(self.equity_share, 4)}
 
 
 @dataclass
@@ -176,7 +178,8 @@ def crisis_status(history: dict[str, pd.Series], today: date, alert: float, plan
 
 def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], today: date, contribution: float, *,
           offers=None, history: dict[str, pd.Series] | None = None, brazil_vehicle: str | None = None,
-          held_back: set[str] | None = None, episode: dict | None = None) -> Plan:
+          held_back: set[str] | None = None, episode: dict | None = None,
+          equity_share: float | None = None) -> Plan:
     """The month's plan. ``prices``: last close per listed code; ``offers``: Tesouro Direto bonds on offer."""
     ip = policy.index_plan
     held_back = held_back or set()
@@ -217,9 +220,13 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     deficit = max(reserve - eligible, 0.0)
     investable = max(total - reserve, 0.0)
     base = investable + contribution
-    target = {"brasil": ip.brazil * base, "internacional": ip.international * base,
-              "renda_fixa": ip.fixed_income * base + reserve, "fundos_listados": 0.0}
-    plan = Plan(today, investable, reserve, eligible, deficit, brazil_vehicle=vehicle, unvalued=unvalued)
+    # The director may recommend less in equities than the plan's mix (never more), keeping Brazil:global.
+    share = ip.equity_share if equity_share is None else min(max(equity_share, 0.0), ip.equity_share)
+    scale = share / ip.equity_share if ip.equity_share else 0.0
+    target = {"brasil": ip.brazil * scale * base, "internacional": ip.international * scale * base,
+              "renda_fixa": (1 - share) * base + reserve, "fundos_listados": 0.0}
+    plan = Plan(today, investable, reserve, eligible, deficit, brazil_vehicle=vehicle, unvalued=unvalued,
+                equity_share=share)
     if unvalued:
         plan.pending.append("Sem preço nem valor para " + ", ".join(unvalued) + ": o plano não move dinheiro "
                             "entre classes até completar o patrimônio.")

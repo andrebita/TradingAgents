@@ -64,6 +64,17 @@ Para usar, a política ganha um bloco `index_plan`:
   lugar de cada venda adiada;
 - dá os pontos que a carta deve passar e o que só você pode decidir.
 
+Com `equity_min` na política, o diretor também recomenda **quanto manter em ações**: entre `equity_min` e a
+mistura do plano (por exemplo, de 40% a 60% do investível), no máximo `equity_step_max` (10 pontos) por reunião,
+mantendo a proporção 1:2 entre Brasil e global. Ele pesa o que a renda fixa paga (Selic, Tesouro, CDB acima da
+Selic) contra as ações, sem prever preços. A evidência que ele recebe:
+- trocar entre ações e CDI pelo valuation perdeu de manter a proporção fixa nos testes;
+- reduzir de 60% para 45% quase não mudou a chance de ganhar da Selic (79% contra 78%), mas reduziu o ganho
+  típico.
+
+A checagem traz a escolha de volta aos limites. O registro guarda a parcela escolhida e a da mistura fixa, para
+medir se a escolha ajudou.
+
 Numa queda, ele não sugere vender por causa do preço. Se a sua situação mudou (precisa do dinheiro numa data,
 ou não aguenta mais o risco), ele pede uma revisão da política.
 
@@ -130,6 +141,10 @@ tradingagents comite reunir --politica ~/.tradingagents/minha/politica.json \
     --patrimonio ~/.tradingagents/minha/patrimonio.json --aporte 3000
 ```
 
+- **No Supabase:** com `TRADINGAGENTS_SUPABASE_URL` e `TRADINGAGENTS_SUPABASE_KEY` (chave secreta) no
+  ambiente, `tradingagents comite reunir --do-banco` lê a política e o patrimônio mais recentes do banco, e cada
+  reunião grava lá o registro, a carta, as ordens (como propostas) e as pendências. As tabelas estão em
+  `supabase/migrations/`; os testes nunca acessam o banco.
 - **Modelos de arquivo:** `examples/comite/politica_exemplo.json` e `examples/comite/patrimonio_exemplo.json`;
   para a carteira por índices, `examples/comite/politica_indices_exemplo.json`. Todos os valores são fictícios.
   - **No patrimônio:**
