@@ -71,8 +71,14 @@ def offers(as_of: date | None = None) -> list[Offer]:
     return parse(_csv(), as_of)
 
 
-def selic_to_buy(available: list[Offer], today: date, years: int = 5) -> Offer | None:
-    """The Tesouro Selic bond to buy: the highest spread among those maturing within ``years``."""
-    limit = date(today.year + years, today.month, min(today.day, 28))
-    selic = [o for o in available if o.kind == "Tesouro Selic" and o.maturity <= limit]
-    return max(selic, key=lambda o: (o.rate, -o.maturity.toordinal())) if selic else None
+def selic_to_buy(available: list[Offer], today: date, years: int = 5, until: date | None = None) -> Offer | None:
+    """The Tesouro Selic bond to buy: the highest spread among those maturing by ``until`` (the investor's
+    horizon) or, without one, within ``years``. If none matures by then, the first one after it: the money is
+    needed at the horizon, so a later bond would be sold at market."""
+    limit = until or date(today.year + years, today.month, min(today.day, 28))
+    selic = [o for o in available if o.kind == "Tesouro Selic" and o.maturity > today]
+    within = [o for o in selic if o.maturity <= limit]
+    if within:
+        return max(within, key=lambda o: (o.rate, -o.maturity.toordinal()))
+    later = [o for o in selic if o.maturity > limit]
+    return min(later, key=lambda o: o.maturity) if later else None

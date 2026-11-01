@@ -23,6 +23,7 @@ class Models(BaseModel):
     risk: str = "claude-sonnet-5-5"
     tax: str = "claude-sonnet-5-5"
     macro: str = "claude-haiku-5-5"
+    letter: str = "claude-sonnet-5-5"   # the letter on the final plan, after the director's decision (review 6)
 
 
 class IndexPlan(BaseModel):

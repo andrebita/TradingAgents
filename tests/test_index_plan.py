@@ -109,7 +109,7 @@ def test_a_fall_from_the_12_month_high_puts_the_crisis_plan_on_the_table():
     bova = pd.Series(200.0, index=days)
     bova.iloc[-5:] = 150.0                                   # -25%
     status = indices.crisis_status({"BOVA11": bova, "WRLD11": pd.Series(150.0, index=days)}, TODAY, 0.15, 0.30)
-    assert status["status"] == "atenção" and status["falls_from_12m_high"]["BOVA11"] == -0.25 and status["plan"]
+    assert status["status"] == "atenção" and status["falls_from_high"]["BOVA11"] == -0.25 and status["plan"]
     bova.iloc[-5:] = 130.0
     assert indices.crisis_status({"BOVA11": bova}, TODAY, 0.15, 0.30)["status"] == "crise"
 
@@ -176,7 +176,7 @@ def test_the_fixed_income_analyst_reads_the_plans_redemptions_and_rule():
 
 def _with_second_fund():
     w = _wealth()
-    w.listed.append(Listed(code="INFR11", quantity=100, kind="fi_infra"))
+    w.listed.append(Listed(code="INFR11", quantity=100, kind="fi_infra", average_price=95.0))
     return w
 
 
@@ -217,18 +217,128 @@ def test_the_directors_escalations_do_not_repeat_the_plans_pending_list():
 
 @pytest.mark.unit
 def test_a_postponed_sale_shows_in_the_letter_and_the_log(tmp_path):
-    decision = director.IndexDecision(letter="Carta.", brazil_vehicle="BOVA11", brazil_vehicle_reason="padrão",
+    decision = director.IndexDecision(brazil_vehicle="BOVA11", brazil_vehicle_reason="padrão",
                                       held_back_sales=[director.HoldBack(asset="FUND11", reason="sem custo")],
                                       escalations=["Informe o preço médio de FUND11: sem ele o IR não pode ser "
-                                                   "calculado."])
+                                                   "calculado."], key_points=["Troca de ações por BOVA11."])
     with mock.patch.object(index_meeting.analysts, "Models") as models, \
             mock.patch.object(index_meeting.analysts, "_with_view", side_effect=lambda r, *a, **k: r), \
-            mock.patch.object(director, "ask_index", return_value=decision) as ask:
+            mock.patch.object(director, "ask_index", return_value=decision) as ask, \
+            mock.patch.object(director, "write_letter",
+                              return_value="Vendemos R$ 18.050,00 em ações e o risco é de R$ 50 mil.") as write:
         models.return_value.spent = 0.0
         models.return_value.budget.by_model = {}
         m = _hold(tmp_path)
     assert "if_held_back" in ask.call_args.args[2]
     assert "### O que mudou no plano depois da decisão do diretor" in m.letter
     assert "Vender FUND11 (10, R$ 1.000,00) sai do plano: adiada pelo diretor (sem custo)." in m.letter
+    # The letter is written on the final plan: FUND11's sale is gone from the data it reads.
+    data = write.call_args.args[1]
+    assert not any(o["asset"] == "FUND11" for o in data["final_plan"]["orders"])
+    assert data["final_plan"]["totals"]["sales"] == pytest.approx(19_000) and data["changes"]
+    # The amounts it cites are checked: R$ 18.050 is not in the plan, nor R$ 50 mil.
+    assert "## 2. Carta do comitê" in m.letter and "**Conferência automática:**" in m.letter
+    assert "R$ 18.050,00" in m.letter.split("**Conferência automática:**")[1]
+    assert "**Pontos do diretor:**" in m.letter
     log = (tmp_path / "comite" / "decisoes.jsonl").read_text().splitlines()[-1]
-    assert '"held_back": ["FUND11"]' in log and "changes_after_director" in log
+    assert '"held_back": ["FUND11"]' in log and "changes_after_director" in log and "letter_audit" in log
+
+
+@pytest.mark.unit
+def test_the_selic_bond_matures_by_the_horizon_or_just_after_it():
+    raw = ("Tipo Titulo;Data Vencimento;Data Base;Taxa Compra Manha;Taxa Venda Manha;PU Compra Manha;"
+           "PU Venda Manha;PU Base Manha\n"
+           "Tesouro Selic;01/03/2029;30/10/2026;0,06;0,07;20185,67;20180,00;20180,00\n"
+           "Tesouro Selic;01/03/2031;30/10/2026;0,10;0,11;20120,75;20110,00;20110,00\n"
+           "Tesouro Selic;01/03/2033;30/10/2026;0,15;0,16;20000,00;19990,00;19990,00\n").encode("latin-1")
+    offers = tesouro_direto.parse(raw)
+    assert tesouro_direto.selic_to_buy(offers, TODAY, until=date(2030, 1, 1)).name == "Tesouro Selic 2029"
+    # In 2029 the five-year rule would reach 2033: the horizon keeps it to the bond that matures first after it.
+    assert tesouro_direto.selic_to_buy(offers, date(2029, 6, 1), until=date(2031, 11, 1)).name == "Tesouro Selic 2031"
+    assert tesouro_direto.selic_to_buy(offers, date(2031, 6, 1), until=date(2031, 11, 1)).name == "Tesouro Selic 2033"
+
+
+@pytest.mark.unit
+def test_the_transition_closes_on_schedule():
+    wealth = Wealth(as_of=date(2026, 10, 31), fixed_income=[
+        FixedIncome(name="Tesouro Selic 2031", kind="tesouro_selic", issuer="Tesouro", indexer="SELIC",
+                    value=200_000, liquidity_days=1)])
+    first = indices.build(_policy(), wealth, PRICES, date(2026, 11, 2), 0)
+    last = indices.build(_policy(), wealth, PRICES, date(2027, 10, 4), 0)
+    # Month 1 moves a twelfth of the gap; month 12 moves all that is left, not a twelfth of it.
+    gap = 0.6 * 140_000
+    assert first.transfer == pytest.approx(gap / 12)
+    assert last.transfer == pytest.approx(gap)
+
+
+@pytest.mark.unit
+def test_a_fund_sale_without_its_cost_is_blocked_and_the_pace_passes_on():
+    wealth = _with_second_fund()
+    wealth.listed[2] = Listed(code="FUND11", quantity=120, kind="fii")          # no average price
+    plan = indices.build(_policy(), wealth, {**PRICES, "INFR11": 100.0}, TODAY, 3000)
+    sold = {o.asset for o in plan.orders if o.side == "venda"}
+    assert "FUND11" not in sold and "INFR11" in sold
+    assert any(p.startswith("Venda de FUND11 bloqueada") for p in plan.pending)
+    assert any("Lei 12.431" in p for p in plan.pending)
+    # Unknown tax is never shown as zero; the single-stock sales carry the CPF-wide check.
+    assert all(o.tax is not None for o in plan.orders if o.side == "venda")
+    assert any("por CPF" in p for p in plan.pending)
+
+
+@pytest.mark.unit
+def test_december_rebalancing_puts_the_proceeds_to_work():
+    wealth = Wealth(as_of=date(2026, 11, 30), fixed_income=[
+        FixedIncome(name="Tesouro Selic 2031", kind="tesouro_selic", issuer="Tesouro", indexer="SELIC",
+                    value=100_000, liquidity_days=1)],
+        listed=[Listed(code="BOVA11", quantity=300, kind="etf", counts_as="acoes", average_price=150.0),
+                Listed(code="WRLD11", quantity=200, kind="etf", counts_as="internacional", average_price=140.0)])
+    plan = indices.build(_policy(), wealth, PRICES, date(2026, 12, 1), 0)
+    sale = next(o for o in plan.orders if o.side == "venda" and o.asset == "BOVA11")
+    assert sale.tax == pytest.approx(0.15 * (160 - 150) * sale.quantity)
+    # The proceeds, net of the tax, buy the sleeve furthest below target (abroad) and the rest goes to Selic; the
+    # month's transition from Selic buys equities too.
+    bought = sum(o.value for o in plan.orders if o.side in ("compra", "aplicar"))
+    assert bought == pytest.approx(sale.value - sale.tax + plan.transfer, abs=1.0)
+    assert any(o.side == "compra" and o.asset == "WRLD11" for o in plan.orders)
+    blocked = Wealth(as_of=wealth.as_of, fixed_income=wealth.fixed_income,
+                     listed=[Listed(code="BOVA11", quantity=300, kind="etf", counts_as="acoes")])
+    plan = indices.build(_policy(), blocked, PRICES, date(2026, 12, 1), 0)
+    assert not any(o.side == "venda" for o in plan.orders)
+    assert any(p.startswith("Rebalanceamento de BOVA11 bloqueado") for p in plan.pending)
+
+
+@pytest.mark.unit
+def test_an_open_crisis_episode_keeps_its_peak_past_the_12_month_window():
+    days = pd.bdate_range("2025-01-01", "2026-10-30")
+    bova = pd.Series(200.0, index=days)
+    bova.loc["2025-06-01":] = 120.0                         # -40% since mid-2025, flat ever since
+    plain = indices.crisis_status({"BOVA11": bova}, TODAY, 0.15, 0.30)
+    assert plain["status"] == "normal"                       # the old high left the 12-month window
+    episode = {"start": "2025-06-02", "peaks": {"BOVA11": 200.0}}
+    kept = indices.crisis_status({"BOVA11": bova}, TODAY, 0.15, 0.30, episode)
+    assert kept["status"] == "crise" and kept["episode"]["start"] == "2025-06-02"
+    bova.iloc[-1] = 190.0
+    closed = indices.crisis_status({"BOVA11": bova}, TODAY, 0.15, 0.30, episode)
+    assert closed["status"] == "normal" and closed["episode_closed"]["start"] == "2025-06-02"
+
+
+@pytest.mark.unit
+def test_the_letter_audit_flags_amounts_not_in_the_data():
+    data = {"loss": -29_386.6, "sales": [18_996.71], "contribution": 3000}
+    letter = "Perde R$ 29 mil (R$ 29,4 mil), não R$ 50 mil; vendas de R$ 18.996,71; aporte de R$ 3.000; R$ 36.024,71."
+    assert director.audit_letter(letter, data) == ["R$ 50 mil", "R$ 36.024,71"]
+
+
+@pytest.mark.unit
+def test_the_execution_order_frees_money_before_spending_it():
+    plan = indices.build(_policy(), _wealth(), PRICES, TODAY, 3000)
+    steps = index_meeting.execution_steps(plan)
+    assert steps[0].startswith("Na corretora, venda primeiro") and "D+2" in steps[0]
+    assert any("até as 13h" in x for x in steps) and steps[-1].startswith("Depois de executar")
+    m_letter = index_meeting.render(TODAY, _policy(), _wealth(), plan,
+                                    director.check_index(director.IndexDecision(brazil_vehicle="BOVA11",
+                                                                                brazil_vehicle_reason="padrão"),
+                                                         _policy(), set()),
+                                    [], 0.0, None, False, no_letter="Sem modelos.", price_asof=date(2026, 10, 30))
+    assert "### Ordem de execução" in m_letter and "fechamentos até 30/10/2026" in m_letter
+    assert "| Preço ref. |" in m_letter

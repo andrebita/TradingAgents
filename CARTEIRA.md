@@ -37,24 +37,32 @@ Para usar, a política ganha um bloco `index_plan`:
 1. **Reserva primeiro:** só conta caixa e pós-fixado diário.
 2. **Migração do que está fora do plano:**
    - ações individuais saem dentro da isenção de R$ 20 mil por mês, das maiores para as menores;
-   - fundos listados saem aos poucos, ao longo dos meses definidos;
+   - fundos listados saem aos poucos, ao longo dos meses definidos. Um fundo sem preço médio fica bloqueado até
+     você informar o preço, porque sem ele o IR não pode ser calculado; o ritmo passa para o fundo seguinte;
    - Tesouro IPCA+ e prefixados que vencem depois do seu horizonte vão para o Tesouro Selic;
    - o resto da renda fixa fica até o vencimento.
 3. **Dinheiro da venda de ações individuais:** compra primeiro o ETF Brasil. É uma troca dentro da mesma classe:
    a migração não tira dinheiro do Brasil para o exterior depois de uma queda, nem o contrário.
 4. **Dinheiro novo e o resto da migração:** vai para a classe mais abaixo do alvo, em cotas inteiras de ETF e em
-   Tesouro Selic. O título é o de maior taxa entre os que vencem em até 5 anos, com a taxa do dia do Tesouro
-   Direto.
-5. **Rebalanceamento:** só em junho e dezembro, e só quando uma classe passa do alvo mais a faixa.
-6. **Situação de mercado:** a queda de cada ETF desde a máxima de 12 meses. A partir de 15%, a carta traz o plano
-   de crise escrito; a partir de 30%, chama uma reunião extraordinária.
+   Tesouro Selic. O título é o de maior taxa entre os que vencem até o fim do seu horizonte, com a taxa do dia do
+   Tesouro Direto; se nenhum vence até lá, o primeiro que vence depois.
+5. **Transição:** quando faltam ações além da faixa, sai da Selic acima da reserva a diferença dividida pelos
+   meses que faltam da transição. Assim ela termina no prazo.
+6. **Rebalanceamento:** só em junho e dezembro, e só quando uma classe passa do alvo mais a faixa. O dinheiro da
+   venda, líquido do IR, vai para a classe mais abaixo do alvo. Sem preço médio, a venda fica bloqueada.
+7. **Situação de mercado:** a queda de cada ETF desde a máxima de 12 meses. A partir de 15%, a carta traz o plano
+   de crise escrito; a partir de 30%, chama uma reunião extraordinária. Enquanto o episódio está aberto, a queda
+   é medida desde o pico do episódio, mesmo depois de ele sair da janela de 12 meses.
 
 **O diretor:**
 - escolhe o ETF da parte Brasil dentro do cardápio (BOVA11, DIVO11 ou metade de cada). A escolha vale para o
   dinheiro novo, porque vender ETF paga 15% de IR;
 - pode adiar até duas vendas de migração. O ritmo se mantém: antes de decidir, ele vê o que o código vende no
   lugar de cada venda adiada;
-- explica o mês na carta.
+- dá os pontos que a carta deve passar e o que só você pode decidir.
+
+Numa queda, ele não sugere vender por causa do preço. Se a sua situação mudou (precisa do dinheiro numa data,
+ou não aguenta mais o risco), ele pede uma revisão da política.
 
 Valores, ritmo e alvos são do código, e a checagem recusa o que sair do cardápio.
 
@@ -68,7 +76,11 @@ Eles leem a política sem os campos da regra antiga de ações. Quando o diretor
 que mudou no plano depois da decisão. As pendências que o diretor repete das do código saem da lista.
 
 **A carta** abre com a carteira recomendada ativo a ativo: o que comprar, vender, resgatar, aplicar ou manter,
-com quantidade, valor e motivo.
+com quantidade, preço de referência, valor e motivo. Depois vêm a ordem de execução (vender antes de comprar, com
+as datas de liquidação), o IR (o que não pode ser calculado aparece como tal, nunca como zero) e as pendências.
+
+O texto da carta é escrito depois da decisão do diretor, sobre o plano final. O código confere cada valor em R$
+que o texto cita contra os dados e avisa quando um não aparece neles.
 
 ## Comitê de investimentos
 

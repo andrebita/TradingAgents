@@ -1199,6 +1199,49 @@ preço sem explicação nas posições.
 - A saída gradual nos últimos 12 meses (sensibilidade do §3) não foi rodada.
 - A atribuição setorial ficou de fora.
 
+## Revisão 6 (Astra): estratégia, personas e fluxo do comitê (commit `5c5ec4e`) e correções
+
+**Veredito da revisão:** o app entrega planejamento de carteira por regras, com uma camada de análise e
+explicação. Ainda não entrega gestão pró-ativa e especializada de ponta a ponta. O que falta não é liberdade
+para prever o mercado, e sim:
+- descobrir problemas sem ser chamado;
+- escolher entre alternativas de implementação já calculadas;
+- acompanhar a execução e cobrar pendências;
+- prestar contas do resultado líquido contra a Selic.
+
+**Conferido no código:** os pontos de desenho que a revisão apontou estavam certos.
+
+**Corrigido** (sem custo de API):
+
+| Achado | O que mudou |
+|---|---|
+| A carta do diretor era escrita antes do plano final | O diretor decide e dá os pontos da carta; o texto é escrito depois, sobre o plano final (`director.write_letter`), e o código confere cada valor em R$ citado (`director.audit_letter`) |
+| IR desconhecido virava zero na soma | A carta separa o IR estimado do IR não calculado; uma venda de fundo sem preço médio fica bloqueada, e o ritmo passa ao fundo seguinte |
+| Rebalanceamento de junho e dezembro | O dinheiro da venda, líquido do IR, vai para a classe mais abaixo do alvo (antes, ficava fora da conta); sem preço médio, a venda fica bloqueada |
+| A transição de 1/12 da diferença atual deixava cerca de 35% sem fazer em 12 meses | A diferença é dividida pelos meses que faltam da transição |
+| O Tesouro Selic "em até 5 anos" passaria do horizonte a partir de 2027 | O título vence até o fim do horizonte, ou é o primeiro depois dele |
+| A máxima de 12 meses some da janela numa queda longa | O pico do episódio de crise fica guardado no registro até a recuperação |
+| O prompt dos analistas não separava instruções de dados | Política e fatos entre marcas `<data>`, com a mesma proteção do diretor |
+| O prompt do diretor chamava toda a evidência de pré-registrada e proibia sugerir venda em qualquer crise | A disputa de seleção aparece como exploratória, os 78% como frequência histórica, e uma mudança de situação do investidor leva a uma revisão da política |
+| A carta não dizia como executar | Preço de referência com data, ordem de execução (vender antes de comprar, D+2 na B3, corte das 13h no Tesouro) e o limite de isenção por CPF |
+
+**Fatos externos conferidos** por um agente nas fontes, em 1º/11/2026:
+- confirmados: as taxas de WRLD11 (0,36% no total), BOVA11 e BOVV11 (0,10%), DIVO11 (0,50%) e IVVB11 (0,23%);
+  os limites do FGC e a falta de cobertura de LIG e debêntures; a custódia do Tesouro;
+- duas correções à revisão:
+  - o VWRA11 custa 0,52% no total, não 0,44%;
+  - o MUND11 existe e custa 0,26% no total, menos que o WRLD11. É candidato ao comparador de veículos.
+- uma precisão: o resgate no Tesouro cai no mesmo dia se pedido até as 13h; depois disso, no dia útil seguinte.
+
+**Fica para as próximas etapas**, como protocolos sem LLM:
+- **T1:** redução de risco perto de 2031 e variantes de rebalanceamento, no simulador de alocação;
+- **T2:** ritmo da migração e tributação;
+- **T3:** comparador de veículos pelo custo total;
+- **T4:** renda fixa e crédito;
+- **T5:** ciclo operacional: execução conciliada, pendências persistentes, monitor de eventos e prestação de
+  contas contra a Selic;
+- **T6:** prompts estruturados e escolha de modelos, com casos de teste.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada

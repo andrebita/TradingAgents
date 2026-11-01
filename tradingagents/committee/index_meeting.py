@@ -152,14 +152,60 @@ def order_changes(before: indices.Plan, after: indices.Plan, reasons: dict[str, 
 def tax_facts(plan: indices.Plan) -> dict:
     sales = [o for o in plan.orders if o.side in ("venda", "resgatar")]
     return {"sales": [{"asset": o.asset, "value": round(o.value, 2), "tax": o.tax, "reason": o.reason} for o in sales],
-            "estimated_tax": round(sum(o.tax or 0.0 for o in sales), 2),
-            "unknown_tax": [o.asset for o in sales if o.tax is None and o.reason.startswith("migração")],
+            "estimated_tax_known": round(sum(o.tax for o in sales if o.tax is not None), 2),
+            "unknown_tax": [o.asset for o in sales if o.tax is None],
             "rules": {"stocks": "isentas até R$ 20 mil de vendas no mês; acima, 15% sobre o ganho",
                       "etf": "15% sobre o ganho na venda, sem isenção",
                       "fii_fiagro": "20% sobre o ganho na venda; rendimentos isentos com 100+ cotistas e menos de "
                                     "10% das cotas", "fi_infra": "alíquota zero se enquadrado na Lei 12.431",
                       "tesouro": "tabela regressiva: 22,5% até 180 dias, 20% até 360, 17,5% até 720, 15% depois",
                       "jcp": "17,5% retido desde 2026"}}
+
+
+def totals(plan: indices.Plan) -> dict:
+    """The month's sums by kind of order, so no model has to add them up."""
+    def total(side):
+        return round(sum(o.value for o in plan.orders if o.side == side), 2)
+
+    return {"sales": total("venda"), "redemptions": total("resgatar"), "purchases": total("compra"),
+            "applications": total("aplicar"),
+            "tax_known": round(sum(o.tax for o in plan.orders if o.tax is not None), 2),
+            "tax_unknown_for": [o.asset for o in plan.orders if o.side in ("venda", "resgatar") and o.tax is None]}
+
+
+def execution_steps(plan: indices.Plan) -> list[str]:
+    """The order of operations for the investor: what frees money before what spends it."""
+    sides = {o.side for o in plan.orders}
+    steps = []
+    if "venda" in sides:
+        steps.append("Na corretora, venda primeiro, com ordem limitada perto do preço de referência. A venda na B3 "
+                     "liquida em D+2: o dinheiro fica livre dois dias úteis depois.")
+    if "resgatar" in sides:
+        steps.append("No Tesouro Direto, peça os resgates em dia útil até as 13h para o dinheiro cair no mesmo dia; "
+                     "depois das 13h, ele cai às 13h do dia útil seguinte.")
+    if "compra" in sides:
+        steps.append("Compre os ETFs com dinheiro já disponível: o das vendas na B3 só libera em D+2, salvo se a sua "
+                     "corretora compensar compra e venda com a mesma liquidação. Use ordem limitada; o lote de ETF é "
+                     "de 1 cota. Se o preço estiver mais de 3% longe da referência, ajuste a quantidade ao valor da "
+                     "tabela, sem aumentar o valor.")
+    if "aplicar" in sides:
+        steps.append("Aplique no Tesouro Selic com o dinheiro já na conta: o aporte, os resgates e, depois de D+2, o "
+                     "das vendas na B3.")
+    if steps:
+        steps.append("Depois de executar, atualize o patrimônio com as quantidades e os preços das notas, para a "
+                     "próxima reunião partir do que foi feito.")
+    return steps
+
+
+def previous_episode(out: Path) -> dict | None:
+    """The crisis episode still open at the last meeting, if any."""
+    log = out / "decisoes.jsonl"
+    if log.exists():
+        for line in reversed(log.read_text(encoding="utf-8").splitlines()):
+            record = json.loads(line)
+            if record.get("mode") == "indices":
+                return (record.get("plan") or {}).get("crisis", {}).get("episode")
+    return None
 
 
 def previous_vehicle(out: Path, default: str) -> str:
@@ -185,11 +231,12 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
     with run_config(config):
         codes = {x.code.strip().upper() for x in wealth.listed} | set(ip.brazil_menu) | {ip.international_vehicle}
         px = b3_market.histories(codes)
-        prices, history = {}, {}
+        prices, history, price_dates = {}, {}, {}
         for code in codes:
             close = px[code]["Close"].loc[:pd.Timestamp(today)] if code in px else pd.Series(dtype=float)
             if len(close) and (pd.Timestamp(today) - close.index[-1]).days <= PRICE_MAX_AGE_DAYS:
                 prices[code] = float(close.iloc[-1])
+                price_dates[code] = close.index[-1].date()
             if code in set(ip.brazil_menu) | {ip.international_vehicle} and len(close):
                 history[code] = close
         try:
@@ -200,10 +247,11 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
             logger.warning("Tesouro Direto offers unavailable: %s", exc)
             offers = None
         previous = previous_vehicle(out, ip.brazil_default)
+        episode = previous_episode(out)
 
         def rebuild(held_back=frozenset(), vehicle=previous):
             return indices.build(policy, wealth, prices, today, contribution, offers=offers, history=history,
-                                 brazil_vehicle=vehicle, held_back=set(held_back))
+                                 brazil_vehicle=vehicle, held_back=set(held_back), episode=episode)
 
         plan = first = rebuild()
         models = analysts.Models(config, Budget(policy.budget_usd)) if use_llm else None
@@ -225,11 +273,10 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                     submit(analysts.macro, policy, today, models, MACRO_BRIEF)]
             reports = [j.result() for j in jobs]
 
-        decision = director.IndexDecision(letter="Reunião sem LLM: o plano acima é o do código, sem leitura do "
-                                                 "diretor.", brazil_vehicle=previous,
+        decision = director.IndexDecision(brazil_vehicle=previous,
                                           brazil_vehicle_reason="Sem diretor nesta reunião: vale a escolha anterior "
                                                                 "ou o padrão do protocolo.")
-        director_ran = False
+        director_ran, no_letter = False, "Reunião sem modelos: o plano acima é o do código, sem leitura do diretor."
         if models is not None:
             facts = {**plan.facts(), "if_held_back": hold_back_effects(plan, rebuild)}
             try:
@@ -240,7 +287,7 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                 director_ran = True
             except Exception as exc:  # a refusal, an invalid answer or the budget: the code's plan stands
                 logger.warning("The director failed: %s", exc)
-                decision.letter = f"O diretor não respondeu nesta reunião ({type(exc).__name__}). O plano acima é o do código."
+                no_letter = f"O diretor não respondeu nesta reunião ({type(exc).__name__}). O plano acima é o do código."
                 decision.escalations = [f"Rodar a reunião de novo: o diretor falhou ({type(exc).__name__})."]
         checked = director.check_index(decision, policy, {o.asset for o in plan.migration_sales()})
         plan = rebuild(checked.held_back, checked.vehicle)
@@ -248,9 +295,31 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
         changes = order_changes(first, plan, reasons)
         escalations, repeated = director.merge_escalations(plan.pending, checked.decision.escalations)
 
+        # The letter is written on the final plan, after the decision, and its amounts are checked by code.
+        letter_text, audit = None, []
+        if director_ran:
+            data = {"policy": json.loads(policy.for_models()),
+                    "final_plan": {**plan.facts(), "totals": totals(plan)},
+                    "director_decision": {"brazil_vehicle": checked.vehicle,
+                                          "brazil_vehicle_reason": checked.decision.brazil_vehicle_reason,
+                                          "held_back": reasons, "key_points": checked.decision.key_points,
+                                          "escalations": escalations, "checks": checked.adjustments},
+                    "changes": changes, "risk": risk_facts(policy, plan)[0]["simultaneous_stress"],
+                    "analysts": [{"role": r.role, "summary": r.view.summary if r.view else None}
+                                 for r in reports]}
+            try:
+                letter_text = director.write_letter(models.llm(policy.models.letter), data, budget=models.budget,
+                                                    model=policy.models.letter)
+                audit = director.audit_letter(letter_text, data)
+            except Exception as exc:  # the plan and the director's points still reach the investor
+                logger.warning("The letter failed: %s", exc)
+                no_letter = f"A carta não foi gerada ({type(exc).__name__}). O plano e os pontos do diretor valem."
+
     spent = models.spent if models else 0.0
+    used = [price_dates[o.asset] for o in plan.orders if o.asset in price_dates]
     letter = render(today, policy, wealth, plan, checked, reports, spent, models, director_ran,
-                    changes=changes, escalations=escalations)
+                    changes=changes, escalations=escalations, letter_text=letter_text, no_letter=no_letter,
+                    audit=audit, price_asof=min(used) if used else None)
     path = out / f"carta_{today.isoformat()}.md"
     path.write_text(letter, encoding="utf-8")
     with (out / "decisoes.jsonl").open("a", encoding="utf-8") as fh:
@@ -258,7 +327,8 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                              "default_vehicle": ip.brazil_default, "held_back": sorted(checked.held_back),
                              "adjustments": checked.adjustments, "changes_after_director": changes,
                              "plan": plan.facts(), "escalations": escalations,
-                             "escalations_repeating_pending": repeated, "cost_usd": round(spent, 4)},
+                             "escalations_repeating_pending": repeated, "key_points": checked.decision.key_points,
+                             "letter_audit": audit, "cost_usd": round(spent, 4)},
                             ensure_ascii=False, default=str) + "\n")
     return Meeting(letter, path, spent, checked, reports)
 
@@ -268,7 +338,8 @@ ACTION = {"compra": "Comprar", "venda": "Vender", "resgatar": "Resgatar", "aplic
 
 def render(day: date, policy: InvestmentPolicy, wealth: Wealth, plan: indices.Plan, checked, reports: list,
            spent: float, models, director_ran: bool, *, changes: list[str] = (),
-           escalations: list[str] | None = None) -> str:
+           escalations: list[str] | None = None, letter_text: str | None = None, no_letter: str = "",
+           audit: list[str] = (), price_asof: date | None = None) -> str:
     ip = policy.index_plan
     d = checked.decision
     escalations = list(d.escalations) if escalations is None else escalations
@@ -277,26 +348,29 @@ def render(day: date, policy: InvestmentPolicy, wealth: Wealth, plan: indices.Pl
            "sem você.", "", "## 1. Carteira recomendada", "",
            f"Plano: {ip.brazil:.0%} ações Brasil, {ip.international:.0%} ações globais e {ip.fixed_income:.0%} "
            "Tesouro Selic, sobre o patrimônio investível; a reserva de emergência fica à parte.", "",
-           "### O que fazer com cada ativo", "",
-           "| Ativo | Classe | Ação | Quantidade | Valor | Motivo |", "|---|---|---|---|---|---|"]
+           "### O que fazer com cada ativo", ""]
+    if price_asof:
+        out += [f"Preços de referência: fechamentos até {price_asof:%d/%m/%Y}.", ""]
+    out += ["| Ativo | Classe | Ação | Quantidade | Preço ref. | Valor | Motivo |", "|---|---|---|---|---|---|---|"]
     acted = set()
     for o in plan.orders:
         acted.add(o.asset)
         q = "" if o.quantity is None else f"{o.quantity:,.0f}".replace(",", ".")
+        price = brl(o.price) if o.price else ""
         out.append(f"| {o.asset} | {SLEEVE_NAMES.get(o.sleeve, o.sleeve)} | **{ACTION.get(o.side, o.side)}** | {q} "
-                   f"| {brl(o.value)} | {o.reason} |")
+                   f"| {price} | {brl(o.value)} | {o.reason} |")
     for h in plan.holds:
-        out.append(f"| {h.split(':')[0]} | Renda fixa | Manter | | | {h.split(':', 1)[1].strip()} |")
+        out.append(f"| {h.split(':')[0]} | Renda fixa | Manter | | | | {h.split(':', 1)[1].strip()} |")
     for code, h in indices.consolidate(wealth).items():
         if code in acted:
             continue
         if code in set(ip.brazil_menu) | {ip.international_vehicle}:
-            out.append(f"| {code} | ETF do plano | Manter | {h.quantity:,.0f} | | no plano |")
+            out.append(f"| {code} | ETF do plano | Manter | {h.quantity:,.0f} | | | no plano |")
         elif h.kind == "acao":
-            out.append(f"| {code} | Ações Brasil | Manter por ora | {h.quantity:,.0f} | | venda nos próximos meses, "
+            out.append(f"| {code} | Ações Brasil | Manter por ora | {h.quantity:,.0f} | | | venda nos próximos meses, "
                        "dentro da isenção de R$ 20 mil |")
         else:
-            out.append(f"| {code} | {SLEEVE_NAMES['fundos_listados']} | Manter por ora | {h.quantity:,.0f} | | "
+            out.append(f"| {code} | {SLEEVE_NAMES['fundos_listados']} | Manter por ora | {h.quantity:,.0f} | | | "
                        f"venda aos poucos, em {ip.listed_funds_exit_months} meses |")
     out += ["", "### Onde o patrimônio está", "", "| Classe | Hoje | Depois do plano | Alvo |", "|---|---|---|---|"]
     for k, v in plan.sleeves.items():
@@ -307,12 +381,21 @@ def render(day: date, policy: InvestmentPolicy, wealth: Wealth, plan: indices.Pl
     if plan.transfer:
         out.append(f"- Transição: {brl(plan.transfer)} da Selic acima da reserva vão para ações neste mês.")
     out.append(f"- ETF da parte Brasil: **{checked.vehicle}** ({d.brazil_vehicle_reason.strip()})")
-    tax = sum(o.tax or 0.0 for o in plan.orders)
-    out += ["", f"IR estimado nas vendas e resgates do mês: **{brl(tax)}**."]
+    t = totals(plan)
+    line = f"IR estimado nas vendas e resgates do mês: **{brl(t['tax_known'])}**"
+    if t["tax_unknown_for"]:
+        line += (", fora o IR não calculado de " + ", ".join(t["tax_unknown_for"]) + " (falta o custo de aquisição; "
+                 "no Tesouro, o IR é retido na fonte)")
+    out += ["", line + "."]
+    steps = execution_steps(plan)
+    if steps:
+        out += ["", "### Ordem de execução", ""] + [f"{i}. {x}" for i, x in enumerate(steps, 1)]
     out += ["", f"### Mercado: {plan.crisis.get('status', 'normal')}", ""]
-    falls = plan.crisis.get("falls_from_12m_high", {})
+    falls = plan.crisis.get("falls_from_high", {})
     if falls:
-        out.append("Queda desde a máxima de 12 meses: " + ", ".join(f"{c} {pct(v, 1)}" for c, v in falls.items()) + ".")
+        since = (f"desde a máxima do episódio aberto em {plan.crisis['episode']['start']}"
+                 if plan.crisis.get("episode") else "desde a máxima de 12 meses")
+        out.append(f"Queda {since}: " + ", ".join(f"{c} {pct(v, 1)}" for c, v in falls.items()) + ".")
     if plan.crisis.get("plan"):
         out += ["", "**Plano de crise, escrito antes da crise:**", ""] + [f"- {x}" for x in plan.crisis["plan"]]
     to_decide = plan.pending + escalations
@@ -323,15 +406,18 @@ def render(day: date, policy: InvestmentPolicy, wealth: Wealth, plan: indices.Pl
         out += ["", "### O que a checagem mudou na decisão do diretor", ""] + [f"- {a}" for a in checked.adjustments]
     if changes:
         out += ["", "### O que mudou no plano depois da decisão do diretor", "",
-                "Os analistas leram o plano antes destas mudanças, e a carta do diretor também. Vale o quadro acima.",
-                ""] + [f"- {c}" for c in changes]
-    if director_ran:
-        note = ("_Escrita antes da checagem e do plano refeito com a decisão; onde divergir do quadro acima, vale o "
-                "quadro._" if changes or checked.adjustments else
-                "_Escrita antes da checagem; onde divergir do plano acima, vale o plano._")
-        out += ["", f"## 2. Carta do Diretor Financeiro ({policy.models.director})", "", note, "", d.letter.strip(), ""]
+                "Os analistas leram o plano antes destas mudanças. Vale o quadro acima.", ""] + [f"- {c}" for c in changes]
+    if letter_text:
+        out += ["", "## 2. Carta do comitê", "",
+                f"_Escrita sobre o plano final, depois da decisão do diretor ({policy.models.director}), por "
+                f"{policy.models.letter}._", "", letter_text.strip(), ""]
+        if audit:
+            out += [f"**Conferência automática:** a carta cita valores que não estão no plano nem nos fatos: "
+                    f"{', '.join(audit)}. Vale o quadro da seção 1.", ""]
     else:
-        out += ["", "## 2. Sem carta do diretor nesta reunião", "", d.letter.strip(), ""]
+        out += ["", "## 2. Sem carta nesta reunião", "", no_letter, ""]
+    if director_ran and d.key_points:
+        out += ["**Pontos do diretor:**", ""] + [f"- {x}" for x in d.key_points] + [""]
     out += ["", "## 3. Relatórios dos analistas", ""]
     if changes:
         out += ["_Leram o plano antes da decisão do diretor: veja o que mudou na seção 1._", ""]

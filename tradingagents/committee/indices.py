@@ -16,8 +16,9 @@ two migration sales (``director.check_index``). The plan:
    to the sleeves furthest below target**, in reais: the Brazil ETF, the global ETF, Tesouro Selic. A shortfall in equities beyond the band also draws a monthly transfer from Tesouro Selic
    beyond the reserve, over ``transition_months``, never while the reserve is short.
 4. **Rebalancing sales** only in June and December, and only for a sleeve more than ``band`` above target.
-5. **Crisis status** from each equity ETF's fall from its 12-month high: the written crisis plan applies from
-   ``crisis_alert``; from ``crisis_plan`` the letter calls an extraordinary meeting.
+5. **Crisis status** from each equity ETF's fall from its 12-month high, or from the open episode's peak: the
+   written crisis plan applies from ``crisis_alert``; from ``crisis_plan`` the letter calls an extraordinary
+   meeting.
 """
 
 from __future__ import annotations
@@ -120,6 +121,18 @@ def consolidate(wealth: Wealth) -> dict[str, Holding]:
     return out
 
 
+def _merge(plan: Plan, order: Order) -> None:
+    """Add an order, or add to the same side and asset already in the plan (one line per asset)."""
+    for o in plan.orders:
+        if (o.side, o.asset) == (order.side, order.asset):
+            o.value += order.value
+            if o.quantity is not None and order.quantity is not None:
+                o.quantity += order.quantity
+            o.reason = f"{o.reason}; {order.reason}"
+            return
+    plan.orders.append(order)
+
+
 def regressive_rate(applied_on: date | None, today: date) -> float:
     if applied_on is None:
         return REGRESSIVE[0][1]
@@ -131,22 +144,37 @@ def months_between(start: date, end: date) -> int:
     return (end.year - start.year) * 12 + end.month - start.month
 
 
-def crisis_status(history: dict[str, pd.Series], today: date, alert: float, plan: float) -> dict:
-    """Each equity ETF's fall from its high of the last 12 months, and the status it sets."""
+def crisis_status(history: dict[str, pd.Series], today: date, alert: float, plan: float,
+                  episode: dict | None = None) -> dict:
+    """Each equity ETF's fall from its high, and the status it sets.
+
+    The high is the last 12 months' or, while an episode is open, the episode's own peak: a long fall must not
+    look like a recovery when the old high leaves the 12-month window. The episode opens at the alert and closes
+    when every ETF is back within the alert of its peak; its start and peaks go to the log.
+    """
+    peaks = dict((episode or {}).get("peaks", {}))
     falls = {}
     for code, s in history.items():
         s = s.loc[:pd.Timestamp(today)]
         window = s.loc[pd.Timestamp(today) - pd.DateOffset(months=12):]
         if len(window):
-            falls[code] = round(float(window.iloc[-1] / window.max() - 1), 4)
+            peak = max(float(window.max()), float(peaks.get(code, 0.0)))
+            peaks[code] = peak
+            falls[code] = round(float(window.iloc[-1]) / peak - 1, 4)
     worst = min(falls.values()) if falls else 0.0
     status = "crise" if -worst >= plan else "atenção" if -worst >= alert else "normal"
-    return {"status": status, "falls_from_12m_high": falls, "plan": CRISIS_PLAN if status != "normal" else []}
+    out = {"status": status, "falls_from_high": falls, "plan": CRISIS_PLAN if status != "normal" else []}
+    if status != "normal":
+        out["episode"] = {"start": (episode or {}).get("start") or today.isoformat(),
+                          "peaks": {c: round(v, 4) for c, v in peaks.items()}}
+    elif episode:
+        out["episode_closed"] = {"start": episode.get("start"), "end": today.isoformat()}
+    return out
 
 
 def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], today: date, contribution: float, *,
           offers=None, history: dict[str, pd.Series] | None = None, brazil_vehicle: str | None = None,
-          held_back: set[str] | None = None) -> Plan:
+          held_back: set[str] | None = None, episode: dict | None = None) -> Plan:
     """The month's plan. ``prices``: last close per listed code; ``offers``: Tesouro Direto bonds on offer."""
     ip = policy.index_plan
     held_back = held_back or set()
@@ -196,7 +224,7 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     if offers:
         from tradingagents.dataflows.vendors.tesouro_direto import selic_to_buy
 
-        bond = selic_to_buy(offers, today)
+        bond = selic_to_buy(offers, today, until=ip.horizon_end)
         if bond:
             plan.selic_bond, plan.selic_rate = bond.name, bond.rate
     selic_name = plan.selic_bond or "Tesouro Selic"
@@ -238,31 +266,42 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
             p = prices.get(code) or (x.value / x.quantity if x.value and x.quantity else None)
             if not p:
                 continue
+            if x.average_price is None:  # unknown tax is never zero: blocked until the cost is known
+                no_cost_funds.append(code)
+                continue
             q = min(x.quantity, math.ceil(amount / p)) if left > 1 else x.quantity
-            gain = (p - x.average_price) * q if x.average_price is not None else None
+            gain = (p - x.average_price) * q
             reason = ("migração: fundos listados saem da carteira, do maior para o menor, em "
                       f"{ip.listed_funds_exit_months} meses")
-            if x.kind == "fi_infra":     # exempt whatever the gain: the average price is not needed for the tax
+            if x.kind == "fi_infra":
                 tax = 0.0
-                reason += "; FI-Infra da Lei 12.431 é isento na venda, se o regulamento confirmar o enquadramento"
+                reason += (f"; isento se o regulamento confirmar a Lei 12.431 (senão, IR sobre o ganho de "
+                           f"{brl(max(gain, 0.0))})")
                 infra.append(code)
             else:
-                tax = FUND_TAX * max(gain, 0.0) if gain is not None else None
-                if gain is None:
-                    no_cost_funds.append(code)
+                tax = FUND_TAX * max(gain, 0.0)
             plan.orders.append(Order("venda", code, q * p, reason, q, p, tax, "fundos_listados"))
             equity_cash += q * p - (tax or 0.0)
             amount -= q * p
 
+    if singles and any(o.sleeve == "brasil" and o.side == "venda" for o in plan.orders):
+        planned = sum(o.value for o in plan.orders if o.side == "venda" and o.sleeve == "brasil")
+        plan.pending.append(f"Antes de vender as ações: o limite de R$ 20 mil de isenção é por CPF, somando todas as "
+                            f"corretoras no mês. O plano conta {brl(sold_this_month)} já vendidos que você informou "
+                            f"e {brl(planned)} destas vendas; qualquer outra venda de ações no mês, ou day trade, "
+                            "muda a conta.")
     if no_cost:
         plan.pending.append("Informe o preço médio de " + ", ".join(no_cost) + ": as vendas estão dentro da "
                             "isenção, mas o preço médio é preciso para declarar o ganho isento e registrar prejuízos.")
     if no_cost_funds:
-        plan.pending.append("Informe o preço médio de " + ", ".join(no_cost_funds) + ": sem ele, o IR na venda "
-                            "(20% sobre o ganho, pago por você em DARF) não pode ser calculado.")
+        sold_funds = any(o.sleeve == "fundos_listados" for o in plan.orders)
+        plan.pending.append("Venda de " + ", ".join(no_cost_funds) + " bloqueada até você informar o preço médio: sem "
+                            "ele, o IR na venda não pode ser calculado (nos FII e Fiagro, 20% sobre o ganho, pago por "
+                            "você em DARF). " + ("O ritmo da saída passa para o fundo seguinte." if sold_funds else
+                                                 "Nenhum fundo sai neste mês."))
     if infra:
-        plan.pending.append("Confirme no regulamento de " + ", ".join(infra) + " o enquadramento na Lei 12.431: "
-                            "sem ele, a venda pode pagar IR sobre o ganho.")
+        plan.pending.append("Confirme no regulamento de " + ", ".join(infra) + " o enquadramento na Lei 12.431: o "
+                            "plano conta a venda como isenta.")
     horizon = ip.horizon_end
     for b in wealth.fixed_income:
         if b.reserve_eligible:
@@ -301,7 +340,8 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
                   - equity_cash - brazil_cash - money)
     if equity_gap > policy.band * investable and not deficit and not unvalued:
         beyond = max(eligible + fixed_cash - reserve, 0.0)
-        plan.transfer = min(equity_gap / policy.transition_months, beyond)
+        months_left = max(policy.transition_months - months_between(ip.migration_start or today, today), 1)
+        plan.transfer = min(equity_gap / months_left, beyond)
     cash = equity_cash + money + plan.transfer
     after["renda_fixa"] -= plan.transfer
     # Single stocks swap into the Brazil ETF first: same sleeve, so the swap does not move money between Brazil
@@ -343,11 +383,13 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
         after["renda_fixa"] += selic_amount - fixed_cash - to_reserve
     if plan.transfer:
         plan.orders.append(Order("resgatar", "Tesouro Selic e pós-fixados acima da reserva", plan.transfer,
-                                 f"transição para ações, 1/{policy.transition_months} da diferença por mês",
+                                 f"transição para ações: a diferença dividida pelos meses que faltam da transição "
+                                 f"de {policy.transition_months} meses",
                                  sleeve="renda_fixa"))
 
     # -- Rebalancing sales in June and December -------------------------------------------------------
     if today.month in (6, 12) and not unvalued:
+        proceeds = 0.0
         for s, code in (("brasil", vehicle if vehicle != "metade" else ip.brazil_default),
                         ("internacional", ip.international_vehicle)):
             excess = after[s] - (target[s] + policy.band * base)
@@ -356,10 +398,34 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
                 q = math.floor(excess / p)
                 if q > 0:
                     x = kinds.get(code)
-                    gain = (p - x.average_price) * q if x and x.average_price is not None else None
+                    if x is None or x.average_price is None:   # unknown tax is never zero
+                        plan.pending.append(f"Rebalanceamento de {code} bloqueado: informe o preço médio, para "
+                                            "calcular o IR de 15% sobre o ganho.")
+                        continue
+                    tax = ETF_TAX * max((p - x.average_price) * q, 0.0)
                     plan.orders.append(Order("venda", code, q * p, "rebalanceamento: classe acima do alvo mais a "
-                                             "faixa", q, p, ETF_TAX * max(gain, 0.0) if gain is not None else None, s))
+                                             "faixa", q, p, tax, s))
+                    after[s] -= q * p
+                    proceeds += q * p - tax
+        # The proceeds go to the sleeve furthest below target; what does not buy a whole quota goes to Selic.
+        if proceeds > 1.0:
+            gaps = {k: target[k] - after[k] for k in ("brasil", "internacional", "renda_fixa")}
+            k = max(gaps, key=gaps.get)
+            code = None if k == "renda_fixa" else (ip.international_vehicle if k == "internacional" else
+                                                     (vehicle if vehicle != "metade" else ip.brazil_default))
+            p = prices.get(code) if code else None
+            q = math.floor(min(proceeds, max(gaps[k], 0.0)) / p) if p else 0
+            if q > 0:
+                _merge(plan, Order("compra", code, q * p, "rebalanceamento: para a classe mais abaixo do alvo", q, p,
+                                   sleeve=k))
+                after[k] += q * p
+                proceeds -= q * p
+            if proceeds > 1.0:
+                rate = f" (Selic + {plan.selic_rate:.2f}% ao ano)" if plan.selic_rate is not None else ""
+                _merge(plan, Order("aplicar", selic_name + rate, proceeds, "rebalanceamento: o que sobra vai para o "
+                                   "pós-fixado", sleeve="renda_fixa"))
+                after["renda_fixa"] += proceeds
 
     plan.sleeves = {s: {"today": today_by[s], "target": target[s], "after": after[s]} for s in SLEEVES}
-    plan.crisis = crisis_status(history or {}, today, ip.crisis_alert, ip.crisis_plan)
+    plan.crisis = crisis_status(history or {}, today, ip.crisis_alert, ip.crisis_plan, episode)
     return plan
