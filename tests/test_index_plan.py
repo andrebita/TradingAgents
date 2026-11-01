@@ -334,7 +334,8 @@ def test_the_letter_audit_flags_amounts_not_in_the_data():
 def test_the_execution_order_frees_money_before_spending_it():
     plan = indices.build(_policy(), _wealth(), PRICES, TODAY, 3000)
     steps = index_meeting.execution_steps(plan)
-    assert steps[0].startswith("Na corretora, venda primeiro") and "D+2" in steps[0]
+    assert steps[0].startswith("Na corretora, venda primeiro") and "D+2" in steps[0] and "aluguel" not in steps[0]
+    assert "PETR4 estão emprestadas" in index_meeting.execution_steps(plan, {"PETR4", "XXXX3"})[0]
     assert any("até as 13h" in x for x in steps) and steps[-1].startswith("Depois de executar")
     m_letter = index_meeting.render(TODAY, _policy(), _wealth(), plan,
                                     director.check_index(director.IndexDecision(brazil_vehicle="BOVA11",

@@ -175,14 +175,19 @@ def totals(plan: indices.Plan) -> dict:
             "tax_unknown_for": [o.asset for o in plan.orders if o.side in ("venda", "resgatar") and o.tax is None]}
 
 
-def execution_steps(plan: indices.Plan) -> list[str]:
-    """The order of operations for the investor: what frees money before what spends it."""
+def execution_steps(plan: indices.Plan, lent: set[str] = frozenset()) -> list[str]:
+    """The order of operations for the investor: what frees money before what spends it. ``lent``: codes the
+    investor has lent out (aluguel), which a sale must recall first."""
     sides = {o.side for o in plan.orders}
     steps = []
     if "venda" in sides:
-        steps.append("Na corretora, venda primeiro, com ordem limitada perto do preço de referência. A venda na B3 "
-                     "liquida em D+2: o dinheiro fica livre dois dias úteis depois. Ações emprestadas no aluguel também "
-                     "podem ser vendidas: a corretora pede a devolução; confira no app que a quantidade está liberada.")
+        step = ("Na corretora, venda primeiro, com ordem limitada perto do preço de referência. A venda na B3 "
+                "liquida em D+2: o dinheiro fica livre dois dias úteis depois.")
+        recall = sorted({o.asset for o in plan.orders if o.side == "venda"} & set(lent))
+        if recall:
+            step += (f" {', '.join(recall)} estão emprestadas no aluguel: a venda pede a devolução, então confira no app "
+                     "que a quantidade está liberada antes de vender.")
+        steps.append(step)
     if "resgatar" in sides:
         steps.append("No Tesouro Direto, peça os resgates em dia útil até as 13h para o dinheiro cair no mesmo dia; "
                      "depois das 13h, ele cai às 13h do dia útil seguinte.")
@@ -390,7 +395,7 @@ def render(day: date, policy: InvestmentPolicy, wealth: Wealth, plan: indices.Pl
         line += (", fora o IR não calculado de " + ", ".join(t["tax_unknown_for"]) + " (falta o custo de aquisição; "
                  "no Tesouro, o IR é retido na fonte)")
     out += ["", line + "."]
-    steps = execution_steps(plan)
+    steps = execution_steps(plan, {x.code.strip().upper() for x in wealth.listed if x.lent})
     if steps:
         out += ["", "### Ordem de execução", ""] + [f"{i}. {x}" for i, x in enumerate(steps, 1)]
     out += ["", f"### Mercado: {plan.crisis.get('status', 'normal')}", ""]
