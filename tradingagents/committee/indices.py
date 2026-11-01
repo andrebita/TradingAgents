@@ -205,7 +205,7 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     sold_this_month, _, _ = wealth.tax.for_month(today)
     room = max(ip.stock_sales_cap - sold_this_month, 0.0)
     equity_cash, fixed_cash, brazil_cash = 0.0, 0.0, 0.0
-    no_cost, later = [], []
+    no_cost, no_cost_funds, infra, later = [], [], [], []
     singles = sorted((c for c, x in kinds.items() if x.kind == "acao" and c not in menu and c in prices),
                      key=lambda c: -values.get(c, 0.0))
     for code in singles:
@@ -240,21 +240,29 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
                 continue
             q = min(x.quantity, math.ceil(amount / p)) if left > 1 else x.quantity
             gain = (p - x.average_price) * q if x.average_price is not None else None
-            rate = 0.0 if x.kind == "fi_infra" else FUND_TAX
-            tax = rate * max(gain, 0.0) if gain is not None else None
             reason = ("migração: fundos listados saem da carteira, do maior para o menor, em "
                       f"{ip.listed_funds_exit_months} meses")
-            if x.kind == "fi_infra":
+            if x.kind == "fi_infra":     # exempt whatever the gain: the average price is not needed for the tax
+                tax = 0.0
                 reason += "; FI-Infra da Lei 12.431 é isento na venda, se o regulamento confirmar o enquadramento"
+                infra.append(code)
+            else:
+                tax = FUND_TAX * max(gain, 0.0) if gain is not None else None
+                if gain is None:
+                    no_cost_funds.append(code)
             plan.orders.append(Order("venda", code, q * p, reason, q, p, tax, "fundos_listados"))
             equity_cash += q * p - (tax or 0.0)
             amount -= q * p
-            if gain is None:
-                no_cost.append(code)
 
     if no_cost:
-        plan.pending.append("Informe o preço médio de " + ", ".join(no_cost) + ": sem ele, o ganho dessas vendas "
-                            "fica fora do controle do IR (nos FIIs, 20% sobre o ganho).")
+        plan.pending.append("Informe o preço médio de " + ", ".join(no_cost) + ": as vendas estão dentro da "
+                            "isenção, mas o preço médio é preciso para declarar o ganho isento e registrar prejuízos.")
+    if no_cost_funds:
+        plan.pending.append("Informe o preço médio de " + ", ".join(no_cost_funds) + ": sem ele, o IR na venda "
+                            "(20% sobre o ganho, pago por você em DARF) não pode ser calculado.")
+    if infra:
+        plan.pending.append("Confirme no regulamento de " + ", ".join(infra) + " o enquadramento na Lei 12.431: "
+                            "sem ele, a venda pode pagar IR sobre o ganho.")
     horizon = ip.horizon_end
     for b in wealth.fixed_income:
         if b.reserve_eligible:

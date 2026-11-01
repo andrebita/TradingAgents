@@ -77,11 +77,12 @@ class Models:
 
 def ask_view(models: Models, model: str, role: str, brief: str, facts: dict, policy: InvestmentPolicy) -> View:
     prompt = (f"You are the {role} of a private investment committee in Brazil, reporting to the financial director. "
-              f"{brief}\n\nThe investor's policy:\n{policy.model_dump_json(indent=1, exclude={'models'})}\n\n"
+              f"{brief}\n\nThe investor's policy:\n{policy.for_models()}\n\n"
               f"The facts, computed by the committee's code (trust these numbers; do not recompute them):\n"
               f"{json.dumps(facts, ensure_ascii=False, indent=1, default=str)}\n\n"
-              "Write for the director in Portuguese. Stay within the policy. Do not forecast prices or rates: "
-              "the committee's backtests found no edge in timing the market.")
+              "Write for the director in Portuguese. Stay within the policy. Quote the numbers in the facts; any "
+              "figure you derive yourself must show its calculation, so the director can check it. Do not forecast "
+              "prices or rates: the committee's backtests found no edge in timing the market.")
     return models.budget.invoke(models.llm(model).with_structured_output(View), prompt, model=model,
                                 max_output=ANALYST_MAX_OUTPUT)
 

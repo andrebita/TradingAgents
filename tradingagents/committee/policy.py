@@ -95,6 +95,16 @@ class InvestmentPolicy(BaseModel):
     def reserve(self) -> float:
         return self.monthly_expenses * self.reserve_months
 
+    def for_models(self) -> str:
+        """The policy as the committee's models read it: without the model names, and, under the index plan,
+        without the dividend rule's fields (stock target, listed-funds ceiling, sectors), which the plan does not
+        use and which led an analyst to argue for the old targets."""
+        exclude = {"models"} | (LEGACY_FIELDS if self.index_plan else {"index_plan"})
+        return self.model_dump_json(indent=1, exclude=exclude)
+
+
+LEGACY_FIELDS = {"stock_target", "stock_target_max", "stock_step_per_year", "listed_funds_max", "excluded_sectors"}
+
 
 def load_policy(path: str | Path) -> InvestmentPolicy:
     return InvestmentPolicy.model_validate(json.loads(Path(path).read_text(encoding="utf-8")))

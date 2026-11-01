@@ -114,11 +114,14 @@ def test_a_fall_from_the_12_month_high_puts_the_crisis_plan_on_the_table():
     assert indices.crisis_status({"BOVA11": bova}, TODAY, 0.15, 0.30)["status"] == "crise"
 
 
-@pytest.mark.unit
-def test_an_index_meeting_without_models_writes_the_plan_and_keeps_the_choice(tmp_path):
+def _frames():
     days = pd.bdate_range("2025-10-01", "2026-10-30")
-    frames = {c: pd.DataFrame({"Close": p, "Adj Close": p, "Volume": 1e6, "Dividends": 0.0}, index=days)
-              for c, p in PRICES.items()}
+    return {c: pd.DataFrame({"Close": p, "Adj Close": p, "Volume": 1e6, "Dividends": 0.0}, index=days)
+            for c, p in PRICES.items()}
+
+
+def _hold(tmp_path, **kw):
+    frames = _frames()
     config = {**index_meeting.DEFAULT_CONFIG, "results_dir": str(tmp_path)}
     with mock.patch.object(index_meeting.b3_market, "histories",
                            side_effect=lambda codes: {c: frames[c] for c in codes if c in frames}), \
@@ -127,9 +130,105 @@ def test_an_index_meeting_without_models_writes_the_plan_and_keeps_the_choice(tm
                               return_value=index_meeting.analysts.Report("Analista Macro", {})):
         from tradingagents.committee import meeting
 
-        m = meeting.hold(_policy(), _wealth(), as_of=TODAY, use_llm=False, config=config)
+        return meeting.hold(_policy(), _wealth(), as_of=TODAY, config=config, **kw)
+
+
+@pytest.mark.unit
+def test_an_index_meeting_without_models_writes_the_plan_and_keeps_the_choice(tmp_path):
+    m = _hold(tmp_path, use_llm=False)
     assert "## 1. Carteira recomendada" in m.letter and "**Vender** | 475" in m.letter
     assert "ETF da parte Brasil: **BOVA11**" in m.letter and "### Mercado: normal" in m.letter
+    assert "O que mudou no plano" not in m.letter
     log = (tmp_path / "comite" / "decisoes.jsonl").read_text().splitlines()
     assert '"brazil_vehicle": "BOVA11"' in log[-1]
     assert index_meeting.previous_vehicle(tmp_path / "comite", "DIVO11") == "BOVA11"
+
+
+@pytest.mark.unit
+def test_the_models_read_the_index_policy_without_the_old_rule():
+    seen = _policy().for_models()
+    assert "index_plan" in seen and "stock_target" not in seen and "listed_funds_max" not in seen
+    old = InvestmentPolicy(monthly_expenses=10_000).for_models()
+    assert "stock_target" in old and "index_plan" not in old and "claude" not in old
+
+
+@pytest.mark.unit
+def test_the_stress_is_in_reais_of_the_investable_wealth():
+    plan = indices.build(_policy(), _wealth(), PRICES, TODAY, 3000)
+    facts, warnings = index_meeting.risk_facts(_policy(), plan)
+    target = facts["simultaneous_stress"]["target"]
+    # Target: 20% Brazil at -50% and 40% abroad at -35% of the investable wealth plus the contribution.
+    assert target["investable_brl"] == pytest.approx(91_000)
+    assert target["loss_brl"] == pytest.approx(-0.5 * 18_200 - 0.35 * 36_400)
+    assert target["fall"] == pytest.approx(-0.24)
+    assert "R$" in warnings[0] and "24%" in warnings[0]
+
+
+@pytest.mark.unit
+def test_the_fixed_income_analyst_reads_the_plans_redemptions_and_rule():
+    plan = indices.build(_policy(), _wealth(), PRICES, TODAY, 3000)
+    r = index_meeting.fixed_income_report(_policy(), _wealth(), plan, TODAY, None)
+    assert "long_dated_marked_to_market" not in r.facts
+    assert any(o["side"] == "resgatar" and o["asset"] == "Tesouro IPCA+ 2045" for o in r.facts["plan"]["orders"])
+    assert any(h.startswith("Tesouro IPCA+ 2029") for h in r.facts["plan"]["held_to_maturity"])
+    assert "redeemed by rule" in index_meeting.FIXED_INCOME_BRIEF
+
+
+def _with_second_fund():
+    w = _wealth()
+    w.listed.append(Listed(code="INFR11", quantity=100, kind="fi_infra"))
+    return w
+
+
+@pytest.mark.unit
+def test_the_director_sees_what_replaces_a_postponed_sale_and_the_letter_what_changed():
+    policy, wealth, prices = _policy(), _with_second_fund(), {**PRICES, "INFR11": 100.0}
+
+    def rebuild(held=frozenset()):
+        return indices.build(policy, wealth, prices, TODAY, 3000, held_back=set(held))
+
+    first = rebuild()
+    effects = index_meeting.hold_back_effects(first, rebuild)
+    # FUND11 (R$ 12,000) leaves first; postponed, its 1/12 of the funds passes to INFR11. A bond has no substitute.
+    assert effects["FUND11"].startswith("no lugar: INFR11")
+    assert effects["Tesouro IPCA+ 2045"] == "nada entra no lugar neste mês"
+    # FI-Infra: exempt on sale, so no average price is needed for the tax; its framing is asked once.
+    infra = next(o for o in rebuild({"FUND11"}).orders if o.asset == "INFR11")
+    assert infra.tax == 0.0
+    changes = index_meeting.order_changes(first, rebuild({"FUND11"}), {"FUND11": "sem preço médio"})
+    assert any(c.startswith("Vender FUND11") and "adiada pelo diretor (sem preço médio)" in c for c in changes)
+    assert any(c.startswith("Vender INFR11") and "no lugar da venda adiada" in c for c in changes)
+
+
+@pytest.mark.unit
+def test_the_directors_escalations_do_not_repeat_the_plans_pending_list():
+    pending = ["Vendas que ficam para o mês seguinte, pelo limite de isenção: AAAA3, BBBB4, CCCC3.",
+               "Informe o preço médio de DDDD3, EEEE11: sem ele, o IR dessas vendas (20% sobre o ganho) não pode "
+               "ser calculado."]
+    escalations = ["Ciência de que ficam para o mês seguinte, pelo limite de isenção, as vendas de AAAA3, BBBB4 e "
+                   "CCCC3.",
+                   "Informar o preço médio de compra (com corretagem) de DDDD3 e EEEE11; sem ele o IR das vendas não "
+                   "pode ser calculado.",
+                   "Declarar a maior queda que aceita, em reais e em percentual.",
+                   "Confirmar que não há outras vendas de AAAA3, BBBB4 e CCCC3 em outra corretora neste mês."]
+    kept, dropped = director.merge_escalations(pending, escalations)
+    assert kept == escalations[2:] and dropped == escalations[:2]
+
+
+@pytest.mark.unit
+def test_a_postponed_sale_shows_in_the_letter_and_the_log(tmp_path):
+    decision = director.IndexDecision(letter="Carta.", brazil_vehicle="BOVA11", brazil_vehicle_reason="padrão",
+                                      held_back_sales=[director.HoldBack(asset="FUND11", reason="sem custo")],
+                                      escalations=["Informe o preço médio de FUND11: sem ele o IR não pode ser "
+                                                   "calculado."])
+    with mock.patch.object(index_meeting.analysts, "Models") as models, \
+            mock.patch.object(index_meeting.analysts, "_with_view", side_effect=lambda r, *a, **k: r), \
+            mock.patch.object(director, "ask_index", return_value=decision) as ask:
+        models.return_value.spent = 0.0
+        models.return_value.budget.by_model = {}
+        m = _hold(tmp_path)
+    assert "if_held_back" in ask.call_args.args[2]
+    assert "### O que mudou no plano depois da decisão do diretor" in m.letter
+    assert "Vender FUND11 (10, R$ 1.000,00) sai do plano: adiada pelo diretor (sem custo)." in m.letter
+    log = (tmp_path / "comite" / "decisoes.jsonl").read_text().splitlines()[-1]
+    assert '"held_back": ["FUND11"]' in log and "changes_after_director" in log

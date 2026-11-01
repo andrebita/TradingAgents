@@ -52,10 +52,20 @@ Para usar, a política ganha um bloco `index_plan`:
 **O diretor:**
 - escolhe o ETF da parte Brasil dentro do cardápio (BOVA11, DIVO11 ou metade de cada). A escolha vale para o
   dinheiro novo, porque vender ETF paga 15% de IR;
-- pode adiar até duas vendas de migração;
+- pode adiar até duas vendas de migração. O ritmo se mantém: antes de decidir, ele vê o que o código vende no
+  lugar de cada venda adiada;
 - explica o mês na carta.
 
 Valores, ritmo e alvos são do código, e a checagem recusa o que sair do cardápio.
+
+**Os analistas** leem o plano do mês antes do diretor:
+- **renda fixa:** confere a reserva, os resgates da regra do horizonte, os vencimentos e os emissores;
+- **risco:** a queda num estresse simultâneo, em % e em R$ do patrimônio investível;
+- **tributário:** o IR das vendas e resgates;
+- **macro:** juros, inflação e câmbio, só como contexto.
+
+Eles leem a política sem os campos da regra antiga de ações. Quando o diretor adia uma venda, a carta mostra o
+que mudou no plano depois da decisão. As pendências que o diretor repete das do código saem da lista.
 
 **A carta** abre com a carteira recomendada ativo a ativo: o que comprar, vender, resgatar, aplicar ou manter,
 com quantidade, valor e motivo.
