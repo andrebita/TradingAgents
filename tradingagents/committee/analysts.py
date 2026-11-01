@@ -49,9 +49,9 @@ class Report:
     error: str | None = None
 
 
-ANALYST_MAX_OUTPUT = 8_000          # thinking counts against it; a cut-off reading is lost
+ANALYST_MAX_OUTPUT = 15_000         # thinking counts against it; a cut-off reading is lost
 LETTER_MAX_OUTPUT = 8_000
-DIRECTOR_MAX_OUTPUT = 24_000
+DIRECTOR_MAX_OUTPUT = 40_000
 
 
 @dataclass
