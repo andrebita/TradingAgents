@@ -30,6 +30,7 @@ import pandas as pd
 
 from tradingagents.committee.policy import InvestmentPolicy
 from tradingagents.committee.wealth import Wealth
+from tradingagents.dividend_portfolio.report import brl
 
 ETF_TAX, FUND_TAX = 0.15, 0.20
 REGRESSIVE = ((180, 0.225), (360, 0.20), (720, 0.175))
@@ -267,8 +268,8 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
         if long_bond and b.name not in held_back:
             gain = b.value - b.applied_value if b.applied_value is not None else None
             tax = regressive_rate(b.applied_on, today) * max(gain, 0.0) if gain is not None else None
-            note = "" if gain is None else (f"; ganho estimado de R$ {gain:,.2f}" if gain >= 0
-                                            else f"; perda de R$ {-gain:,.2f} realizada")
+            note = "" if gain is None else (f"; ganho de {brl(gain)}, IR de {brl(tax)}" if gain >= 0
+                                            else f"; perda de {brl(-gain)}, sem IR")
             plan.orders.append(Order("resgatar", b.name, b.value, f"migração: vence em {b.maturity.year}, depois do "
                                      f"seu horizonte ({horizon.isoformat()}); o dinheiro vai para a Selic" + note,
                                      tax=tax, sleeve="renda_fixa"))
