@@ -218,8 +218,11 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     reserve = policy.reserve
     eligible = wealth.reserve_eligible()
     deficit = max(reserve - eligible, 0.0)
-    investable = max(total - reserve, 0.0)
-    base = investable + contribution
+    # Investable: everything but the reserve; while the reserve is short, everything but what it already holds.
+    # The contribution tops the reserve up first, and only the rest joins the base the targets are cut from.
+    investable = max(total - min(eligible, reserve), 0.0)
+    to_reserve = min(deficit, contribution)
+    base = investable + contribution - to_reserve
     # The director may recommend less in equities than the plan's mix (never more), keeping Brazil:global.
     share = ip.equity_share if equity_share is None else min(max(equity_share, 0.0), ip.equity_share)
     scale = share / ip.equity_share if ip.equity_share else 0.0
@@ -349,7 +352,6 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
         if o.side in ("venda", "resgatar"):
             after[o.sleeve] -= o.value
     after["renda_fixa"] += fixed_cash                       # redemptions stay in fixed income (Selic)
-    to_reserve = min(deficit, contribution)
     money = contribution - to_reserve
     after["renda_fixa"] += to_reserve
     equity_gap = (sum(max(target[s] - after[s], 0.0) for s in ("brasil", "internacional"))

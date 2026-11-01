@@ -466,3 +466,24 @@ def test_a_meeting_under_a_mandate_logs_the_share_beside_the_fixed_mix(tmp_path)
     log = json.loads((tmp_path / "comite" / "decisoes.jsonl").read_text().splitlines()[-1])
     assert log["equity_share"] == pytest.approx(0.5) and log["equity_share_fixed_mix"] == pytest.approx(0.6)
     assert index_meeting.previous_equity_share(tmp_path / "comite") == pytest.approx(0.5)
+
+
+@pytest.mark.unit
+def test_with_the_reserve_short_the_targets_are_cut_from_what_is_left_after_topping_it_up():
+    """Found by the backtest: a contribution that first fills the reserve must not also count in the base the
+    equity targets are cut from, and money outside the reserve is investable even while the reserve is short."""
+    policy = _policy()                                    # reserve: 6 x R$ 10,000
+    wealth = Wealth(as_of=TODAY, fixed_income=[FixedIncome(name="Tesouro Selic 2031", kind="tesouro_selic",
+                    issuer="Tesouro", indexer="SELIC", value=20_000, liquidity_days=1)])
+    plan = indices.build(policy, wealth, PRICES, TODAY, 100_000)
+    # R$ 40,000 tops the reserve up; the base is the other R$ 60,000: 20% Brazil, 40% global, 40% Selic.
+    assert plan.reserve_deficit == pytest.approx(40_000) and plan.investable == pytest.approx(0)
+    assert plan.sleeves["brasil"]["target"] == pytest.approx(12_000)
+    assert plan.sleeves["internacional"]["target"] == pytest.approx(24_000)
+    assert plan.sleeves["renda_fixa"]["target"] == pytest.approx(24_000 + 60_000)
+    bought = sum(o.value for o in plan.orders if o.side == "compra")
+    assert bought <= 36_000 and bought > 35_000
+    # Equities held while the reserve is short are investable: they count in the base, not against the reserve.
+    wealth.listed = [Listed(code="WRLD11", quantity=100, kind="etf", asset_class="internacional", average_price=100)]
+    plan = indices.build(policy, wealth, PRICES, TODAY, 0.0)
+    assert plan.investable == pytest.approx(15_000)
