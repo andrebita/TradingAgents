@@ -70,6 +70,7 @@ def test_the_plan_migrates_at_its_pace_and_fills_the_largest_gap():
     # Listed funds over 12 months: a twelfth of R$ 12,000, in whole quotas; 20% on the gain.
     fund = by[("venda", "FUND11")]
     assert fund.quantity == 10 and fund.tax == pytest.approx(0.20 * 10 * 10)
+    assert "ganho de R$ 100,00, IR de R$ 20,00" in fund.reason
     # The IPCA+ 2045 matures after the horizon: redeemed, 15% on the R$ 4,000 gain (over 720 days).
     bond = by[("resgatar", "Tesouro IPCA+ 2045")]
     assert bond.tax == pytest.approx(600)
@@ -326,8 +327,10 @@ def test_an_open_crisis_episode_keeps_its_peak_past_the_12_month_window():
 
 @pytest.mark.unit
 def test_the_letter_audit_flags_amounts_not_in_the_data():
-    data = {"loss": -29_386.6, "sales": [18_996.71], "contribution": 3000}
-    letter = "Perde R$ 29 mil (R$ 29,4 mil), não R$ 50 mil; vendas de R$ 18.996,71; aporte de R$ 3.000; R$ 36.024,71."
+    data = {"loss": -29_386.6, "sales": [18_996.71], "contribution": 3000,
+            "pending": ["O plano conta R$ 18.987,13 destas vendas."]}
+    letter = ("Perde R$ 29 mil (R$ 29,4 mil), não R$ 50 mil; vendas de R$ 18.996,71; aporte de R$ 3.000; "
+              "R$ 36.024,71; as vendas de R$ 18.987,13 do texto.")
     assert director.audit_letter(letter, data) == ["R$ 50 mil", "R$ 36.024,71"]
 
 

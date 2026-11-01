@@ -487,11 +487,19 @@ def write_letter(llm, data: dict, *, budget=None, model: str = "", max_output: i
 _AMOUNT = re.compile(r"R\$\s?(\d{1,3}(?:\.\d{3})+|\d+)(?:,(\d+))?(\s?(?:mil\b|milh(?:ão|ões)\b))?", re.IGNORECASE)
 
 
+def _parse(m) -> float:
+    whole, decimals, scale = m.group(1), m.group(2) or "", (m.group(3) or "").strip().lower()
+    unit = 1_000.0 if scale == "mil" else 1_000_000.0 if scale.startswith("milh") else 1.0
+    return float(whole.replace(".", "") + ("." + decimals if decimals else "")) * unit
+
+
 def _numbers(value) -> list[float]:
     if isinstance(value, bool):
         return []
     if isinstance(value, (int, float)):
         return [abs(float(value))]
+    if isinstance(value, str):        # amounts the code wrote into texts (pending items, reasons)
+        return [_parse(m) for m in _AMOUNT.finditer(value)]
     if isinstance(value, dict):
         return [n for v in value.values() for n in _numbers(v)]
     if isinstance(value, (list, tuple)):

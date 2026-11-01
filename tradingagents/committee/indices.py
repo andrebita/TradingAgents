@@ -291,6 +291,9 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
                 infra.append(code)
             else:
                 tax = FUND_TAX * max(gain, 0.0)
+                reason += (f"; ganho de {brl(gain)}, IR de {brl(tax)} pago por você em DARF" if gain >= 0 else
+                           f"; perda de {brl(-gain)}, sem IR: registre o prejuízo para compensar ganhos futuros em "
+                           "FII e Fiagro")
             plan.orders.append(Order("venda", code, q * p, reason, q, p, tax, "fundos_listados"))
             equity_cash += q * p - (tax or 0.0)
             amount -= q * p

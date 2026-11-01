@@ -172,7 +172,9 @@ def totals(plan: indices.Plan) -> dict:
     return {"sales": total("venda"), "redemptions": total("resgatar"), "purchases": total("compra"),
             "applications": total("aplicar"),
             "tax_known": round(sum(o.tax for o in plan.orders if o.tax is not None), 2),
-            "tax_unknown_for": [o.asset for o in plan.orders if o.side in ("venda", "resgatar") and o.tax is None]}
+            "tax_unknown_for": [o.asset for o in plan.orders if o.side in ("venda", "resgatar") and o.tax is None],
+            "single_stock_sales": round(sum(o.value for o in plan.orders if o.side == "venda"
+                                            and o.sleeve == "brasil"), 2)}
 
 
 def execution_steps(plan: indices.Plan, lent: set[str] = frozenset()) -> list[str]:
@@ -346,6 +348,8 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                                           "held_back": reasons, "key_points": checked.decision.key_points,
                                           "escalations": escalations, "checks": checked.adjustments},
                     "changes": changes, "risk": risk_facts(policy, plan)[0]["simultaneous_stress"],
+                    "rules": {"stock_sales_exemption_brl": 20_000.0, "stock_sales_cap_brl": ip.stock_sales_cap,
+                              "monthly_contribution_brl": contribution, "reserve_target_brl": policy.reserve},
                     "analysts": [{"role": r.role, "summary": r.view.summary if r.view else None}
                                  for r in reports]}
             try:
