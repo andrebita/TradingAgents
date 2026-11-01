@@ -345,14 +345,16 @@ def tax(policy, wealth, equity_plan, models: Models | None) -> Report:
 MACRO = ("selic", "ipca_12m", "focus_selic", "focus_ipca", "usd_brl")
 
 
-def macro(policy, today: date, models: Models | None) -> Report:
+MACRO_BRIEF = ("Summarize rates, inflation and the market's expectations as context for the director: the real rate "
+               "on fixed income, what it means for the investor's choice between post-fixed, inflation-linked and "
+               "fixed-rate bonds at the investor's horizon. Context only: no market timing.")
+
+
+def macro(policy, today: date, models: Models | None, brief: str = MACRO_BRIEF) -> Report:
     facts = {}
     for alias in MACRO:
         try:
             facts[alias] = route_to_vendor("get_macro_indicators", alias, today.isoformat(), 120)
         except VendorError as exc:
             facts[alias] = f"indisponível: {exc}"
-    brief = ("Summarize rates, inflation and the market's expectations as context for the director: the real rate "
-             "on fixed income, what it means for the investor's choice between post-fixed, inflation-linked and "
-             "fixed-rate bonds at the investor's horizon. Context only: no market timing.")
     return _with_view(Report(ROLES["macro"], facts), models, policy.models.macro, brief, policy)

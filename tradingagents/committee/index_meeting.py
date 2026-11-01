@@ -100,6 +100,13 @@ def fixed_income_report(policy: InvestmentPolicy, wealth: Wealth, plan: indices.
                                policy.models.fixed_income, FIXED_INCOME_BRIEF, policy)
 
 
+MACRO_BRIEF = (
+    "Summarize rates, inflation, the exchange rate and the market's expectations as context for the director, and "
+    "what they mean for the plan's three parts: Tesouro Selic (the yield of the post-fixed money and of the "
+    "reserve), Brazilian equities, and global equities held in reais (the exchange rate moves them). Context only: "
+    "the plan's mix and pace do not change on forecasts, and fixed income is all in Tesouro Selic by policy.")
+
+
 def _describe(o: indices.Order) -> str:
     q = "" if o.quantity is None else f"{o.quantity:,.0f}".replace(",", ".") + ", "
     return f"{q}{brl(o.value)}"
@@ -215,7 +222,7 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                     submit(analysts._with_view, analysts.Report(analysts.ROLES["tax"], tax_facts(plan)), models,
                            policy.models.tax, "Check this month's sales and redemptions for income tax and say what "
                            "the investor must record or confirm.", policy),
-                    submit(analysts.macro, policy, today, models)]
+                    submit(analysts.macro, policy, today, models, MACRO_BRIEF)]
             reports = [j.result() for j in jobs]
 
         decision = director.IndexDecision(letter="Reunião sem LLM: o plano acima é o do código, sem leitura do "
