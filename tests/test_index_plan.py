@@ -342,3 +342,34 @@ def test_the_execution_order_frees_money_before_spending_it():
                                     [], 0.0, None, False, no_letter="Sem modelos.", price_asof=date(2026, 10, 30))
     assert "### Ordem de execução" in m_letter and "fechamentos até 30/10/2026" in m_letter
     assert "| Preço ref. |" in m_letter
+
+
+@pytest.mark.unit
+def test_without_a_date_the_bond_rule_rolls_five_years_ahead():
+    plan_cfg = IndexPlan(migration_start=date(2026, 11, 1))
+    policy = InvestmentPolicy(monthly_expenses=10_000, monthly_contribution=3000, index_plan=plan_cfg)
+    plan = indices.build(policy, _wealth(), PRICES, TODAY, 3000)
+    bond = next(o for o in plan.orders if o.side == "resgatar" and o.asset == "Tesouro IPCA+ 2045")
+    assert "mais de 5 anos" in bond.reason and "régua do plano é a Selic" in bond.reason
+    assert any(h.startswith("Tesouro IPCA+ 2029") and "vence em até 5 anos" in h for h in plan.holds)
+
+
+@pytest.mark.unit
+def test_a_single_vehicle_menu_leaves_nothing_to_choose():
+    class Capture:
+        def with_structured_output(self, schema):
+            return self
+
+        def invoke(self, prompt):
+            self.prompt = prompt
+            return director.IndexDecision(brazil_vehicle="BOVA11", brazil_vehicle_reason="fixo")
+
+    policy = _policy(brazil_menu=["BOVA11"])
+    llm = Capture()
+    director.ask_index(llm, policy, {}, [], "BOVA11")
+    assert "fixed by the investor's policy: return BOVA11" in llm.prompt and "DIVO11 IRR" not in llm.prompt
+    assert director.check_index(director.IndexDecision(brazil_vehicle="metade", brazil_vehicle_reason="x"), policy,
+                                set()).vehicle == "BOVA11"
+    llm2 = Capture()
+    director.ask_index(llm2, _policy(), {}, [], "BOVA11")
+    assert "DIVO11 IRR" in llm2.prompt

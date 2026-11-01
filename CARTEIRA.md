@@ -39,7 +39,9 @@ Para usar, a política ganha um bloco `index_plan`:
    - ações individuais saem dentro da isenção de R$ 20 mil por mês, das maiores para as menores;
    - fundos listados saem aos poucos, ao longo dos meses definidos. Um fundo sem preço médio fica bloqueado até
      você informar o preço, porque sem ele o IR não pode ser calculado; o ritmo passa para o fundo seguinte;
-   - Tesouro IPCA+ e prefixados que vencem depois do seu horizonte vão para o Tesouro Selic;
+   - Tesouro IPCA+ e prefixados que vencem depois do seu horizonte vão para o Tesouro Selic. Sem uma data de
+     saque (`horizon_end`), vale uma janela móvel de `bond_max_years` anos (5 por padrão): o preço desses títulos
+     oscila muito com os juros, e a régua do plano é a Selic;
    - o resto da renda fixa fica até o vencimento.
 3. **Dinheiro da venda de ações individuais:** compra primeiro o ETF Brasil. É uma troca dentro da mesma classe:
    a migração não tira dinheiro do Brasil para o exterior depois de uma queda, nem o contrário.
@@ -56,7 +58,8 @@ Para usar, a política ganha um bloco `index_plan`:
 
 **O diretor:**
 - escolhe o ETF da parte Brasil dentro do cardápio (BOVA11, DIVO11 ou metade de cada). A escolha vale para o
-  dinheiro novo, porque vender ETF paga 15% de IR;
+  dinheiro novo, porque vender ETF paga 15% de IR. Com um só ETF no cardápio, não há escolha: trocar de índice ou
+  incluir uma inclinação a dividendos é mudança de política, decidida por você;
 - pode adiar até duas vendas de migração. O ritmo se mantém: antes de decidir, ele vê o que o código vende no
   lugar de cada venda adiada;
 - dá os pontos que a carta deve passar e o que só você pode decidir.

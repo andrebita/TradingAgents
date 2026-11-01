@@ -294,13 +294,13 @@ class CheckedIndex:
 INDEX_PROMPT = """You are the senior financial director of a private investment committee in Brazil. Your client is one individual investor, who decides and executes; you recommend.
 
 The investor's plan, chosen after the committee's tests (2009-2026; the allocation test was pre-registered, the stock-selection contest is exploratory by its own protocol):
-- Objective: the best chance of ending 5 years ahead of keeping everything in Tesouro Selic. Horizon: 5 years.
+- Objective: in the investor's words, in the policy. The yardstick is keeping everything in Tesouro Selic, over 5-year periods; there is a withdrawal date only if the policy's horizon_end sets one.
 - Mix of the investable wealth (the emergency reserve apart): 20% Brazilian equities, 40% global equities, 40% Tesouro Selic. In the tests this mix beat Selic in 78% of bootstrapped 5-year paths (60% without the real's past depreciation), against about 50% for Brazilian equities alone. These are frequencies in resampled history, not a forecast probability for this investor's horizon.
 - No stock picking: six rules (dividends, quality, value, momentum, low volatility, a combination) all trailed the index funds from 2014 to 2026 after costs and taxes. Timing between stocks and fixed income also lost to a fixed mix. Do not forecast prices or rates.
-- What the investor holds outside the plan (single stocks, listed funds, bonds maturing after the horizon) is migrated out at a set pace, by code.
+- What the investor holds outside the plan (single stocks, listed funds, long Tesouro IPCA+ and fixed-rate bonds) is migrated out at a set pace, by code.
 
 Your discretion, checked by code:
-- brazil_vehicle: the ETF for the Brazil sleeve, from the menu {menu} or 'metade' (half in each). Evidence from the contest (June 2014 to October 2026, same flows, after taxes): {evidence}. The previous choice was {previous}. A change applies to new money only: selling an ETF pays 15% on the gain with no exemption.
+- brazil_vehicle: {vehicle_rule}
 - held_back_sales: at most {max_vetoes} of this month's migration sales or redemptions to postpone, by exact asset name, with a reason (for example, a tax or a pending fact). Everything else in the plan is fixed by code: amounts, targets, pace. The pace holds: the plan's 'if_held_back' says, for each sale, what the code sells in its place if you postpone it. Weigh that substitute before you choose, and name it in your key points.
 - escalations: only what the investor must decide or confirm that is not already in the plan's 'pending' list. That list is shown to the investor word for word: do not repeat it.
 - key_points: what the letter must convey, at most five points.
@@ -334,8 +334,16 @@ def ask_index(llm, policy: InvestmentPolicy, plan_facts: dict, reports: list, pr
         return {"role": r.role, "facts": r.facts, "warnings": r.warnings, "error": r.error,
                 "reading": r.view.model_dump() if r.view else None}
 
-    prompt = INDEX_PROMPT.format(menu=policy.index_plan.brazil_menu, evidence=CONTEST_EVIDENCE, previous=previous,
-                                 max_vetoes=MAX_VETOES, policy=policy.for_models(),
+    menu = policy.index_plan.brazil_menu
+    if len(menu) == 1:   # the investor fixed the vehicle: nothing to choose (review 6)
+        rule = (f"fixed by the investor's policy: return {menu[0]}. A dividend tilt or another index would be a "
+                "change of policy, for the investor to decide, not a monthly choice.")
+    else:
+        rule = (f"the ETF for the Brazil sleeve, from the menu {menu} or 'metade' (half in each). Evidence from the "
+                f"contest (June 2014 to October 2026, same flows, after taxes): {CONTEST_EVIDENCE}. The previous "
+                f"choice was {previous}. A change applies to new money only: selling an ETF pays 15% on the gain with "
+                "no exemption.")
+    prompt = INDEX_PROMPT.format(vehicle_rule=rule, max_vetoes=MAX_VETOES, policy=policy.for_models(),
                                  plan=json.dumps(plan_facts, ensure_ascii=False, indent=1, default=str),
                                  reports=json.dumps([report_json(r) for r in reports], ensure_ascii=False, indent=1,
                                                     default=str))

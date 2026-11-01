@@ -72,9 +72,11 @@ def risk_facts(policy: InvestmentPolicy, plan: indices.Plan) -> tuple[dict, list
 
 FIXED_INCOME_BRIEF = (
     "The plan's fixed-income moves follow the investor's policy and were computed by code: check them, do not redo "
-    "them. All fixed income ends in Tesouro Selic. Tesouro IPCA+ and fixed-rate bonds maturing after the horizon are "
+    "them. All fixed income ends in Tesouro Selic. Tesouro IPCA+ and fixed-rate bonds maturing after the horizon (a "
+    "date the investor set, or a rolling window of years) are "
     "redeemed by rule, a choice the investor made: argue against a redemption only with a concrete cost the code "
-    "missed (a coupon or a maturity within weeks, a loss, the tax bracket about to fall) and put it as a point for "
+    "missed (a maturity within weeks, the tax bracket about to fall; a coupon or an unrealized loss alone is not a "
+    "cost, since the price already reflects them) and put it as a point for "
     "the director, who may postpone up to two migration sales. Bonds maturing within the horizon, and deposits with "
     "liquidity only at maturity, are held; their money goes to Selic at maturity. Check: the emergency reserve "
     "(which positions count, the shortfall, whether they really pay out the next day); the tax and any loss of each "
@@ -90,7 +92,7 @@ def fixed_income_report(policy: InvestmentPolicy, wealth: Wealth, plan: indices.
     facts["plan"] = {
         "rule": "toda a renda fixa termina em Tesouro Selic; IPCA+ e prefixados que vencem depois do horizonte são "
                 "resgatados; os demais ficam até o vencimento",
-        "horizon_end": policy.index_plan.horizon_end,
+        "horizon_end": policy.index_plan.horizon_end, "bond_max_years": policy.index_plan.bond_max_years,
         "orders": [{"side": o.side, "asset": o.asset, "value": round(o.value, 2),
                     "tax": None if o.tax is None else round(o.tax, 2), "reason": o.reason}
                    for o in plan.orders if o.sleeve == "renda_fixa"],

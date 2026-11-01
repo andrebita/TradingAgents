@@ -8,8 +8,9 @@ two migration sales (``director.check_index``). The plan:
 2. **Migration out of what the plan does not hold**, at a set pace:
    - single stocks, sold within the monthly exemption (``stock_sales_cap``), largest first;
    - listed funds, sold down to zero over ``listed_funds_exit_months``, largest first;
-   - Tesouro IPCA+ and fixed-rate bonds maturing after ``horizon_end``, redeemed into Tesouro Selic: their
-     duration does not fit the horizon (review 4). Those maturing earlier, and bank deposits and debentures
+   - Tesouro IPCA+ and fixed-rate bonds maturing after ``horizon_end`` (or, without a date, more than
+     ``bond_max_years`` ahead), redeemed into Tesouro Selic: their price swings with rates, a bet against the
+     plan's Selic yardstick (reviews 4 and 6). Those maturing earlier, and bank deposits and debentures
      with liquidity only at maturity, are held to maturity.
 3. **Proceeds of single stocks buy the Brazil ETF first** (a swap within the sleeve, so the migration does not
    move money between Brazil and abroad after whatever the market did); **new money and the other proceeds go
@@ -221,13 +222,15 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     if unvalued:
         plan.pending.append("Sem preço nem valor para " + ", ".join(unvalued) + ": o plano não move dinheiro "
                             "entre classes até completar o patrimônio.")
+    horizon = ip.horizon_end or date(today.year + ip.bond_max_years, today.month, min(today.day, 28))
     if offers:
         from tradingagents.dataflows.vendors.tesouro_direto import selic_to_buy
 
-        bond = selic_to_buy(offers, today, until=ip.horizon_end)
+        bond = selic_to_buy(offers, today, until=horizon)
         if bond:
             plan.selic_bond, plan.selic_rate = bond.name, bond.rate
     selic_name = plan.selic_bond or "Tesouro Selic"
+    fixed_date = ip.horizon_end is not None
 
     # -- Migration sales ------------------------------------------------------------------------------
     sold_this_month, _, _ = wealth.tax.for_month(today)
@@ -302,13 +305,12 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
     if infra:
         plan.pending.append("Confirme no regulamento de " + ", ".join(infra) + " o enquadramento na Lei 12.431: o "
                             "plano conta a venda como isenta.")
-    horizon = ip.horizon_end
     for b in wealth.fixed_income:
         if b.reserve_eligible:
             continue
         matured = b.maturity is not None and b.maturity <= today
         long_bond = (b.sovereign and b.indexer in ("IPCA", "PRE") and b.liquidity_days is not None
-                     and horizon is not None and b.maturity is not None and b.maturity > horizon)
+                     and b.maturity is not None and b.maturity > horizon)
         if matured:
             plan.orders.append(Order("aplicar", selic_name, b.value, f"vencimento de {b.name}", sleeve="renda_fixa"))
             continue
@@ -317,14 +319,17 @@ def build(policy: InvestmentPolicy, wealth: Wealth, prices: dict[str, float], to
             tax = regressive_rate(b.applied_on, today) * max(gain, 0.0) if gain is not None else None
             note = "" if gain is None else (f"; ganho de {brl(gain)}, IR de {brl(tax)}" if gain >= 0
                                             else f"; perda de {brl(-gain)}, sem IR")
-            plan.orders.append(Order("resgatar", b.name, b.value, f"migração: vence em {b.maturity.year}, depois do "
-                                     f"seu horizonte ({horizon.isoformat()}); o dinheiro vai para a Selic" + note,
-                                     tax=tax, sleeve="renda_fixa"))
+            why = (f"depois do seu horizonte ({horizon.isoformat()})" if fixed_date else
+                   f"daqui a mais de {ip.bond_max_years} anos: o preço oscila muito com os juros, e a régua do plano "
+                   "é a Selic")
+            plan.orders.append(Order("resgatar", b.name, b.value, f"migração: vence em {b.maturity.year}, {why}; o "
+                                     "dinheiro vai para a Selic" + note, tax=tax, sleeve="renda_fixa"))
             fixed_cash += b.value - (tax or 0.0)
             if gain is None:
                 plan.pending.append(f"Informe a data e o valor aplicado em {b.name}, para estimar o IR do resgate.")
         else:
-            why = "vence dentro do seu horizonte" if b.maturity else "liquidez só no vencimento"
+            why = (("vence dentro do seu horizonte" if fixed_date else f"vence em até {ip.bond_max_years} anos")
+                   if b.maturity else "liquidez só no vencimento")
             plan.holds.append(f"{b.name}: manter até {b.maturity or 'o vencimento'} ({why})")
 
     # -- New money, proceeds and transfer, to the sleeves furthest below target ----------------------------

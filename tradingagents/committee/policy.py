@@ -41,8 +41,12 @@ class IndexPlan(BaseModel):
     brazil_menu: list[str] = Field(default_factory=lambda: ["BOVA11", "DIVO11"])
     brazil_default: str = "BOVA11"
     international_vehicle: str = "WRLD11"
-    horizon_end: date | None = Field(None, description="When the money may be needed: bonds maturing later are "
-                                                       "moved to Tesouro Selic; earlier ones are held to maturity")
+    horizon_end: date | None = Field(None, description="A date the money is needed, if there is one: bonds maturing "
+                                                       "later are moved to Tesouro Selic; earlier ones are held to "
+                                                       "maturity. Without it, a rolling window of bond_max_years")
+    bond_max_years: int = Field(5, ge=1, description="Without horizon_end: Tesouro IPCA+ and fixed-rate bonds maturing "
+                                                     "more than this many years ahead are moved to Tesouro Selic, "
+                                                     "since their price swings with rates against a Selic yardstick")
     migration_start: date | None = Field(None, description="When the investor adopted the plan; paces the exits")
     listed_funds_exit_months: int = Field(12, ge=1, description="Months to sell the listed funds down to zero")
     stock_sales_cap: float = Field(19_000.0, gt=0, description="Most single-stock sales a month, within the "

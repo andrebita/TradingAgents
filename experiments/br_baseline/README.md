@@ -1242,6 +1242,31 @@ para prever o mercado, e sim:
   contas contra a Selic;
 - **T6:** prompts estruturados e escolha de modelos, com casos de teste.
 
+## Revisão 6, exploratório: margem sobre a Selic e nível de risco (`allocation_r6_margins.py`, US$ 0)
+
+Feito depois de ver os resultados da revisão 5, para ajudar o investidor a escolher a margem e a tolerância. Não
+é um teste pré-registrado. Usa o mesmo bootstrap: 10 mil caminhos de 5 anos, R$ 125 mil iniciais e R$ 3 mil por
+mês, depois da liquidação e do IR. A tabela mostra a probabilidade de terminar à frente da Selic por pelo menos
+a margem indicada, por ano.
+
+| Mistura (Brasil/global/Selic) | Só ganhar | +0,5%/ano | +1%/ano | +2%/ano | Mediana | Pior 5% | Choque instantâneo |
+|---|---|---|---|---|---|---|---|
+| 60% ações (20/40/40) | 78% | 71% | 64% | 47% | +9,4% | −9,3% | −24% |
+| 45% ações (15/30/55) | 79% | 69% | 59% | 37% | +7,2% | −7,0% | −18% |
+| 30% ações (10/20/70) | 79% | 65% | 48% | 19% | +4,9% | −4,7% | −12% |
+
+**Sem a desvalorização média do real:**
+
+| Mistura | Só ganhar | +0,5%/ano | +1%/ano | +2%/ano | Mediana | Pior 5% |
+|---|---|---|---|---|---|---|
+| 60% ações | 60% | 52% | 43% | 27% | +3,0% | −14,4% |
+| 45% ações | 61% | 49% | 38% | 19% | +2,4% | −11,0% |
+| 30% ações | 62% | 44% | 28% | 7% | +1,7% | −7,5% |
+
+**Leitura:** a chance de apenas ganhar da Selic quase não muda com o risco. O que muda é o tamanho do ganho e o
+da perda. Por isso, "maior chance de ganhar da Selic" sozinha não escolhe a mistura, como a revisão 6 apontou: a
+escolha depende da queda que o investidor aguenta e da margem que ele quer.
+
 ## Custo estimado da execução com LLM
 
 `estimate_tokens.py` roda o grafo real sobre dados reais e conta os tokens de cada
