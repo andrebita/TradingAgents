@@ -476,7 +476,7 @@ Between the <data> tags are the policy, the final plan, the director's decision,
 </data>"""
 
 
-def write_letter(llm, data: dict, *, budget=None, model: str = "", max_output: int = 8_000) -> str:
+def write_letter(llm, data: dict, *, budget=None, model: str = "", max_output: int = 15_000) -> str:
     runnable = llm.with_structured_output(CommitteeLetter)
     prompt = LETTER_PROMPT.format(data=json.dumps(data, ensure_ascii=False, indent=1, default=str))
     out = runnable.invoke(prompt) if budget is None else budget.invoke(runnable, prompt, model=model,
