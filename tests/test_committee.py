@@ -346,3 +346,23 @@ def test_the_risk_facts_carry_a_simultaneous_stress_of_the_whole_mix():
     # Target 40% stocks and the funds capped at 15%: 0.4 x -59% + 0.15 x -30% = -28.1%.
     assert facts["simultaneous_stress"]["target_mix"] == pytest.approx(-0.281)
     assert any("Tolerância a quedas não informada" in w for w in warnings)
+
+
+@pytest.mark.unit
+def test_the_budget_keeps_each_calls_tokens_against_its_cap():
+    from langchain_core.messages import AIMessage
+    from langchain_core.outputs import ChatGeneration, LLMResult
+
+    def runnable_invoke(prompt, config):
+        message = AIMessage(content="ok", usage_metadata={"input_tokens": 1000, "output_tokens": 2000,
+                                                          "total_tokens": 3000})
+        for cb in config["callbacks"]:
+            cb.on_llm_end(LLMResult(generations=[[ChatGeneration(message=message)]]))
+        return "ok"
+
+    budget = Budget(1.0)
+    budget.invoke(SimpleNamespace(invoke=runnable_invoke), "p", model="claude-sonnet-5-5", max_output=8000,
+                  label="Analista")
+    assert budget.usage == [{"label": "Analista", "model": "claude-sonnet-5-5", "max_output": 8000,
+                             "input_tokens": 1000, "output_tokens": 2000, "output_share": 0.25,
+                             "cost_usd": pytest.approx((1000 * 2.0 + 2000 * 10.0) / 1e6)}]

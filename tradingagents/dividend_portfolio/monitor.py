@@ -37,10 +37,14 @@ class CostMeter(BaseCallbackHandler):
         self.budget_usd = budget_usd
         self.spent = 0.0
         self.calls = 0
+        self.input_tokens = 0
+        self.output_tokens = 0          # thinking included: it counts against the call's max_tokens
 
     def on_llm_end(self, response, **kwargs):
         for generation in (g for batch in response.generations for g in batch):
             usage = getattr(getattr(generation, "message", None), "usage_metadata", None) or {}
+            self.input_tokens += usage.get("input_tokens", 0)
+            self.output_tokens += usage.get("output_tokens", 0)
             self.spent += (usage.get("input_tokens", 0) * self.price[0]
                            + usage.get("output_tokens", 0) * self.price[1]) / 1e6
         self.calls += 1
@@ -71,6 +75,7 @@ class Budget:
         self.parent = parent
         self.spent = 0.0
         self.reserved = 0.0
+        self.usage: list[dict] = []
         self.by_model: dict[str, float] = {}
         self._lock = threading.Lock()
 
@@ -96,8 +101,9 @@ class Budget:
         if self.parent is not None:
             self.parent._settle(model, held, cost)
 
-    def invoke(self, runnable, prompt: str, *, model: str, max_output: int, meters: tuple = ()):
-        """``runnable.invoke(prompt)`` if the budget covers its worst case; ``meters`` also count its cost."""
+    def invoke(self, runnable, prompt: str, *, model: str, max_output: int, meters: tuple = (), label: str = ""):
+        """``runnable.invoke(prompt)`` if the budget covers its worst case; ``meters`` also count its cost. Each
+        call's tokens, against its ``max_output``, are kept in ``usage`` under ``label``."""
         held = self.estimate(prompt, model, max_output)
         if not self._reserve(held):
             raise BudgetExceeded(f"orçamento de LLM insuficiente: a chamada pode custar até US$ {held:.2f}, "
@@ -107,6 +113,11 @@ class Budget:
             return runnable.invoke(prompt, config={"callbacks": [meter, *meters]})
         finally:
             self._settle(model, held, meter.spent if meter.calls else held)
+            with self._lock:
+                self.usage.append({"label": label or model, "model": model, "max_output": max_output,
+                                   "input_tokens": meter.input_tokens, "output_tokens": meter.output_tokens,
+                                   "output_share": round(meter.output_tokens / max_output, 3) if max_output else None,
+                                   "cost_usd": round(meter.spent if meter.calls else held, 4)})
 
 
 class NewsAlert(BaseModel):

@@ -378,7 +378,7 @@ def ask_index(llm, policy: InvestmentPolicy, plan_facts: dict, reports: list, pr
     runnable = llm.with_structured_output(IndexDecision)
     if budget is None:
         return runnable.invoke(prompt)
-    return budget.invoke(runnable, prompt, model=policy.models.director, max_output=max_output)
+    return budget.invoke(runnable, prompt, model=policy.models.director, max_output=max_output, label="Diretor")
 
 
 def check_index(decision: IndexDecision, policy: InvestmentPolicy, migration_assets: set[str],
@@ -476,11 +476,11 @@ Between the <data> tags are the policy, the final plan, the director's decision,
 </data>"""
 
 
-def write_letter(llm, data: dict, *, budget=None, model: str = "", max_output: int = 4_000) -> str:
+def write_letter(llm, data: dict, *, budget=None, model: str = "", max_output: int = 8_000) -> str:
     runnable = llm.with_structured_output(CommitteeLetter)
     prompt = LETTER_PROMPT.format(data=json.dumps(data, ensure_ascii=False, indent=1, default=str))
     out = runnable.invoke(prompt) if budget is None else budget.invoke(runnable, prompt, model=model,
-                                                                         max_output=max_output)
+                                                                         max_output=max_output, label="Carta")
     return out.letter
 
 

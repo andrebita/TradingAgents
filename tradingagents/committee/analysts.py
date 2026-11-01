@@ -49,7 +49,8 @@ class Report:
     error: str | None = None
 
 
-ANALYST_MAX_OUTPUT = 4_000
+ANALYST_MAX_OUTPUT = 8_000          # thinking counts against it; a cut-off reading is lost
+LETTER_MAX_OUTPUT = 8_000
 DIRECTOR_MAX_OUTPUT = 24_000
 
 
@@ -88,7 +89,7 @@ def ask_view(models: Models, model: str, role: str, brief: str, facts: dict, pol
               f"<data>\nThe investor's policy:\n{policy.for_models()}\n\nThe facts:\n"
               f"{json.dumps(facts, ensure_ascii=False, indent=1, default=str)}\n</data>")
     return models.budget.invoke(models.llm(model).with_structured_output(View), prompt, model=model,
-                                max_output=ANALYST_MAX_OUTPUT)
+                                max_output=ANALYST_MAX_OUTPUT, label=role)
 
 
 def _with_view(report: Report, models: Models | None, model: str, brief: str, policy: InvestmentPolicy) -> Report:

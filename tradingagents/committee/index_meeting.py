@@ -353,8 +353,10 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                     "analysts": [{"role": r.role, "summary": r.view.summary if r.view else None}
                                  for r in reports]}
             try:
-                letter_text = director.write_letter(models.llm(policy.models.letter), data, budget=models.budget,
-                                                    model=policy.models.letter)
+                letter_text = director.write_letter(models.llm(policy.models.letter,
+                                                               max_output=analysts.LETTER_MAX_OUTPUT), data,
+                                                    budget=models.budget, model=policy.models.letter,
+                                                    max_output=analysts.LETTER_MAX_OUTPUT)
                 audit = director.audit_letter(letter_text, data)
             except Exception as exc:  # the plan and the director's points still reach the investor
                 logger.warning("The letter failed: %s", exc)
@@ -374,6 +376,7 @@ def hold(policy: InvestmentPolicy, wealth: Wealth, *, contribution: float | None
                              "plan": plan.facts(), "escalations": escalations,
                              "escalations_repeating_pending": repeated, "key_points": checked.decision.key_points,
                              "letter_audit": audit, "cost_usd": round(spent, 4),
+                             "token_usage": list(models.budget.usage) if models is not None else [],
                              "equity_share": plan.equity_share if ip.equity_min is not None else None,
                              "equity_share_fixed_mix": ip.equity_share,
                              "equity_share_reason": checked.decision.equity_share_reason or None},
@@ -508,4 +511,8 @@ def render(day: date, policy: InvestmentPolicy, wealth: Wealth, plan: indices.Pl
     if models is not None:
         detail = "; ".join(f"{m}: US$ {v:.3f}" for m, v in models.budget.by_model.items())
         out.append(f"_Custo dos modelos nesta reunião: US$ {spent:.3f} ({detail})._")
+        usage = getattr(models.budget, "usage", None)
+        if isinstance(usage, list) and usage:
+            out.append("_Tokens de saída (com o raciocínio) contra o limite: " + "; ".join(
+                f"{u['label']} {u['output_tokens']:,} de {u['max_output']:,}".replace(",", ".") for u in usage) + "._")
     return "\n".join(out) + "\n"
